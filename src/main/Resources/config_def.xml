@@ -1,0 +1,12 @@
+<Configurations>
+    <Configuration name="StandardPlot">
+        <title>Result</title>
+        <plotType>b</plotType>
+        <plotFormat>png</plotFormat>
+        <plotVar>HWAH_S</plotVar>
+        <inputFile>input_avg.txt</inputFile>
+        <outputPath>plot_output</outputPath>
+        <outputACMO>acmo_output.csv</outputACMO>
+        <outputGraph>output</outputGraph>
+    </Configuration>
+</Configurations>

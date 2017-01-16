@@ -1,0 +1,3 @@
+csv group color
+"D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\src\test\resources\r_dev\ACMO_DSSAT.csv" dssat green
+"D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\src\test\resources\r_dev\ACMO_APSIM.csv" apsim red

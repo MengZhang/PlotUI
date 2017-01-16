@@ -1,0 +1,14 @@
+target/*
+*.swp
+.classpath
+.project
+.settings/*
+.DS_Store
+*.tmp
+nbactions.xml
+run.sh
+*.log
+/src/main/resources/git.properties
+Rplots.pdf
+r_lib/*
+plot_output/*
