@@ -3,16 +3,30 @@ package org.agmip.ui.plotui;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
+import java.util.logging.Level;
+import javax.swing.JFileChooser;
 import org.agmip.common.Functions;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -28,40 +42,45 @@ import org.slf4j.LoggerFactory;
 public class PlotUtil {
 
     private final static Logger LOG = LoggerFactory.getLogger(PlotUtil.class);
-    protected final static String R_PATH = "C:\\Program Files\\R\\R-3.3.2\\bin\\x64\\Rscript.exe";
-    protected final static String R_LIB_PATH = "D:\\SSD_USER\\Documents\\R\\win-library\\3.3";
+    private static String R_EXE_PATH = detectRExePath();
+    private static String R_LIB_PATH = detectRLibPath();
     protected final static String R_SCP_PATH = "r_lib";
     protected final static String CONFIG_FILE = "config.xml";
     protected final static String CONFIG_FILE_DEF = "config_def.xml";
+    protected final static String CONFIG_FILE_DEF_TEMPLATE = "config_def.template";
+    protected final static String REPORT_TEMPLATE = "report.template";
     protected static HashMap<String, HashMap<String, String>> CONFIG_MAP;
-    
+
     public enum RScps {
-        StandardPlot("ria_standardplots2.r");
-        
-        private String rScpName;
+
+        StandardPlot("StandardPlot.r"), CorrelationPlot("CorrelationPlot.r"), ClimAnomaly("ClimAnomaly.r");
+
+        private final String rScpName;
+
         private RScps(String rScpName) {
             this.rScpName = rScpName;
         }
+
         public String getScpName() {
             return this.rScpName;
         }
     }
-    
+
     protected static class ForceStopException extends Exception {
-        
+
     }
 
     protected static void initialize(boolean isForced) throws ForceStopException {
-        
+
         LOG.info("Initialize tool configuration...");
-        
+
         // Deploy any invalid R script file
         Path rScpDir = Paths.get(R_SCP_PATH);
         if (!rScpDir.toFile().exists()) {
             Functions.revisePath(rScpDir.toFile().getPath());
         }
         LOG.debug(rScpDir.toFile().getAbsolutePath());
-        
+
         for (RScps rScp : RScps.values()) {
             File rScpFile = rScpDir.resolve(rScp.getScpName()).toFile();
             if (!rScpFile.exists() || isForced) {
@@ -79,7 +98,30 @@ public class PlotUtil {
             waitForUserConfirm("Config file is set to default, please make any necessary change before starting plot tool.");
         }
         CONFIG_MAP = PlotUtil.readConfig(config);
+
+        // Setup environment paths
+        R_LIB_PATH = readRPath("libPath", R_LIB_PATH);
+        R_EXE_PATH = readRPath("exePath", R_EXE_PATH);
+
         LOG.info("Initialization Done!");
+    }
+
+    private static String readRPath(String key, String defPath) throws ForceStopException {
+        HashMap<String, String> rPathConfig = CONFIG_MAP.get("R-Paths");
+        if (rPathConfig == null) {
+            LOG.warn("Missing R-Paths section in config file");
+            if (defPath == null) {
+                waitForUserConfirm(key + " can not be detected automatically, please provide the path manually via config.xml file.");
+            }
+            return defPath;
+        }
+        String path = rPathConfig.get(key);
+        if (path != null && !"".equals(path.trim()) && !("default").equalsIgnoreCase(path.trim())) {
+            return path;
+        } else if (defPath == null) {
+            waitForUserConfirm(key + " can not be detected automatically, please provide the path manually via config.xml file.");
+        }
+        return defPath;
     }
 
     private static void deployFile(InputStream in, File outputFile) {
@@ -96,7 +138,7 @@ public class PlotUtil {
             LOG.error(Functions.getStackTrace(ex));
         }
     }
-    
+
     public static void waitForUserConfirm(String... texts) throws ForceStopException {
         for (String txt : texts) {
             LOG.info(txt);
@@ -110,15 +152,19 @@ public class PlotUtil {
             }
             userInput = keyboard.next();
         }
-        
+
     }
-    
-    public static HashMap<String, String> readCommand(String[] args) {
-        HashMap<String, String> cmds = new HashMap();
+
+    public static HashSet<PlotUtil.RScps> readCommand(String[] args) {
+        HashSet<PlotUtil.RScps> cmds = new HashSet();
         int i = 0;
         while (i < args.length && args[i].startsWith("-")) {
             if (args[i].equalsIgnoreCase("-stdplot")) {
-                cmds.put("rScpType", PlotUtil.RScps.StandardPlot.toString());
+                cmds.add(PlotUtil.RScps.StandardPlot);
+            } else if (args[i].equalsIgnoreCase("-corplot")) {
+                cmds.add(PlotUtil.RScps.CorrelationPlot);
+            } else if (args[i].equalsIgnoreCase("-climate")) {
+                cmds.add(PlotUtil.RScps.ClimAnomaly);
             }
             i++;
         }
@@ -147,5 +193,137 @@ public class PlotUtil {
             LOG.error(Functions.getStackTrace(ex));
         }
         return ret;
+    }
+
+    public static String detectRExePath() {
+        File rExePath = new File("C:\\Program Files\\R\\R-3.3.2\\bin\\Rscript.exe");
+        if (rExePath.exists()) {
+            return rExePath.getPath();
+        } else {
+            File rInstallPath = new File("C:\\Program Files\\R");
+            if (rInstallPath.isDirectory()) {
+                for (File dir : rInstallPath.listFiles()) {
+                    File f = Paths.get(dir.getPath(), "bin", "Rscript.exe").toFile();
+                    if (f.isFile()) {
+                        return f.getPath();
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
+    public static String detectRLibPath() {
+        String userDocPath = new JFileChooser().getFileSystemView().getDefaultDirectory().getPath();
+        File rLibDir = new File(userDocPath + "/R/win-library/3.3");
+        if (rLibDir.exists()) {
+            return rLibDir.getPath();
+        } else {
+            rLibDir = new File(userDocPath + "/R/win-library");
+            for (File dir : rLibDir.listFiles()) {
+                for (File f : dir.listFiles()) {
+                    if (f.getName().equalsIgnoreCase("ggplot2") && f.isDirectory()) {
+                        return dir.getPath();
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
+    public static String getRScpPath(RScps rScpType) {
+        return Paths.get(PlotUtil.R_SCP_PATH, rScpType.getScpName()).toString();
+    }
+
+    public static String getRLibPath() {
+        return R_LIB_PATH;
+    }
+
+    public static String getRExePath() {
+        return R_EXE_PATH;
+    }
+
+    public static String getVersion() {
+        try {
+            Properties versionProperties = new Properties();
+            try (InputStream versionFile = PlotUIApp.class.getClassLoader().getResourceAsStream("product.properties")) {
+                versionProperties.load(versionFile);
+            }
+            StringBuilder avv = new StringBuilder();
+            String buildType = versionProperties.getProperty("product.buildtype");
+            avv.append("Version ");
+            avv.append(versionProperties.getProperty("product.version"));
+            avv.append("-").append(versionProperties.getProperty("product.buildversion"));
+            avv.append("(").append(buildType).append(")");
+            if (buildType.equals("dev")) {
+                avv.append(" [").append(versionProperties.getProperty("product.buildts")).append("]");
+            }
+            return avv.toString();
+        } catch (IOException ex) {
+            LOG.error("Unable to load version information, version will be blank.");
+            return "";
+        }
+    }
+
+    public static Writer openUTF8FileForWrite(File file) throws IOException {
+        return new OutputStreamWriter(
+                new FileOutputStream(file),
+                StandardCharsets.UTF_8);
+    }
+
+    public static List<File> getAllInputFiles(File... dirs) {
+        return getAllInputFiles(true, dirs);
+    }
+
+    public static List<File> getAllInputFiles(boolean ifGoSub, File... dirs) {
+        HashSet<File> files = new HashSet();
+        for (File dir : dirs) {
+            if (dir.isDirectory()) {
+                if (ifGoSub) {
+                    files.addAll(getAllInputFiles(dir.listFiles()));
+                } else {
+                    for (File f : dir.listFiles()) {
+                        if (dir.isFile() && isCsvFile(f)) {
+                            files.add(f);
+                        }
+                    }
+                }
+            } else if (isCsvFile(dir)) {
+                files.add(dir);
+            }
+        }
+
+        return Arrays.asList(files.toArray(new File[]{}));
+    }
+
+    public static boolean isCsvFile(File f) {
+        return f.getName().toLowerCase().endsWith(".csv");
+    }
+
+    public static File generateReport(LinkedHashMap<File, ArrayList<HashMap<String, String>>> result, String outputPath) {
+        LOG.info("Saving validation report ...");
+        File report = Paths.get(outputPath, "report_" + System.currentTimeMillis() + ".htm").toFile();
+        Functions.revisePath(outputPath);
+        try {
+            deployFileByTemplate(report, REPORT_TEMPLATE, result, "reports");
+        } catch (IOException ex) {
+            LOG.error("An error occured while writing the validation report: {}", ex.getMessage());
+            LOG.error(Functions.getStackTrace(ex));
+        }
+        LOG.info("Done!");
+
+        return report;
+    }
+    
+    public static void deployFileByTemplate(File outputFile, String templateName, Object data, String dataName) throws IOException {
+        try (Writer writer = PlotUtil.openUTF8FileForWrite(outputFile)) {
+            Velocity.init();
+            VelocityContext context = new VelocityContext();
+            Reader R = new InputStreamReader(PlotUIWindow.class.getClassLoader().getResourceAsStream(templateName));
+
+            context.put(dataName, data);
+            Velocity.evaluate(context, writer, "Generate " + dataName, R);
+            writer.close();
+        }
     }
 }

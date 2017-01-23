@@ -1,0 +1,87 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+        <meta http-equiv="Content-Language" content="en-us" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Validation Report</title>
+        <style type="text/css">
+            .style2 {
+                border-style: solid;
+                border-width: 1px;
+                background-color: #C0C0C0;
+            }
+            .style4 {
+                border-width: 0px;
+            }
+            .style11 {
+                border-style: solid;
+                border-width: 1px;
+            }
+            .style12 {
+                border-style: solid;
+                border-width: 1px;
+                text-align: center;
+            }
+            .style13 {
+                text-align: center;
+                font-size: x-large;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <p class="style13">Validation Report</p>
+        <p>The follow tables shows the missing variable used for plot in each ACMO file.</p>
+        #foreach ( $csv in $reports.keySet() )
+        <p>$!{csv.getPath()}</p>
+        <table style="width: 100%" class="style4">
+            <tr>
+                <td class="style2" style="width: 70px"><strong>EXNAME</strong></td>
+                <td class="style2" style="width: 70px"><strong>HWAH_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>CWAH_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>ADAT_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>MDAT_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>HADAT_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>LAIX_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>PRCP_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>ETCP_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>NUCM_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>NLCM_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>EPCP_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>ESCP_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>SRAA_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>TMAXA_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>TMINA_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>TAVGA_S</strong></td>
+                <td class="style2" style="width: 70px"><strong>CO2D_S</strong></td>
+            </tr>
+            #foreach ( $farm in $reports.get($csv) )
+            <tr>
+                <td class="style11">$!farm.exname</td>
+                <td class="style12">$!farm.hwah_s</td>
+                <td class="style12">$!farm.cwah_s</td>
+                <td class="style12">$!farm.adat_s</td>
+                <td class="style12">$!farm.mdat_s</td>
+                <td class="style12">$!farm.hadat_s</td>
+                <td class="style12">$!farm.laix_s</td>
+                <td class="style12">$!farm.prcp_s</td>
+                <td class="style12">$!farm.etcp_s</td>
+                <td class="style12">$!farm.nucm_s</td>
+                <td class="style12">$!farm.nlcm_s</td>
+                <td class="style12">$!farm.epcp_s</td>
+                <td class="style12">$!farm.escp_s</td>
+                <td class="style12">$!farm.sraa_s</td>
+                <td class="style12">$!farm.tmaxa_s</td>
+                <td class="style12">$!farm.tmina_s</td>
+                <td class="style12">$!farm.tavga_s</td>
+                <td class="style12">$!farm.co2d_s</td>
+            </tr>
+            #end
+
+        </table>
+        #end
+
+    </body>
+
+</html>

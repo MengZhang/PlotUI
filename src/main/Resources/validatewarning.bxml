@@ -1,0 +1,7 @@
+<BoxPane orientation="vertical"
+    xmlns:bxml="http://pivot.apache.org/bxml"
+    xmlns:content="org.apache.pivot.wtk.content"
+    xmlns="org.apache.pivot.wtk">
+    <Label text="Do you want to continue or abort?" styles="{font:{bold:true}}"/>
+    <Label text="For details, click report" styles="{font:{bold:true}}"/>
+</BoxPane>

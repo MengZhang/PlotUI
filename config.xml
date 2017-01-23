@@ -1,17 +1,17 @@
-<Configurations>    
+<Configurations>
     <Configuration name="R-Paths">
         <RLibPath>default</RLibPath>
         <RExePath>default</RExePath>
     </Configuration>
     <Configuration name="StandardPlot">
         <title>Result</title>
-        <plotType>b</plotType>
+        <plotType>BoxPlot</plotType>
         <plotFormat>png</plotFormat>
-        <plotVar>HWAH_S</plotVar>
-        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev</inputDir>
+        <plotVar>MDAT_S</plotVar>
+        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\good_data</inputDir>
         <outputPath>plot_output</outputPath>
         <outputACMO>acmo_output.csv</outputACMO>
-        <outputGraph>output_stdplot</outputGraph>
+        <outputGraph>StdPlot</outputGraph>
     </Configuration>
     <Configuration name="CorrelationPlot">
         <plotFormat>png</plotFormat>
@@ -19,17 +19,17 @@
         <plotVarY>HWAH_S</plotVarY>
         <group1>CRID_text</group1>
         <group2>SOIL_ID</group2>
-        <inputFile>ACMO_DSSAT.csv</inputFile>
+        <inputDir></inputDir>
         <outputPath>plot_output</outputPath>
-        <outputGraph>output_corplot</outputGraph>
+        <outputGraph>CorPlot</outputGraph>
     </Configuration>
     <Configuration name="ClimAnomaly">
         <plotFormat>png</plotFormat>
         <plotVar>TMAX</plotVar>
         <plotType>relative</plotType>
         <plotFormat>png</plotFormat>
-        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\wth_data</inputDir>
+        <inputDir></inputDir>
         <outputPath>plot_output</outputPath>
-        <outputGraph>output_climate</outputGraph>
+        <outputGraph>Climate</outputGraph>
     </Configuration>
 </Configurations>

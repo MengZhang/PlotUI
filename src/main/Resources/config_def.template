@@ -1,0 +1,35 @@
+<Configurations>
+    <Configuration name="R-Paths">
+        <RLibPath>default</RLibPath>
+        <RExePath>default</RExePath>
+    </Configuration>
+    <Configuration name="StandardPlot">
+        <title>$!{config.StandardPlot.title}</title>
+        <plotType>$!{config.StandardPlot.plotType}</plotType>
+        <plotFormat>$!{config.StandardPlot.plotFormat}</plotFormat>
+        <plotVar>$!{config.StandardPlot.plotVar}</plotVar>
+        <inputDir>$!{config.StandardPlot.inputDir}</inputDir>
+        <outputPath>$!{config.StandardPlot.outputPath}</outputPath>
+        <outputACMO>acmo_output.csv</outputACMO>
+        <outputGraph>$!{config.StandardPlot.outputGraph}</outputGraph>
+    </Configuration>
+    <Configuration name="CorrelationPlot">
+        <plotFormat>$!{config.CorrelationPlot.plotFormat}</plotFormat>
+        <plotVarX>$!{config.CorrelationPlot.plotVarX}</plotVarX>
+        <plotVarY>$!{config.CorrelationPlot.plotVarY}</plotVarY>
+        <group1>$!{config.CorrelationPlot.group1}</group1>
+        <group2>$!{config.CorrelationPlot.group2}</group2>
+        <inputDir>$!{config.CorrelationPlot.inputDir}</inputDir>
+        <outputPath>$!{config.CorrelationPlot.outputPath}</outputPath>
+        <outputGraph>$!{config.CorrelationPlot.outputGraph}</outputGraph>
+    </Configuration>
+    <Configuration name="ClimAnomaly">
+        <plotFormat>$!{config.ClimAnomaly.plotFormat}</plotFormat>
+        <plotVar>$!{config.ClimAnomaly.plotVar}</plotVar>
+        <plotType>$!{config.ClimAnomaly.plotType}</plotType>
+        <plotFormat>$!{config.ClimAnomaly.plotFormat}</plotFormat>
+        <inputDir>$!{config.ClimAnomaly.inputDir}</inputDir>
+        <outputPath>$!{config.ClimAnomaly.outputPath}</outputPath>
+        <outputGraph>$!{config.ClimAnomaly.outputGraph}</outputGraph>
+    </Configuration>
+</Configurations>

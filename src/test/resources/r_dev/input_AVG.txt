@@ -1,6 +1,0 @@
-csv group color
-"D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\src\test\resources\r_dev\ACMO_APSIM_0XFX_AVG.csv" apsim red
-"D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\src\test\resources\r_dev\ACMO_DSSAT_IEFA.csv" dssat green
-"D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\src\test\resources\r_dev\ACMO_APSIM_IEFA.csv" apsim red
-"D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\src\test\resources\r_dev\ACMO_DSSAT_ZZZZ.csv" dssat green
-"D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\src\test\resources\r_dev\ACMO_APSIM_ZZZZ.csv" apsim red

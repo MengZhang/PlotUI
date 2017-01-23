@@ -3,7 +3,6 @@ package org.agmip.ui.plotui;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import org.agmip.common.Functions;
 import org.agmip.ui.plotui.PlotUtil.RScps;
@@ -16,40 +15,92 @@ import org.slf4j.LoggerFactory;
  * @author Meng Zhang
  */
 public class PlotRunner {
-    
+
     private final static Logger LOG = LoggerFactory.getLogger(PlotRunner.class);
-    
-    public static void runStandardPlot() throws IOException {
-        
-        HashMap<String, String> configSTPlot = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.StandardPlot.toString());
-        
-        String rScript = Paths.get(PlotUtil.R_SCP_PATH, RScps.StandardPlot.getScpName()).toString();
-        String title = configSTPlot.get("title");
-        String plotType = configSTPlot.get("plotType");
-        String plotFormat = configSTPlot.get("plotFormat");
-        String plotVar = configSTPlot.get("plotVar");
-        String inputFile = configSTPlot.get("inputFile"); //"D:\\SSD_USER\\Documents\\NetBeansProjects\\Develop\\PlotUI\\target\\test-classes\\r_dev\\input_avg.txt";
-        String outputPath = configSTPlot.get("outputPath"); //"plot_output";
-        String outputACMO = configSTPlot.get("outputACMO"); //"acmo_output.csv";
-        String outputGraph = configSTPlot.get("outputGraph"); //"output";
+
+    public static int runStandardPlot() throws IOException {
+
+        HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.StandardPlot.toString());
+
+        String title = config.get("title");
+        String plotType = config.get("plotType");
+        String plotFormat = config.get("plotFormat");
+        String plotVar = config.get("plotVar");
+        String inputDir = config.get("inputDir");
+        String outputPath = config.get("outputPath");
+        String outputACMO = config.get("outputACMO");
+        String outputGraph = config.get("outputGraph");
 
         Functions.revisePath(outputPath);
-        ProcessBuilder pb = new ProcessBuilder(PlotUtil.R_PATH, rScript, PlotUtil.R_LIB_PATH, title, plotType, plotFormat, plotVar, inputFile, outputPath, outputACMO, outputGraph);
+        ProcessBuilder pb = new ProcessBuilder(
+                PlotUtil.getRExePath(),
+                PlotUtil.getRScpPath(RScps.StandardPlot),
+                PlotUtil.getRLibPath(),
+                title, plotType, plotFormat, plotVar, inputDir, outputPath, outputACMO, outputGraph);
         LOG.debug(pb.command().toString());
-        printRProc(pb.start(), RScps.StandardPlot);
+        return printRProc(pb.start(), RScps.StandardPlot);
     }
 
-    public static void printRProc(Process p, RScps Rscp) {
+    public static int runCorrelationPlot() throws IOException {
+
+        HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.CorrelationPlot.toString());
+
+        String plotFormat = config.get("plotFormat");
+        String plotVarX = config.get("plotVarX");
+        String plotVarY = config.get("plotVarY");
+        String group1 = config.get("group1");
+        String group2 = config.get("group2");
+        String inputFile = config.get("inputFile");
+        String outputPath = config.get("outputPath");
+        String outputGraph = config.get("outputGraph");
+
+        Functions.revisePath(outputPath);
+        ProcessBuilder pb = new ProcessBuilder(
+                PlotUtil.getRExePath(),
+                PlotUtil.getRScpPath(RScps.CorrelationPlot),
+                PlotUtil.getRLibPath(),
+                inputFile, plotFormat, plotVarX, plotVarY, group1, group2, outputPath, outputGraph);
+        LOG.debug(pb.command().toString());
+        return printRProc(pb.start(), RScps.CorrelationPlot);
+    }
+
+    public static int runClimAnomaly() throws IOException {
+
+        HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.ClimAnomaly.toString());
+
+        String plotType = config.get("plotType");
+        String plotFormat = config.get("plotFormat");
+        String plotVar = config.get("plotVar");
+        String inputDir = config.get("inputDir");
+        String outputPath = config.get("outputPath");
+        String outputGraph = config.get("outputGraph");
+
+        Functions.revisePath(outputPath);
+        ProcessBuilder pb = new ProcessBuilder(
+                PlotUtil.getRExePath(),
+                PlotUtil.getRScpPath(RScps.ClimAnomaly),
+                PlotUtil.getRLibPath(),
+                inputDir, plotVar, plotType, plotFormat, outputPath, outputGraph);
+        LOG.debug(pb.command().toString());
+        return printRProc(pb.start(), RScps.ClimAnomaly);
+    }
+
+    public static int printRProc(Process p, RScps Rscp) {
 
         final BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
         final BufferedReader errReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
         try {
             String line;
+            boolean isErrExist = false;
             while ((line = reader.readLine()) != null) {
                 LOG.debug("{} : {}", Rscp.toString(), line);
             }
             while ((line = errReader.readLine()) != null) {
+                isErrExist = true;
                 LOG.info("{} : {}", Rscp.toString(), line);
+            }
+            if (!isErrExist) {
+                LOG.info("{} : Job done!", Rscp.toString());
             }
             reader.close();
             errReader.close();
@@ -57,5 +108,6 @@ public class PlotRunner {
             LOG.error("{} : {}", Rscp.toString(), "failed to read output from process");
             LOG.error(Functions.getStackTrace(e));
         }
+        return p.exitValue();
     }
 }
