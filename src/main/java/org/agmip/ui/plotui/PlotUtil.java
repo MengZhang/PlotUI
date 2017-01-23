@@ -25,6 +25,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import javax.swing.JFileChooser;
 import org.agmip.common.Functions;
+import org.agmip.util.MapUtil;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.jdom2.Document;
@@ -42,13 +43,14 @@ import org.slf4j.LoggerFactory;
 public class PlotUtil {
 
     private final static Logger LOG = LoggerFactory.getLogger(PlotUtil.class);
-    private static String R_EXE_PATH = detectRExePath();
-    private static String R_LIB_PATH = detectRLibPath();
+//    private static String R_EXE_PATH = detectRExePath();
+//    private static String R_LIB_PATH = detectRLibPath();
     protected final static String R_SCP_PATH = "r_lib";
     protected final static String CONFIG_FILE = "config.xml";
     protected final static String CONFIG_FILE_DEF = "config_def.xml";
     protected final static String CONFIG_FILE_DEF_TEMPLATE = "config_def.template";
     protected final static String REPORT_TEMPLATE = "report.template";
+    protected final static String GLOBAL_CONFIG = "GlobalConfig";
     protected static HashMap<String, HashMap<String, String>> CONFIG_MAP;
 
     public enum RScps {
@@ -100,28 +102,10 @@ public class PlotUtil {
         CONFIG_MAP = PlotUtil.readConfig(config);
 
         // Setup environment paths
-        R_LIB_PATH = readRPath("libPath", R_LIB_PATH);
-        R_EXE_PATH = readRPath("exePath", R_EXE_PATH);
+        setRPath("RLibPath", detectRLibPath());
+        setRPath("RExePath", detectRExePath());
 
         LOG.info("Initialization Done!");
-    }
-
-    private static String readRPath(String key, String defPath) throws ForceStopException {
-        HashMap<String, String> rPathConfig = CONFIG_MAP.get("R-Paths");
-        if (rPathConfig == null) {
-            LOG.warn("Missing R-Paths section in config file");
-            if (defPath == null) {
-                waitForUserConfirm(key + " can not be detected automatically, please provide the path manually via config.xml file.");
-            }
-            return defPath;
-        }
-        String path = rPathConfig.get(key);
-        if (path != null && !"".equals(path.trim()) && !("default").equalsIgnoreCase(path.trim())) {
-            return path;
-        } else if (defPath == null) {
-            waitForUserConfirm(key + " can not be detected automatically, please provide the path manually via config.xml file.");
-        }
-        return defPath;
     }
 
     private static void deployFile(InputStream in, File outputFile) {
@@ -195,6 +179,29 @@ public class PlotUtil {
         return ret;
     }
 
+    private static void setRPath(String key, String defPath) throws ForceStopException {
+        HashMap<String, String> rPathConfig = CONFIG_MAP.get(GLOBAL_CONFIG);
+        if (rPathConfig == null) {
+            LOG.warn("Missing GlobalConfig section in config file");
+            if (defPath == null) {
+                waitForUserConfirm(key + " can not be detected automatically, please provide the path via config GUI or via config.xml file manually.");
+            } else {
+                rPathConfig = new HashMap();
+                CONFIG_MAP.put(GLOBAL_CONFIG, rPathConfig);
+                rPathConfig.put(key, defPath);
+            }
+        } else {
+            String path = rPathConfig.get(key);
+            if (path == null || "".equals(path.trim()) || ("default").equalsIgnoreCase(path.trim())) {
+                if (defPath == null) {
+                    waitForUserConfirm(key + " can not be detected automatically, please provide the path manually via config.xml file.");
+                } else {
+                    rPathConfig.put(key, defPath);
+                }
+            }
+        }
+    }
+
     public static String detectRExePath() {
         File rExePath = new File("C:\\Program Files\\R\\R-3.3.2\\bin\\Rscript.exe");
         if (rExePath.exists()) {
@@ -236,11 +243,11 @@ public class PlotUtil {
     }
 
     public static String getRLibPath() {
-        return R_LIB_PATH;
+        return MapUtil.getValueOr(CONFIG_MAP.get(GLOBAL_CONFIG), "RLibPath", "");
     }
 
     public static String getRExePath() {
-        return R_EXE_PATH;
+        return MapUtil.getValueOr(CONFIG_MAP.get(GLOBAL_CONFIG), "RExePath", "");
     }
 
     public static String getVersion() {
@@ -314,7 +321,7 @@ public class PlotUtil {
 
         return report;
     }
-    
+
     public static void deployFileByTemplate(File outputFile, String templateName, Object data, String dataName) throws IOException {
         try (Writer writer = PlotUtil.openUTF8FileForWrite(outputFile)) {
             Velocity.init();

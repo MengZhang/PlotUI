@@ -1,7 +1,7 @@
 <Configurations>
-    <Configuration name="R-Paths">
-        <RLibPath>default</RLibPath>
-        <RExePath>default</RExePath>
+    <Configuration name="GlobalConfig">
+        <RLibPath>$!{config.GlobalConfig.RLibPath}</RLibPath>
+        <RExePath>$!{config.GlobalConfig.RExePath}</RExePath>
     </Configuration>
     <Configuration name="StandardPlot">
         <title>$!{config.StandardPlot.title}</title>

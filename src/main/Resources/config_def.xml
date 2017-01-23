@@ -1,5 +1,5 @@
 <Configurations>
-    <Configuration name="R-Paths">
+    <Configuration name="GlobalConfig">
         <RLibPath>default</RLibPath>
         <RExePath>default</RExePath>
     </Configuration>

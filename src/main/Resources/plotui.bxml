@@ -35,7 +35,39 @@
 
         <TablePane.Row height="1*">
             <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
-                <TabPane styles="{padding:6}">
+                <TabPane styles="{padding:6}" selectedIndex="1">
+                    
+                    <!-- R Environment Config -->
+                    <BoxPane orientation="vertical">
+                        <TabPane.tabData>
+                            <content:ButtonData text="GlobalConfig"/>
+                        </TabPane.tabData>
+                        <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
+                            <Border styles="{padding:6}">
+                                <BoxPane orientation="vertical">
+                                    <BoxPane orientation="horizontal">
+                                        <Label text="R Excutable File (RScript.exe):" styles="{font:{bold:true}}"/>
+                                        <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate the R Excutable File (RScript.exe)" />
+                                    </BoxPane>
+                                    <BoxPane orientation="horizontal">
+                                        <TextInput bxml:id="global_rExePath" preferredWidth="400" editable="false"/>
+                                        <PushButton bxml:id="global_browseRExePath" buttonData="Browse"/>
+                                    </BoxPane>
+                                </BoxPane>
+                                <BoxPane orientation="vertical">
+                                    <BoxPane orientation="horizontal">
+                                        <Label text="R library path" styles="{font:{bold:true}}"/>
+                                        <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate the directory which contains third-party library, such like ggplot2" />
+                                    </BoxPane>
+                                    <BoxPane orientation="horizontal">
+                                        <TextInput bxml:id="global_rLibPath" preferredWidth="400" editable="false"/>
+                                        <PushButton bxml:id="global_browseRLibPath" buttonData="Browse"/>
+                                    </BoxPane>
+                                </BoxPane>
+                            </Border>
+                        </BoxPane>
+                    </BoxPane>
+                    
                     <!-- Standard Plot Config -->
                     <BoxPane orientation="vertical">
                         <TabPane.tabData>

@@ -15,6 +15,7 @@ import org.apache.pivot.beans.Bindable;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.serialization.SerializationException;
+import org.apache.pivot.util.Filter;
 import org.apache.pivot.util.Resources;
 import org.apache.pivot.util.concurrent.Task;
 import org.apache.pivot.util.concurrent.TaskListener;
@@ -58,6 +59,11 @@ public class PlotUIWindow extends Window implements Bindable {
     private TextInput curOutputDir = null;
     private TextInput curoutputGraph = null;
 
+    private TextInput global_rExePath = null;
+    private PushButton global_browseRExePath = null;
+    private TextInput global_rLibPath = null;
+    private PushButton global_browseRLibPath = null;
+
     private TextInput stdplot_inputDir = null;
     private PushButton stdplot_inputDirBrowse = null;
     private TextInput stdplot_outputDir = null;
@@ -72,6 +78,7 @@ public class PlotUIWindow extends Window implements Bindable {
     private RadioButton stdplot_plotFormat_pdf = null;
     private RadioButton stdplot_plotFormat_png = null;
 
+    private final HashMap<String, String> globalConfig = PlotUtil.CONFIG_MAP.get(PlotUtil.GLOBAL_CONFIG);
     private final HashMap<String, String> stdConfig = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.StandardPlot.toString());
     private String stdplot_selected_plotVar = "";
 
@@ -90,8 +97,13 @@ public class PlotUIWindow extends Window implements Bindable {
 
     @Override
     public void initialize(Map<String, Object> ns, URL url, Resources rsrcs) {
+        global_rExePath = (TextInput) ns.get("global_rExePath");
+        global_browseRExePath = (PushButton) ns.get("global_browseRExePath");
+        global_rLibPath = (TextInput) ns.get("global_rLibPath");
+        global_browseRLibPath = (PushButton) ns.get("global_browseRLibPath");
         saveConfig = (PushButton) ns.get("saveConfig");
         runRScp = (PushButton) ns.get("runRScp");
+
 //        acebText = (TextInput) ns.get("acebText");
 //        dataListBd = (Border) ns.get("dataList");
 //        dataDetailBd = (Border) ns.get("dataDetail");
@@ -111,6 +123,10 @@ public class PlotUIWindow extends Window implements Bindable {
         stdplot_plotFormat_png = (RadioButton) ns.get("stdplot_plotFormat_png");
 
         // Load configuration from XML into GUI
+        // Global
+        global_rExePath.setText(MapUtil.getValueOr(globalConfig, "RExePath", ""));
+        global_rLibPath.setText(MapUtil.getValueOr(globalConfig, "RLibPath", ""));
+        // StdPlot
         stdplot_inputDir.setText(MapUtil.getValueOr(stdConfig, "inputDir", ""));
         stdplot_title.setText(MapUtil.getValueOr(stdConfig, "title", ""));
         stdplot_outputDir.setText(MapUtil.getValueOr(stdConfig, "outputPath", ""));
@@ -264,6 +280,71 @@ public class PlotUIWindow extends Window implements Bindable {
                     }
                 };
                 task.execute(new TaskAdapter(lisener));
+            }
+        });
+
+        global_browseRExePath.getButtonPressListeners().add(new ButtonPressListener() {
+            @Override
+            public void buttonPressed(Button button) {
+                final FileBrowserSheet browse;
+
+                if (global_rExePath.getText().equals("")) {
+                    browse = new FileBrowserSheet(FileBrowserSheet.Mode.OPEN);
+                } else {
+                    if (!new File(global_rExePath.getText()).exists()) {
+                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.OPEN);
+                    } else {
+                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.OPEN, new File(global_rExePath.getText()).getAbsoluteFile().getParentFile().getPath());
+                    }
+                }
+                browse.setDisabledFileFilter(new Filter<File>() {
+
+                    @Override
+                    public boolean include(File file) {
+                        return (file.isFile() && (!file.getName().equalsIgnoreCase("Rscript.exe")));
+                    }
+                });
+                browse.open(PlotUIWindow.this, new SheetCloseListener() {
+                    @Override
+                    public void sheetClosed(Sheet sheet) {
+                        if (sheet.getResult()) {
+                            File dir = browse.getSelectedFile();
+                            global_rExePath.setText(dir.getPath());
+                            if (globalConfig != null) {
+                                globalConfig.put("RExePath", dir.getPath());
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        global_browseRLibPath.getButtonPressListeners().add(new ButtonPressListener() {
+            @Override
+            public void buttonPressed(Button button) {
+                final FileBrowserSheet browse;
+
+                if (global_rLibPath.getText().equals("")) {
+                    browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO);
+                } else {
+                    if (!new File(global_rLibPath.getText()).exists()) {
+                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO);
+                    } else {
+                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File(global_rLibPath.getText()).getAbsoluteFile().getParentFile().getPath());
+                    }
+                }
+                browse.open(PlotUIWindow.this, new SheetCloseListener() {
+                    @Override
+                    public void sheetClosed(Sheet sheet) {
+                        if (sheet.getResult()) {
+                            File dir = browse.getSelectedFile();
+                            global_rLibPath.setText(dir.getPath());
+                            if (globalConfig != null) {
+                                globalConfig.put("RLibPath", dir.getPath());
+                            }
+                        }
+                    }
+                });
             }
         });
 
