@@ -19,7 +19,7 @@
         <plotVarY>HWAH_S</plotVarY>
         <group1>CRID_text</group1>
         <group2>SOIL_ID</group2>
-        <inputDir></inputDir>
+        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\good_data</inputDir>
         <outputPath>plot_output</outputPath>
         <outputGraph>CorPlot</outputGraph>
     </Configuration>
@@ -28,7 +28,7 @@
         <plotVar>TMAX</plotVar>
         <plotType>relative</plotType>
         <plotFormat>png</plotFormat>
-        <inputDir></inputDir>
+        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\wth_data</inputDir>
         <outputPath>plot_output</outputPath>
         <outputGraph>Climate</outputGraph>
     </Configuration>

@@ -19,7 +19,7 @@
         <plotVarY>HWAH_S</plotVarY>
         <group1>CRID_text</group1>
         <group2>SOIL_ID</group2>
-        <inputFile>ACMO_DSSAT.csv</inputFile>
+        <inputDir></inputDir>
         <outputPath>plot_output</outputPath>
         <outputGraph>CorPlot</outputGraph>
     </Configuration>

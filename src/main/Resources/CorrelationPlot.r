@@ -15,14 +15,14 @@ if (length(args) == 0) {
   args <-
     c(
       "~\\R\\win-library\\3.3",
-      "..\\..\\test\\resources\\r_dev\\ACMO_DSSAT.csv",
+      "..\\..\\test\\resources\\r_dev\\good_data",
       "png",
       "NUCM_S",
       "HWAH_S",
       "CRID_text",
       "SOIL_ID",
       "..\\..\\test\\resources\\r_dev\\plot_output",
-      "output_corplot"
+      "CorPlot"
     )
 }
 getwd()
@@ -244,15 +244,32 @@ name_unit <- function(inputcode) {
   }
   return(all)
 }
-#"FIELD_OVERLAY"
 
-#plot_correction(varNameX,varNameY,Group,acmocsv,fileDir)
+# OriData <- read.csv(acmocsv, skip = 2, header = T)
+acmoinputs <- list.files(path = inputFolder, pattern = ".*\\.csv")
+acmoinputs <- as.character(acmoinputs)
 
-#plot_correction<-function(varNameX,varNameY,Group,acmocsv,fileDir){
-
-#setwd(fileDir)
-OriData <- read.csv(acmocsv, skip = 2, header = T)
-#plot(OriData$PRCP_S,OriData$HWAH_S,main="A scatterplot test", xlab="PRCP_S",ylab="HWAH_S",pch=19)
+for (i in 1:length(acmoinputs)) {
+  print(acmoinputs[i])
+  OriData <-
+    read.csv(paste(inputFolder, acmoinputs[i], sep = "/"),
+             skip = 2,
+             header = T)
+  if (group2 == "NO") {
+    OriData <-
+      OriData[, c(varNameX, varNameY, group1)]
+  } else {
+    OriData <-
+      OriData[, c(varNameX, varNameY, group1, group2)]
+  }
+  
+  if (i == 1) {
+    merged <- OriData
+  } else {
+    merged <- rbind(merged, OriData)
+  }
+  
+}
 
 if (plotFormat == "png") {
   png(output)
@@ -267,7 +284,7 @@ if (Group != "NO") {
 }
 xyplot(
   form,
-  OriData,
+  merged,
   panel = function(x, y, ...) {
     #panel.abline(h=seq(0,8000,2000),col="gray")
     #panel.abline(v=seq(0,1500,500),col="gray")
