@@ -43,7 +43,7 @@
                             <content:ButtonData text="GlobalConfig"/>
                         </TabPane.tabData>
                         <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
-                            <Border styles="{padding:6}">
+                            <Border title="R Environment Setting:" styles="{padding:6}">
                                 <BoxPane orientation="vertical">
                                     <BoxPane orientation="horizontal">
                                         <Label text="R Excutable File (RScript.exe):" styles="{font:{bold:true}}"/>
@@ -66,6 +66,35 @@
                                 </BoxPane>
                             </Border>
                         </BoxPane>
+                        <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
+                            <Border title="Climate Category Mapping:" styles="{padding:6}" minimumWidth="300">
+                                <BoxPane orientation="vertical">
+                                    <BoxPane orientation="horizontal">
+                                        <Label text="Directory for sample ACMO file:" styles="{font:{bold:true}}"/>
+                                        <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate a folder to load ACMO files and detect used GCMs" />
+                                    </BoxPane>
+                                    <BoxPane orientation="horizontal">
+                                        <TextInput bxml:id="global_acmoDir" preferredWidth="400" editable="false"/>
+                                        <PushButton bxml:id="global_browseAcmoDir" buttonData="Browse"/>
+                                    </BoxPane>
+                                </BoxPane>
+                                <BoxPane orientation="horizontal" styles="{padding:{top:6}}">
+                                    <Label text="Mapping:" styles="{font:{bold:true}}"/>
+                                    <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Drag and drop the category with corresponding GCM ID" />
+                                </BoxPane>
+                                <BoxPane orientation="horizontal">
+                                    <BoxPane bxml:id="global_gcmLabels" orientation="vertical">
+                                        <Label text="GCM ID" preferredWidth="60" />
+                                    </BoxPane>
+                                    <BoxPane bxml:id="global_gcmCatLabels" orientation="vertical">
+                                        <Label text="GCM Category" preferredWidth="100"/>
+                                    </BoxPane>
+                                    <BoxPane bxml:id="global_gcmCatSelectionLabels" orientation="vertical">
+                                        <Label text="Selections" preferredWidth="80"/>
+                                    </BoxPane>
+                                </BoxPane>
+                            </Border>
+                        </BoxPane>
                     </BoxPane>
                     
                     <!-- Standard Plot Config -->
@@ -74,7 +103,7 @@
                             <content:ButtonData text="StandardPlot"/>
                         </TabPane.tabData>
                         <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
-                            <Border styles="{padding:6}" preferredWidth="500">
+                            <Border styles="{padding:{bottom:16, top: 6, right: 6, left: 6}}" preferredWidth="500">
                                 <!-- Input Directory -->
                                 <BoxPane orientation="vertical">
                                     <BoxPane orientation="horizontal">
@@ -171,7 +200,7 @@
                             <content:ButtonData text="Others Under Construction"/>
                         </TabPane.tabData>
                         <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
-                            <Border styles="{padding:6}">
+                            <Border styles="{padding:{bottom:16, top: 6, right: 6, left: 6}}">
                                 <BoxPane orientation="vertical">
                                     <BoxPane orientation="horizontal">
                                         <Label text="ACEB File:" styles="{font:{bold:true}}"/>

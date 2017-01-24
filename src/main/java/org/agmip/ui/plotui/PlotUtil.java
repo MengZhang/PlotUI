@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import javax.swing.JFileChooser;
 import org.agmip.common.Functions;
@@ -55,7 +57,7 @@ public class PlotUtil {
 
     public enum RScps {
 
-        StandardPlot("StandardPlot.r"), CorrelationPlot("CorrelationPlot.r"), ClimAnomaly("ClimAnomaly.r");
+        StandardPlot("StandardPlot.r"), CorrelationPlot("CorrelationPlot.r"), ClimAnomaly("ClimAnomaly.r"), VarDetect("VarDetect.r");
 
         private final String rScpName;
 
@@ -332,5 +334,26 @@ public class PlotUtil {
             Velocity.evaluate(context, writer, "Generate " + dataName, R);
             writer.close();
         }
+    }
+    
+    public static String[] getGcms(File dir) {
+        HashSet<String> gcmSet = new HashSet();
+        try {
+            File tmpFile = new File("gcm.txt");
+            PlotRunner.runGcmDetect("CLIM_ID", dir.getPath(), tmpFile.getPath());
+            try (BufferedReader br = new BufferedReader(new FileReader(tmpFile))) {
+                String line;
+                while ( (line = br.readLine()) != null) {
+                    if (!line.trim().equals("")) {
+                        gcmSet.add(line);
+                    }
+                }
+            }
+            tmpFile.delete();
+        } catch (IOException ex) {
+            LOG.error(Functions.getStackTrace(ex));
+        }
+        
+        return new TreeSet<>(gcmSet).toArray(new String[]{});
     }
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.agmip.common.Functions;
 
 import org.apache.pivot.collections.Map;
+import org.apache.pivot.util.concurrent.TaskExecutionException;
 import org.apache.pivot.wtk.Application;
 import org.apache.pivot.wtk.DesktopApplicationContext;
 import org.apache.pivot.wtk.Display;
@@ -34,7 +35,7 @@ public class PlotUIApp extends Application.Adapter {
         return false;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws TaskExecutionException {
 
         try {
             boolean cmdFlg = true;

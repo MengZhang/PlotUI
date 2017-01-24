@@ -2,6 +2,7 @@
     <Configuration name="GlobalConfig">
         <RLibPath>default</RLibPath>
         <RExePath>default</RExePath>
+        <GcmMapping>0XFX:Base|</GcmMapping>
     </Configuration>
     <Configuration name="StandardPlot">
         <title>Result</title>

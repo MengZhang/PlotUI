@@ -1,14 +1,15 @@
 <Configurations>
     <Configuration name="GlobalConfig">
-        <RLibPath>default</RLibPath>
-        <RExePath>default</RExePath>
+        <RLibPath>D:\SSD_USER\Documents\R\win-library\3.3</RLibPath>
+        <RExePath>C:\Program Files\R\R-3.3.2\bin\Rscript.exe</RExePath>
+        <GcmMapping>IEKA:Cool-Dry|IEFA:Hot-Dry|0XFX:Base|ZZZZ:Cool-Wet|</GcmMapping>
     </Configuration>
     <Configuration name="StandardPlot">
         <title>Result</title>
         <plotType>BoxPlot</plotType>
         <plotFormat>png</plotFormat>
-        <plotVar>MDAT_S</plotVar>
-        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\good_data</inputDir>
+        <plotVar>HWAH_S</plotVar>
+        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\bad_data</inputDir>
         <outputPath>plot_output</outputPath>
         <outputACMO>acmo_output.csv</outputACMO>
         <outputGraph>StdPlot</outputGraph>

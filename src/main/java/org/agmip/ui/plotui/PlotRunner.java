@@ -21,6 +21,7 @@ public class PlotRunner {
     public static int runStandardPlot() throws IOException {
 
         HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.StandardPlot.toString());
+        HashMap<String, String> globalConfig = PlotUtil.CONFIG_MAP.get(PlotUtil.GLOBAL_CONFIG);
 
         String title = config.get("title");
         String plotType = config.get("plotType");
@@ -30,13 +31,14 @@ public class PlotRunner {
         String outputPath = config.get("outputPath");
         String outputACMO = config.get("outputACMO");
         String outputGraph = config.get("outputGraph");
+        String gcmMapping = globalConfig.get("GcmMapping");
 
         Functions.revisePath(outputPath);
         ProcessBuilder pb = new ProcessBuilder(
                 PlotUtil.getRExePath(),
                 PlotUtil.getRScpPath(RScps.StandardPlot),
                 PlotUtil.getRLibPath(),
-                title, plotType, plotFormat, plotVar, inputDir, outputPath, outputACMO, outputGraph);
+                title, plotType, plotFormat, plotVar, inputDir, outputPath, outputACMO, outputGraph, gcmMapping.replaceAll("\\|", "_"));
         LOG.debug(pb.command().toString());
         return printRProc(pb.start(), RScps.StandardPlot);
     }
@@ -83,6 +85,17 @@ public class PlotRunner {
                 inputDir, plotVar, plotType, plotFormat, outputPath, outputGraph);
         LOG.debug(pb.command().toString());
         return printRProc(pb.start(), RScps.ClimAnomaly);
+    }
+
+    public static int runGcmDetect(String plotVar, String inputDir, String output) throws IOException {
+
+        ProcessBuilder pb = new ProcessBuilder(
+                PlotUtil.getRExePath(),
+                PlotUtil.getRScpPath(RScps.VarDetect),
+                PlotUtil.getRLibPath(),
+                plotVar, inputDir, output);
+        LOG.debug(pb.command().toString());
+        return printRProc(pb.start(), RScps.VarDetect);
     }
 
     public static int printRProc(Process p, RScps Rscp) {

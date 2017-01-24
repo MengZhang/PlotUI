@@ -22,12 +22,15 @@ import org.apache.pivot.util.concurrent.TaskListener;
 import org.apache.pivot.wtk.Action;
 import org.apache.pivot.wtk.Alert;
 import org.apache.pivot.wtk.AlertListener;
+import org.apache.pivot.wtk.Border;
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonGroup;
 import org.apache.pivot.wtk.ButtonPressListener;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.DesktopApplicationContext;
+import org.apache.pivot.wtk.DragSource;
+import org.apache.pivot.wtk.DropTarget;
 import org.apache.pivot.wtk.FileBrowserSheet;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.ListButton;
@@ -58,11 +61,17 @@ public class PlotUIWindow extends Window implements Bindable {
     private TextInput curInputDir = null;
     private TextInput curOutputDir = null;
     private TextInput curoutputGraph = null;
+    private BoxPane gcmLabels = null;
+    private BoxPane gcmCatLabels = null;
+    private BoxPane gcmCatSelectionLabels = null;
+    HashMap<String, Label> gcmCatMap = new HashMap();
 
     private TextInput global_rExePath = null;
     private PushButton global_browseRExePath = null;
     private TextInput global_rLibPath = null;
     private PushButton global_browseRLibPath = null;
+    private TextInput global_acmoDir = null;
+    private PushButton global_browseAcmoDir = null;
 
     private TextInput stdplot_inputDir = null;
     private PushButton stdplot_inputDirBrowse = null;
@@ -101,6 +110,11 @@ public class PlotUIWindow extends Window implements Bindable {
         global_browseRExePath = (PushButton) ns.get("global_browseRExePath");
         global_rLibPath = (TextInput) ns.get("global_rLibPath");
         global_browseRLibPath = (PushButton) ns.get("global_browseRLibPath");
+        global_acmoDir = (TextInput) ns.get("global_acmoDir");
+        global_browseAcmoDir = (PushButton) ns.get("global_browseAcmoDir");
+        gcmLabels = (BoxPane) ns.get("global_gcmLabels");
+        gcmCatLabels = (BoxPane) ns.get("global_gcmCatLabels");
+        gcmCatSelectionLabels = (BoxPane) ns.get("global_gcmCatSelectionLabels");
         saveConfig = (PushButton) ns.get("saveConfig");
         runRScp = (PushButton) ns.get("runRScp");
 
@@ -156,11 +170,13 @@ public class PlotUIWindow extends Window implements Bindable {
 
         // set default tab
         switchCurTab();
+        setGcmCatMapping();
 
         saveConfig.getButtonPressListeners().add(new ButtonPressListener() {
 
             @Override
             public void buttonPressed(Button button) {
+                saveGlobalConfigToMap();
                 saveStdPlotConfigToMap();
                 LOG.info("Saving {} ...", CONFIG_FILE);
                 try {
@@ -180,6 +196,7 @@ public class PlotUIWindow extends Window implements Bindable {
             @Override
             public void buttonPressed(Button button) {
 
+                saveGlobalConfigToMap();
                 saveStdPlotConfigToMap();
                 try {
                     deployFileByTemplate(new File(CONFIG_FILE), CONFIG_FILE_DEF_TEMPLATE, CONFIG_MAP, "config");
@@ -348,6 +365,39 @@ public class PlotUIWindow extends Window implements Bindable {
             }
         });
 
+        global_browseAcmoDir.getButtonPressListeners().add(new ButtonPressListener() {
+            @Override
+            public void buttonPressed(Button button) {
+                final FileBrowserSheet browse;
+
+                if (global_acmoDir.getText().equals("")) {
+                    if (!new File(stdplot_inputDir.getText()).exists()) {
+                        System.out.println(new File(stdplot_inputDir.getText()));
+                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO);
+                    } else {
+                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File(stdplot_inputDir.getText()).getAbsoluteFile().getParentFile().getPath());
+                    }
+                } else {
+                    if (!new File(global_acmoDir.getText()).exists()) {
+                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO);
+                    } else {
+                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File(global_acmoDir.getText()).getAbsoluteFile().getParentFile().getPath());
+                    }
+                }
+                browse.open(PlotUIWindow.this, new SheetCloseListener() {
+                    @Override
+                    public void sheetClosed(Sheet sheet) {
+                        if (sheet.getResult()) {
+                            File dir = browse.getSelectedFile();
+                            global_acmoDir.setText(dir.getPath());
+//                            setGcmCatMapping(new String[]{"0XFX", "IEFA", "IKFA", "IQFA", "IRFA", "ISFA"});
+                            setGcmCatMapping(PlotUtil.getGcms(dir));
+                        }
+                    }
+                });
+            }
+        });
+
         stdplot_inputDirBrowse.getButtonPressListeners().add(new ButtonPressListener() {
             @Override
             public void buttonPressed(Button button) {
@@ -427,6 +477,12 @@ public class PlotUIWindow extends Window implements Bindable {
 
             @Override
             public void taskExecuted(Task<Integer> task) {
+                
+                if (task.getResult() != 0) {
+                    Alert.alert(MessageType.ERROR, "Job failed! Please check log for detail", PlotUIWindow.this);
+                    return;
+                }
+                
                 BoxPane body = new BoxPane(Orientation.VERTICAL);
                 StringBuilder stdPlotFileName = new StringBuilder();
                 stdPlotFileName.append(stdConfig.get("outputGraph"));
@@ -503,6 +559,16 @@ public class PlotUIWindow extends Window implements Bindable {
         };
         task.execute(new TaskAdapter(lisener));
     }
+    
+    private void saveGlobalConfigToMap() {
+        StringBuilder sbGcmMapping = new StringBuilder();
+        for (String gcm : gcmCatMap.keySet()) {
+            if (gcmCatMap.get(gcm).getText() != null) {
+                sbGcmMapping.append(gcm).append(":").append(gcmCatMap.get(gcm).getText()).append("|");
+            }
+        }
+        globalConfig.put("GcmMapping", sbGcmMapping.toString());
+    }
 
     private void saveStdPlotConfigToMap() {
         stdConfig.put("inputDir", stdplot_inputDir.getText());
@@ -523,6 +589,86 @@ public class PlotUIWindow extends Window implements Bindable {
 
         } else if (curTab.equals(PlotUtil.RScps.ClimAnomaly)) {
 
+        }
+    }
+    
+    private void setGcmCatMapping(String... gcms) {
+        
+        Component title;
+        title = gcmLabels.get(0);
+        gcmLabels.removeAll();
+        gcmLabels.add(title);
+        title = gcmCatLabels.get(0);
+        gcmCatLabels.removeAll();
+        gcmCatLabels.add(title);
+        title = gcmCatSelectionLabels.get(0);
+        gcmCatSelectionLabels.removeAll();
+        gcmCatSelectionLabels.add(title);
+        
+        gcmCatMap = new HashMap();
+        LinkedHashMap<String, String> gcmCatColorMap = new LinkedHashMap();
+        gcmCatColorMap.put("Base", "#D3D3D3");
+        gcmCatColorMap.put("Cool-Dry", "blue");
+        gcmCatColorMap.put("Cool-Wet", "green");
+        gcmCatColorMap.put("Hot-Dry", "red");
+        gcmCatColorMap.put("Hot-Wet", "#FFD700");
+        gcmCatColorMap.put("Middle", "black");
+        
+        DragSource ds = DragDropFactory.createLabelDragSource();
+        DropTarget dt = DragDropFactory.createLabelDropTarget();
+        HashMap<String, String> gcmCatConfig = new LinkedHashMap();
+        String[] gcmPairs = MapUtil.getValueOr(globalConfig, "GcmMapping", "").split("\\|");
+        for (String gcmPair : gcmPairs) {
+            String[] tmp = gcmPair.split(":");
+            if (tmp.length >= 2) {
+                gcmCatConfig.put(tmp[0], tmp[1]);
+            }
+        }
+        
+        if (gcms.length == 0) {
+            gcms = gcmCatConfig.keySet().toArray(gcms);
+        }
+        
+        for (String gcm : gcms) {
+            // GCM ID Label
+            Label gcmLabel = new Label(gcm);
+            gcmLabel.setPreferredHeight(14);
+            gcmLabel.setPreferredWidth(60);
+            Border gcmBorder = new Border(gcmLabel);
+            gcmBorder.getStyles().put("color", "white");
+            gcmLabels.add(gcmBorder);
+            // GCM Category Label
+            Label gcmCatLabel;
+            String gcmCat = gcmCatConfig.get(gcm);
+            
+            if (gcmCat != null) {
+                gcmCatLabel = new Label(gcmCat);
+                gcmCatLabel.getStyles().put("color", gcmCatColorMap.get(gcmCat));
+                gcmCatColorMap.remove(gcmCat);
+            } else {
+                gcmCatLabel = new Label();
+            }
+            gcmCatLabel.setPreferredHeight(14);
+            gcmCatLabel.setPreferredWidth(100);
+            gcmCatLabel.setDragSource(ds);
+            gcmCatLabel.setDropTarget(dt);
+            Border gcmCatBorder = new Border(gcmCatLabel);
+            gcmCatBorder.getStyles().put("backgroundColor", "#F5F5F5");
+            gcmCatLabels.add(gcmCatBorder);
+            gcmCatMap.put(gcm, gcmCatLabel);
+        }
+        
+        for (String gcmCat : gcmCatColorMap.keySet()) {
+            
+            Label gcmCatLabel = new Label(gcmCat);
+            gcmCatLabel.setPreferredHeight(14);
+            gcmCatLabel.setPreferredWidth(80);
+            gcmCatLabel.getStyles().put("color", gcmCatColorMap.get(gcmCat));
+            gcmCatLabel.setDragSource(ds);
+            gcmCatLabel.setDropTarget(dt);
+            Border gcmBorder = new Border(gcmCatLabel);
+            gcmBorder.getStyles().put("color", "white");
+            gcmCatSelectionLabels.add(gcmBorder);
         }
     }
 }

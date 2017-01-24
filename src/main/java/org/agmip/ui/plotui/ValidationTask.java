@@ -57,7 +57,8 @@ public class ValidationTask extends Task<LinkedHashMap<File, ArrayList<HashMap<S
 //        titlePozMap.put("CO2D_S", i++);
     }
     
-    public ValidationTask(List<File> inputCsvFiles, String... validateVars) {this.inputCsvFiles = inputCsvFiles;
+    public ValidationTask(List<File> inputCsvFiles, String... validateVars) {
+        this.inputCsvFiles = inputCsvFiles;
         titlePozMap.put("EXNAME", 2);
         int i = 52;
         HashSet<String> vars = new HashSet(Arrays.asList(validateVars));
@@ -107,6 +108,7 @@ public class ValidationTask extends Task<LinkedHashMap<File, ArrayList<HashMap<S
                         unitReport.put(var.toLowerCase(), val);
                     }
                     if (isBlank) {
+                        LOG.debug("Detect blank records!");
                         validateReport.add(unitReport);
                     }
                 }
