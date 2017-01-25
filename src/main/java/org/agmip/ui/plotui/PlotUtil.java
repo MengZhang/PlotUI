@@ -292,7 +292,7 @@ public class PlotUtil {
                     files.addAll(getAllInputFiles(dir.listFiles()));
                 } else {
                     for (File f : dir.listFiles()) {
-                        if (dir.isFile() && isCsvFile(f)) {
+                        if (f.isFile() && isCsvFile(f)) {
                             files.add(f);
                         }
                     }
@@ -335,7 +335,7 @@ public class PlotUtil {
             writer.close();
         }
     }
-    
+
     public static String[] getGcms(File dir) {
         HashSet<String> gcmSet = new HashSet();
         try {
@@ -343,7 +343,7 @@ public class PlotUtil {
             PlotRunner.runGcmDetect("CLIM_ID", dir.getPath(), tmpFile.getPath());
             try (BufferedReader br = new BufferedReader(new FileReader(tmpFile))) {
                 String line;
-                while ( (line = br.readLine()) != null) {
+                while ((line = br.readLine()) != null) {
                     if (!line.trim().equals("")) {
                         gcmSet.add(line);
                     }
@@ -353,7 +353,52 @@ public class PlotUtil {
         } catch (IOException ex) {
             LOG.error(Functions.getStackTrace(ex));
         }
-        
+
         return new TreeSet<>(gcmSet).toArray(new String[]{});
+    }
+
+    public static ArrayList<String> getValidateVars(PlotUtil.RScps rScpType) {
+        HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(rScpType.toString());
+        ArrayList<String> plotVars = new ArrayList();
+        if (rScpType.equals(PlotUtil.RScps.StandardPlot)) {
+            plotVars.add(config.get("plotVar"));
+        } else if (rScpType.equals(PlotUtil.RScps.CorrelationPlot)) {
+            plotVars.add(config.get("plotVarX"));
+            plotVars.add(config.get("plotVarY"));
+            plotVars.add(config.get("group1"));
+            plotVars.add(config.get("group2"));
+        } else if (rScpType.equals(PlotUtil.RScps.ClimAnomaly)) {
+            plotVars.add(config.get("plotVar"));
+        }
+        return plotVars;
+    }
+
+    public static File getPlotOutputFile(RScps rScpType) {
+        HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(rScpType.toString());
+        StringBuilder plotFileName = new StringBuilder();
+        String outputPath = config.get("outputPath");
+        if (rScpType.equals(PlotUtil.RScps.StandardPlot)) {
+            plotFileName.append(config.get("outputGraph"));
+            plotFileName.append("-").append(config.get("plotType"));
+            plotFileName.append("-ABSOLUTE");
+            plotFileName.append("-").append(config.get("plotVar"));
+            plotFileName.append(".").append(config.get("plotFormat"));
+        } else if (rScpType.equals(PlotUtil.RScps.CorrelationPlot)) {
+            plotFileName.append(config.get("outputGraph"));
+            plotFileName.append("-").append(config.get("plotVarX"));
+            plotFileName.append("-").append(config.get("plotVarY"));
+            plotFileName.append("-").append(config.get("group1"));
+            plotFileName.append("-").append(config.get("group2"));
+            plotFileName.append(".").append(config.get("plotFormat"));
+        } else if (rScpType.equals(PlotUtil.RScps.ClimAnomaly)) {
+            plotFileName.append(config.get("outputGraph"));
+            plotFileName.append("-").append(config.get("plotType"));
+            plotFileName.append("-").append(config.get("plotVar"));
+            plotFileName.append(".").append(config.get("plotFormat"));
+        } else {
+            return null;
+        }
+
+        return Paths.get(outputPath, plotFileName.toString()).toFile();
     }
 }

@@ -52,7 +52,7 @@ public class PlotRunner {
         String plotVarY = config.get("plotVarY");
         String group1 = config.get("group1");
         String group2 = config.get("group2");
-        String inputFile = config.get("inputFile");
+        String inputFile = config.get("inputDir");
         String outputPath = config.get("outputPath");
         String outputGraph = config.get("outputGraph");
 

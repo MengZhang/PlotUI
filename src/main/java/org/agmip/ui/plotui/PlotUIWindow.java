@@ -41,6 +41,8 @@ import org.apache.pivot.wtk.PushButton;
 import org.apache.pivot.wtk.RadioButton;
 import org.apache.pivot.wtk.Sheet;
 import org.apache.pivot.wtk.SheetCloseListener;
+import org.apache.pivot.wtk.TabPane;
+import org.apache.pivot.wtk.TabPaneSelectionListener;
 import org.apache.pivot.wtk.TaskAdapter;
 import org.apache.pivot.wtk.TextInput;
 import org.apache.pivot.wtk.Window;
@@ -55,12 +57,10 @@ public class PlotUIWindow extends Window implements Bindable {
 
     private static final Logger LOG = LoggerFactory.getLogger(PlotUIWindow.class);
     private Label txtVersion = null;
+    private TabPane plotuiTabs = null;
     private PushButton saveConfig = null;
     private PushButton runRScp = null;
     private PlotUtil.RScps curTab = PlotUtil.RScps.StandardPlot;
-    private TextInput curInputDir = null;
-    private TextInput curOutputDir = null;
-    private TextInput curoutputGraph = null;
     private BoxPane gcmLabels = null;
     private BoxPane gcmCatLabels = null;
     private BoxPane gcmCatSelectionLabels = null;
@@ -81,15 +81,25 @@ public class PlotUIWindow extends Window implements Bindable {
     private TextInput stdplot_title = null;
     private ListButton stdplot_plotVarLB = null;
     private ButtonGroup stdplot_plotType = null;
-    private RadioButton stdplot_plotType_box = null;
-    private RadioButton stdplot_plotType_cdf = null;
+    private HashMap<String, RadioButton> stdplot_plotTypeRBMap = null;
     private ButtonGroup stdplot_plotFormat = null;
-    private RadioButton stdplot_plotFormat_pdf = null;
-    private RadioButton stdplot_plotFormat_png = null;
+    private HashMap<String, RadioButton> stdplot_plotFormatRBMap = null;
+
+    private TextInput corplot_inputDir = null;
+    private PushButton corplot_inputDirBrowse = null;
+    private TextInput corplot_outputDir = null;
+    private PushButton corplot_outputDirBrowse = null;
+    private TextInput corplot_outputGraph = null;
+    private ListButton corplot_plotVarXLB = null;
+    private ListButton corplot_plotVarYLB = null;
+    private ListButton corplot_plotGroup1LB = null;
+    private ListButton corplot_plotGroup2LB = null;
+    private ButtonGroup corplot_plotFormat = null;
+    private HashMap<String, RadioButton> corplot_plotFormatRBMap = null;
 
     private final HashMap<String, String> globalConfig = PlotUtil.CONFIG_MAP.get(PlotUtil.GLOBAL_CONFIG);
     private final HashMap<String, String> stdConfig = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.StandardPlot.toString());
-    private String stdplot_selected_plotVar = "";
+    private final HashMap<String, String> corConfig = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.CorrelationPlot.toString());
 
     public PlotUIWindow() {
         Action.getNamedActions().put("fileQuit", new Action() {
@@ -106,6 +116,9 @@ public class PlotUIWindow extends Window implements Bindable {
 
     @Override
     public void initialize(Map<String, Object> ns, URL url, Resources rsrcs) {
+
+        // Initialization
+        // Global
         global_rExePath = (TextInput) ns.get("global_rExePath");
         global_browseRExePath = (PushButton) ns.get("global_browseRExePath");
         global_rLibPath = (TextInput) ns.get("global_rLibPath");
@@ -115,13 +128,12 @@ public class PlotUIWindow extends Window implements Bindable {
         gcmLabels = (BoxPane) ns.get("global_gcmLabels");
         gcmCatLabels = (BoxPane) ns.get("global_gcmCatLabels");
         gcmCatSelectionLabels = (BoxPane) ns.get("global_gcmCatSelectionLabels");
+        plotuiTabs = (TabPane) ns.get("plotuiTabs");
         saveConfig = (PushButton) ns.get("saveConfig");
         runRScp = (PushButton) ns.get("runRScp");
-
-//        acebText = (TextInput) ns.get("acebText");
-//        dataListBd = (Border) ns.get("dataList");
-//        dataDetailBd = (Border) ns.get("dataDetail");
         txtVersion = (Label) ns.get("txtVersion");
+
+        // Standard Plot
         stdplot_inputDir = (TextInput) ns.get("stdplot_inputDir");
         stdplot_inputDirBrowse = (PushButton) ns.get("stdplot_inputDirBrowse");
         stdplot_outputDir = (TextInput) ns.get("stdplot_outputDir");
@@ -130,11 +142,22 @@ public class PlotUIWindow extends Window implements Bindable {
         stdplot_title = (TextInput) ns.get("stdplot_title");
         stdplot_plotVarLB = (ListButton) ns.get("stdplot_plotVarLB");
         stdplot_plotType = (ButtonGroup) ns.get("stdplot_plotTypeButtons");
-        stdplot_plotType_box = (RadioButton) ns.get("stdplot_plotType_box");
-        stdplot_plotType_cdf = (RadioButton) ns.get("stdplot_plotType_cdf");
+        stdplot_plotTypeRBMap = initRadioButtonGroup(ns, "stdplot_plotType_box", "stdplot_plotType_cdf");
         stdplot_plotFormat = (ButtonGroup) ns.get("stdplot_plotFormatButtons");
-        stdplot_plotFormat_pdf = (RadioButton) ns.get("stdplot_plotFormat_pdf");
-        stdplot_plotFormat_png = (RadioButton) ns.get("stdplot_plotFormat_png");
+        stdplot_plotFormatRBMap = initRadioButtonGroup(ns, "stdplot_plotFormat_pdf", "stdplot_plotFormat_png");
+
+        // Correlation Plot
+        corplot_inputDir = (TextInput) ns.get("corplot_inputDir");
+        corplot_inputDirBrowse = (PushButton) ns.get("corplot_inputDirBrowse");
+        corplot_outputDir = (TextInput) ns.get("corplot_outputDir");
+        corplot_outputDirBrowse = (PushButton) ns.get("corplot_outputDirBrowse");
+        corplot_outputGraph = (TextInput) ns.get("corplot_outputGraph");
+        corplot_plotVarXLB = (ListButton) ns.get("corplot_plotVarXLB");
+        corplot_plotVarYLB = (ListButton) ns.get("corplot_plotVarYLB");
+        corplot_plotGroup1LB = (ListButton) ns.get("corplot_plotGroup1LB");
+        corplot_plotGroup2LB = (ListButton) ns.get("corplot_plotGroup2LB");
+        corplot_plotFormat = (ButtonGroup) ns.get("corplot_plotFormatButtons");
+        corplot_plotFormatRBMap = initRadioButtonGroup(ns, "corplot_plotFormat_pdf", "corplot_plotFormat_png");
 
         // Load configuration from XML into GUI
         // Global
@@ -145,49 +168,28 @@ public class PlotUIWindow extends Window implements Bindable {
         stdplot_title.setText(MapUtil.getValueOr(stdConfig, "title", ""));
         stdplot_outputDir.setText(MapUtil.getValueOr(stdConfig, "outputPath", ""));
         stdplot_outputGraph.setText(MapUtil.getValueOr(stdConfig, "outputGraph", ""));
-        String configPlotVar = MapUtil.getValueOr(stdConfig, "plotVar", "");
-        if (!configPlotVar.equals("")) {
-            for (int i = 0; i < stdplot_plotVarLB.getListData().getLength(); i++) {
-                String plotVar = stdplot_plotVarLB.getListData().get(i).toString();
-                if (plotVar.contains(configPlotVar)) {
-                    stdplot_plotVarLB.setSelectedIndex(i);
-                    stdplot_selected_plotVar = configPlotVar;
-                }
-            }
-        }
-        String configPlotType = MapUtil.getValueOr(stdConfig, "plotType", "");
-        if (configPlotType.equalsIgnoreCase("BoxPlot")) {
-            stdplot_plotType.setSelection(stdplot_plotType_box);
-        } else if (configPlotType.equalsIgnoreCase("CDF")) {
-            stdplot_plotType.setSelection(stdplot_plotType_cdf);
-        }
-        String configPlotFormat = MapUtil.getValueOr(stdConfig, "plotFormat", "");
-        if (configPlotFormat.equals("pdf")) {
-            stdplot_plotFormat.setSelection(stdplot_plotFormat_pdf);
-        } else if (configPlotFormat.equals("png")) {
-            stdplot_plotFormat.setSelection(stdplot_plotFormat_png);
-        }
+        setSelectionList(stdplot_plotVarLB, stdConfig, "plotVar");
+        setRadioButtonGroup(stdplot_plotType, stdplot_plotTypeRBMap, stdConfig, "plotType");
+        setRadioButtonGroup(stdplot_plotFormat, stdplot_plotFormatRBMap, stdConfig, "plotFormat");
+        // CorPlot
+        corplot_inputDir.setText(MapUtil.getValueOr(corConfig, "inputDir", ""));
+        corplot_outputDir.setText(MapUtil.getValueOr(corConfig, "outputPath", ""));
+        corplot_outputGraph.setText(MapUtil.getValueOr(corConfig, "outputGraph", ""));
+        setSelectionList(corplot_plotVarXLB, corConfig, "plotVarX");
+        setSelectionList(corplot_plotVarYLB, corConfig, "plotVarY");
+        setSelectionList(corplot_plotGroup1LB, corConfig, "group1");
+        setSelectionList(corplot_plotGroup2LB, corConfig, "group2");
+        corplot_plotFormat.setSelection(corplot_plotFormatRBMap.get(MapUtil.getValueOr(corConfig, "plotFormat", "")));
+        setRadioButtonGroup(corplot_plotFormat, corplot_plotFormatRBMap, corConfig, "plotFormat");
 
-        // set default tab
-        switchCurTab();
+        // Set GCM mapping from config.xml
         setGcmCatMapping();
 
         saveConfig.getButtonPressListeners().add(new ButtonPressListener() {
 
             @Override
             public void buttonPressed(Button button) {
-                saveGlobalConfigToMap();
-                saveStdPlotConfigToMap();
-                LOG.info("Saving {} ...", CONFIG_FILE);
-                try {
-                    deployFileByTemplate(new File(CONFIG_FILE), CONFIG_FILE_DEF_TEMPLATE, CONFIG_MAP, "config");
-                    LOG.info("Done!");
-                    Alert.alert(MessageType.INFO, "Config Saved", PlotUIWindow.this);
-                } catch (IOException ex) {
-                    LOG.error("An error occured while writing the {} file: {}", CONFIG_FILE, ex.getMessage());
-                    LOG.error(Functions.getStackTrace(ex));
-                    Alert.alert(MessageType.ERROR, ex.getMessage(), PlotUIWindow.this);
-                }
+                saveAllConfig();
             }
         });
 
@@ -196,107 +198,36 @@ public class PlotUIWindow extends Window implements Bindable {
             @Override
             public void buttonPressed(Button button) {
 
-                saveGlobalConfigToMap();
-                saveStdPlotConfigToMap();
-                try {
-                    deployFileByTemplate(new File(CONFIG_FILE), CONFIG_FILE_DEF_TEMPLATE, CONFIG_MAP, "config");
-                    LOG.info("Done!");
-                } catch (IOException ex) {
-                    LOG.error("An error occured while writing the {} file: {}", CONFIG_FILE, ex.getMessage());
-                    LOG.error(Functions.getStackTrace(ex));
-                    Alert.alert(MessageType.ERROR, ex.getMessage(), PlotUIWindow.this);
+                saveAllConfig();
+                validateInput();
+            }
+        });
+
+        plotuiTabs.getTabPaneSelectionListeners().add(new TabPaneSelectionListener.Adapter() {
+
+            @Override
+            public void selectedIndexChanged(TabPane tp, int i) {
+                int maxIdx = tp.getTabs().getLength() - 1;
+                int curIdx = tp.getSelectedIndex();
+                if (curIdx == 0) {
+                    saveConfig.setEnabled(true);
+                    runRScp.setEnabled(false);
+                } else if (curIdx == maxIdx) {
+                    saveConfig.setEnabled(false);
+                    runRScp.setEnabled(false);
+                } else {
+                    saveConfig.setEnabled(true);
+                    runRScp.setEnabled(true);
+                    if (curIdx == 1) {
+                        curTab = PlotUtil.RScps.StandardPlot;
+                    } else if (curIdx == 2) {
+                        curTab = PlotUtil.RScps.CorrelationPlot;
+                    } else if (curIdx == 3) {
+                        curTab = PlotUtil.RScps.ClimAnomaly;
+                    } else {
+                        curTab = null;
+                    }
                 }
-                ValidationTask task = new ValidationTask(PlotUtil.getAllInputFiles(new File(stdplot_inputDir.getText())), stdplot_selected_plotVar);
-                TaskListener lisener = new TaskListener<LinkedHashMap<File, ArrayList<HashMap<String, String>>>>() {
-
-                    @Override
-                    public void taskExecuted(Task<LinkedHashMap<File, ArrayList<HashMap<String, String>>>> task) {
-
-                        LinkedHashMap<File, ArrayList<HashMap<String, String>>> result = task.getResult();
-                        if (!result.isEmpty()) {
-
-                            // Generate report
-                            final File report = PlotUtil.generateReport(result, curOutputDir.getText());
-
-                            // Ask for user confirmation
-                            BXMLSerializer serializer = new BXMLSerializer();
-                            Component body = null;
-                            try {
-                                body = (Component) serializer.readObject(getClass().getResource("/validatewarning.bxml"));
-                            } catch (IOException | SerializationException ex) {
-                                LOG.error(Functions.getStackTrace(ex));
-                            }
-
-                            Alert warning = new Alert(MessageType.WARNING, "Detect blank line of model output in ACMO files",
-                                    new org.apache.pivot.collections.ArrayList("Report", "Continue", "Abort"),
-                                    body);
-                            warning.setSelectedOption("Abort");
-                            warning.getAlertListeners().add(new AlertListener() {
-
-                                @Override
-                                public void messageTypeChanged(Alert alert, MessageType mt) {
-                                }
-
-                                @Override
-                                public void messageChanged(Alert alert, String string) {
-                                }
-
-                                @Override
-                                public void bodyChanged(Alert alert, Component cmpnt) {
-                                }
-
-                                @Override
-                                public void optionInserted(Alert alert, int i) {
-                                }
-
-                                @Override
-                                public void optionsRemoved(Alert alert, int i, Sequence<?> sqnc) {
-                                }
-
-                                @Override
-                                public void selectedOptionChanged(Alert alert, int i) {
-                                    String userChoice = alert.getSelectedOption().toString();
-
-                                    switch (userChoice) {
-                                        case "Report":
-                                            LOG.info(userChoice);
-                                            // Open the report
-                                            try {
-                                                ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "start", "\"\"", "\"" + report.getPath() + "\"");
-                                                pb.start();
-                                            } catch (IOException winEx) {
-                                                try {
-                                                    ProcessBuilder pb = new ProcessBuilder("open", "\"" + report.getPath() + "\"");
-                                                    pb.start();
-                                                } catch (IOException macEx) {
-                                                    Alert.alert(MessageType.ERROR, "Your OS can not open the file by using this link", PlotUIWindow.this);
-                                                    LOG.error(Functions.getStackTrace(winEx));
-                                                    LOG.error(Functions.getStackTrace(macEx));
-                                                }
-                                            }
-                                            break;
-                                        case "Continue":
-                                            LOG.info(userChoice);
-                                            runPlot();
-                                            break;
-                                    }
-                                }
-                            });
-                            warning.open(PlotUIWindow.this);
-                        } else {
-                            runPlot();
-                        }
-
-                    }
-
-                    @Override
-                    public void executeFailed(Task<LinkedHashMap<File, ArrayList<HashMap<String, String>>>> task) {
-                        Alert.alert(MessageType.ERROR, task.getFault().toString(), PlotUIWindow.this);
-                        LOG.error(Functions.getStackTrace(task.getFault()));
-//                        quitCurRun(false, isBatchApplied);
-                    }
-                };
-                task.execute(new TaskAdapter(lisener));
             }
         });
 
@@ -327,44 +258,13 @@ public class PlotUIWindow extends Window implements Bindable {
                         if (sheet.getResult()) {
                             File dir = browse.getSelectedFile();
                             global_rExePath.setText(dir.getPath());
-                            if (globalConfig != null) {
-                                globalConfig.put("RExePath", dir.getPath());
-                            }
                         }
                     }
                 });
             }
         });
 
-        global_browseRLibPath.getButtonPressListeners().add(new ButtonPressListener() {
-            @Override
-            public void buttonPressed(Button button) {
-                final FileBrowserSheet browse;
-
-                if (global_rLibPath.getText().equals("")) {
-                    browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO);
-                } else {
-                    if (!new File(global_rLibPath.getText()).exists()) {
-                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO);
-                    } else {
-                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File(global_rLibPath.getText()).getAbsoluteFile().getParentFile().getPath());
-                    }
-                }
-                browse.open(PlotUIWindow.this, new SheetCloseListener() {
-                    @Override
-                    public void sheetClosed(Sheet sheet) {
-                        if (sheet.getResult()) {
-                            File dir = browse.getSelectedFile();
-                            global_rLibPath.setText(dir.getPath());
-                            if (globalConfig != null) {
-                                globalConfig.put("RLibPath", dir.getPath());
-                            }
-                        }
-                    }
-                });
-            }
-        });
-
+        global_browseRLibPath.getButtonPressListeners().add(createGenericDirBPListerner(global_rLibPath));
         global_browseAcmoDir.getButtonPressListeners().add(new ButtonPressListener() {
             @Override
             public void buttonPressed(Button button) {
@@ -372,7 +272,6 @@ public class PlotUIWindow extends Window implements Bindable {
 
                 if (global_acmoDir.getText().equals("")) {
                     if (!new File(stdplot_inputDir.getText()).exists()) {
-                        System.out.println(new File(stdplot_inputDir.getText()));
                         browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO);
                     } else {
                         browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File(stdplot_inputDir.getText()).getAbsoluteFile().getParentFile().getPath());
@@ -390,7 +289,6 @@ public class PlotUIWindow extends Window implements Bindable {
                         if (sheet.getResult()) {
                             File dir = browse.getSelectedFile();
                             global_acmoDir.setText(dir.getPath());
-//                            setGcmCatMapping(new String[]{"0XFX", "IEFA", "IKFA", "IQFA", "IRFA", "ISFA"});
                             setGcmCatMapping(PlotUtil.getGcms(dir));
                         }
                     }
@@ -398,100 +296,163 @@ public class PlotUIWindow extends Window implements Bindable {
             }
         });
 
-        stdplot_inputDirBrowse.getButtonPressListeners().add(new ButtonPressListener() {
-            @Override
-            public void buttonPressed(Button button) {
-                final FileBrowserSheet browse;
+        stdplot_inputDirBrowse.getButtonPressListeners().add(createGenericDirBPListerner(stdplot_inputDir));
+        stdplot_outputDirBrowse.getButtonPressListeners().add(createGenericDirBPListerner(stdplot_outputDir));
 
-                if (stdplot_inputDir.getText().equals("")) {
-                    browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO);
-                } else {
-                    if (!new File(stdplot_inputDir.getText()).exists()) {
-                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO);
-                    } else {
-                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File(stdplot_inputDir.getText()).getAbsoluteFile().getParentFile().getPath());
-                    }
-                }
-                browse.open(PlotUIWindow.this, new SheetCloseListener() {
-                    @Override
-                    public void sheetClosed(Sheet sheet) {
-                        if (sheet.getResult()) {
-                            File dir = browse.getSelectedFile();
-                            stdplot_inputDir.setText(dir.getPath());
-//                            if (stdConfig != null) {
-//                                stdConfig.put("inputDir", dir.getPath());
-//                            }
+        corplot_inputDirBrowse.getButtonPressListeners().add(createGenericDirBPListerner(corplot_inputDir));
+        corplot_outputDirBrowse.getButtonPressListeners().add(createGenericDirBPListerner(corplot_outputDir));
+        setNonRepeatedSelection(corplot_plotVarXLB, corplot_plotVarYLB);
+        setNonRepeatedSelection(corplot_plotGroup1LB, corplot_plotGroup2LB);
+    }
+
+    private void saveAllConfig() {
+
+        LOG.info("Saving {} ...", CONFIG_FILE);
+
+        // GloBal
+        globalConfig.put("RExePath", global_rExePath.getText());
+        globalConfig.put("RLibPath", global_rLibPath.getText());
+        StringBuilder sbGcmMapping = new StringBuilder();
+        for (String gcm : gcmCatMap.keySet()) {
+            if (gcmCatMap.get(gcm).getText() != null) {
+                sbGcmMapping.append(gcm).append(":").append(gcmCatMap.get(gcm).getText()).append("|");
+            }
+        }
+        globalConfig.put("GcmMapping", sbGcmMapping.toString());
+
+        // StdPlot
+        stdConfig.put("inputDir", stdplot_inputDir.getText());
+        stdConfig.put("title", stdplot_title.getText());
+        stdConfig.put("outputPath", stdplot_outputDir.getText());
+        stdConfig.put("outputGraph", stdplot_outputGraph.getText());
+        stdConfig.put("plotFormat", stdplot_plotFormat.getSelection().getButtonData().toString());
+        stdConfig.put("plotType", stdplot_plotType.getSelection().getButtonData().toString());
+        stdConfig.put("plotVar", getSelectedVar(stdplot_plotVarLB));
+
+        // CorPlot
+        corConfig.put("inputDir", corplot_inputDir.getText());
+        corConfig.put("outputPath", corplot_outputDir.getText());
+        corConfig.put("outputGraph", corplot_outputGraph.getText());
+        corConfig.put("plotFormat", corplot_plotFormat.getSelection().getButtonData().toString());
+        corConfig.put("plotVarX", getSelectedVar(corplot_plotVarXLB));
+        corConfig.put("plotVarY", getSelectedVar(corplot_plotVarYLB));
+        corConfig.put("group1", getSelectedVar(corplot_plotGroup1LB));
+        corConfig.put("group2", getSelectedVar(corplot_plotGroup2LB));
+
+        try {
+            deployFileByTemplate(new File(CONFIG_FILE), CONFIG_FILE_DEF_TEMPLATE, CONFIG_MAP, "config");
+            LOG.info("Done!");
+        } catch (IOException ex) {
+            LOG.error("An error occured while writing the {} file: {}", CONFIG_FILE, ex.getMessage());
+            LOG.error(Functions.getStackTrace(ex));
+            Alert.alert(MessageType.ERROR, ex.getMessage(), PlotUIWindow.this);
+        }
+    }
+
+    private void validateInput() {
+
+        LOG.info("Start validation for {}", curTab.toString());
+        ArrayList<String> plotVars = PlotUtil.getValidateVars(curTab);
+        String inputDir = PlotUtil.CONFIG_MAP.get(curTab.toString()).get("inputDir");
+        final String outputDir = PlotUtil.CONFIG_MAP.get(curTab.toString()).get("outputPath");
+        if (inputDir == null || inputDir.equals("")) {
+            LOG.warn("Invalid input path for validation!");
+        } else if (outputDir == null || outputDir.equals("")) {
+            LOG.warn("Invalid output path for validation!");
+        } else if (plotVars.isEmpty()) {
+            LOG.warn("Invalid plot variables for validation!");
+        } else {
+            ValidationTask task = new ValidationTask(PlotUtil.getAllInputFiles(false, new File(inputDir)), plotVars.toArray(new String[]{}));
+            TaskListener lisener = new TaskListener<LinkedHashMap<File, ArrayList<HashMap<String, String>>>>() {
+
+                @Override
+                public void taskExecuted(Task<LinkedHashMap<File, ArrayList<HashMap<String, String>>>> task) {
+
+                    LinkedHashMap<File, ArrayList<HashMap<String, String>>> result = task.getResult();
+                    if (!result.isEmpty()) {
+
+                        // Generate report
+                        final File report = PlotUtil.generateReport(result, outputDir);
+
+                        // Ask for user confirmation
+                        BXMLSerializer serializer = new BXMLSerializer();
+                        Component body = null;
+                        try {
+                            body = (Component) serializer.readObject(getClass().getResource("/validatewarning.bxml"));
+                        } catch (IOException | SerializationException ex) {
+                            LOG.error(Functions.getStackTrace(ex));
                         }
-                    }
-                });
-            }
-        });
 
-        stdplot_outputDirBrowse.getButtonPressListeners().add(new ButtonPressListener() {
-            @Override
-            public void buttonPressed(Button button) {
-                final FileBrowserSheet browse;
+                        Alert warning = new Alert(MessageType.WARNING, "Detect blank line of model output in ACMO files",
+                                new org.apache.pivot.collections.ArrayList("Report", "Continue", "Abort"),
+                                body);
+                        warning.setSelectedOption("Abort");
+                        warning.getAlertListeners().add(new AlertListener.Adapter() {
 
-                if (stdplot_outputDir.getText().equals("")) {
-                    browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO);
-                } else {
-                    if (!new File(stdplot_outputDir.getText()).exists()) {
-                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO);
+                            @Override
+                            public void selectedOptionChanged(Alert alert, int i) {
+                                String userChoice = alert.getSelectedOption().toString();
+
+                                switch (userChoice) {
+                                    case "Report":
+                                        // Open the report
+                                        try {
+                                            ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "start", "\"\"", "\"" + report.getPath() + "\"");
+                                            pb.start();
+                                        } catch (IOException winEx) {
+                                            try {
+                                                ProcessBuilder pb = new ProcessBuilder("open", "\"" + report.getPath() + "\"");
+                                                pb.start();
+                                            } catch (IOException macEx) {
+                                                Alert.alert(MessageType.ERROR, "Your OS can not open the file by using this link", PlotUIWindow.this);
+                                                LOG.error(Functions.getStackTrace(winEx));
+                                                LOG.error(Functions.getStackTrace(macEx));
+                                            }
+                                        }
+                                        break;
+                                    case "Continue":
+                                        runPlot();
+                                        break;
+                                }
+                            }
+                        });
+                        warning.open(PlotUIWindow.this);
                     } else {
-                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File(stdplot_outputDir.getText()).getAbsoluteFile().getParentFile().getPath());
+                        LOG.info("Start validation for {} done!", curTab.toString());
+                        runPlot();
                     }
+
                 }
-                browse.open(PlotUIWindow.this, new SheetCloseListener() {
-                    @Override
-                    public void sheetClosed(Sheet sheet) {
-                        if (sheet.getResult()) {
-                            File dir = browse.getSelectedFile();
-                            stdplot_outputDir.setText(dir.getPath());
-//                            if (stdConfig != null) {
-//                                stdConfig.put("outputDir", dir.getPath());
-//                            }
-                        }
-                    }
-                });
-            }
-        });
 
-        stdplot_plotVarLB.getListButtonSelectionListeners().add(new ListButtonSelectionListener.Adapter() {
-
-            @Override
-            public void selectedItemChanged(ListButton lb, Object o) {
-                String selected = stdplot_plotVarLB.getSelectedItem().toString();
-                LOG.debug(selected);
-                stdplot_selected_plotVar = selected.substring(selected.lastIndexOf("(") + 1).replaceAll("\\)", "");
-                LOG.debug(selected);
-
-            }
-        });
-
+                @Override
+                public void executeFailed(Task<LinkedHashMap<File, ArrayList<HashMap<String, String>>>> task) {
+                    Alert.alert(MessageType.ERROR, task.getFault().toString(), PlotUIWindow.this);
+                    LOG.error(Functions.getStackTrace(task.getFault()));
+//                        quitCurRun(false, isBatchApplied);
+                }
+            };
+            task.execute(new TaskAdapter(lisener));
+        }
     }
 
     private void runPlot() {
 
+        LOG.info("Start R script for {}", curTab.toString());
         RunPlotTask task = new RunPlotTask(curTab);
         TaskListener<Integer> lisener = new TaskListener<Integer>() {
 
             @Override
             public void taskExecuted(Task<Integer> task) {
-                
+
                 if (task.getResult() != 0) {
-                    Alert.alert(MessageType.ERROR, "Job failed! Please check log for detail", PlotUIWindow.this);
+                    Alert.alert(MessageType.ERROR, "R script failed! Please check log for detail", PlotUIWindow.this);
                     return;
                 }
-                
+                LOG.info("Start R script for {} done!", curTab.toString());
+
                 BoxPane body = new BoxPane(Orientation.VERTICAL);
-                StringBuilder stdPlotFileName = new StringBuilder();
-                stdPlotFileName.append(stdConfig.get("outputGraph"));
-                stdPlotFileName.append("-").append(stdConfig.get("plotType"));
-                stdPlotFileName.append("-ABSOLUTE");
-                stdPlotFileName.append("-").append(stdConfig.get("plotVar"));
-                stdPlotFileName.append(".").append(stdConfig.get("plotFormat"));
-                final File plotFile = Paths.get(stdplot_outputDir.getText(), stdPlotFileName.toString()).toFile();
-                LOG.debug(plotFile.getPath());
+                final File plotFile = getPlotOutputFile(curTab);
+                LOG.debug(plotFile.getAbsolutePath());
                 if (plotFile.exists()) {
                     body.add(new Label("Click open to show the plot result"));
                     Alert report = new Alert(MessageType.INFO, "Job done!",
@@ -554,46 +515,15 @@ public class PlotUIWindow extends Window implements Bindable {
 
             @Override
             public void executeFailed(Task<Integer> task) {
-                Alert.alert(MessageType.ERROR, task.getFault().getMessage(), PlotUIWindow.this);
+                Alert.alert(MessageType.ERROR, task.getFault().toString(), PlotUIWindow.this);
+                LOG.error(Functions.getStackTrace(task.getFault()));
             }
         };
         task.execute(new TaskAdapter(lisener));
     }
-    
-    private void saveGlobalConfigToMap() {
-        StringBuilder sbGcmMapping = new StringBuilder();
-        for (String gcm : gcmCatMap.keySet()) {
-            if (gcmCatMap.get(gcm).getText() != null) {
-                sbGcmMapping.append(gcm).append(":").append(gcmCatMap.get(gcm).getText()).append("|");
-            }
-        }
-        globalConfig.put("GcmMapping", sbGcmMapping.toString());
-    }
 
-    private void saveStdPlotConfigToMap() {
-        stdConfig.put("inputDir", stdplot_inputDir.getText());
-        stdConfig.put("title", stdplot_title.getText());
-        stdConfig.put("outputPath", stdplot_outputDir.getText());
-        stdConfig.put("outputGraph", stdplot_outputGraph.getText());
-        stdConfig.put("plotFormat", stdplot_plotFormat.getSelection().getButtonData().toString().toLowerCase());
-        stdConfig.put("plotType", stdplot_plotType.getSelection().getButtonData().toString());
-        stdConfig.put("plotVar", stdplot_selected_plotVar);
-    }
-
-    private void switchCurTab() {
-        if (curTab.equals(PlotUtil.RScps.StandardPlot)) {
-            curInputDir = stdplot_inputDir;
-            curOutputDir = stdplot_outputDir;
-            curoutputGraph = stdplot_outputGraph;
-        } else if (curTab.equals(PlotUtil.RScps.CorrelationPlot)) {
-
-        } else if (curTab.equals(PlotUtil.RScps.ClimAnomaly)) {
-
-        }
-    }
-    
     private void setGcmCatMapping(String... gcms) {
-        
+
         Component title;
         title = gcmLabels.get(0);
         gcmLabels.removeAll();
@@ -604,7 +534,7 @@ public class PlotUIWindow extends Window implements Bindable {
         title = gcmCatSelectionLabels.get(0);
         gcmCatSelectionLabels.removeAll();
         gcmCatSelectionLabels.add(title);
-        
+
         gcmCatMap = new HashMap();
         LinkedHashMap<String, String> gcmCatColorMap = new LinkedHashMap();
         gcmCatColorMap.put("Base", "#D3D3D3");
@@ -613,7 +543,7 @@ public class PlotUIWindow extends Window implements Bindable {
         gcmCatColorMap.put("Hot-Dry", "red");
         gcmCatColorMap.put("Hot-Wet", "#FFD700");
         gcmCatColorMap.put("Middle", "black");
-        
+
         DragSource ds = DragDropFactory.createLabelDragSource();
         DropTarget dt = DragDropFactory.createLabelDropTarget();
         HashMap<String, String> gcmCatConfig = new LinkedHashMap();
@@ -624,11 +554,11 @@ public class PlotUIWindow extends Window implements Bindable {
                 gcmCatConfig.put(tmp[0], tmp[1]);
             }
         }
-        
+
         if (gcms.length == 0) {
             gcms = gcmCatConfig.keySet().toArray(gcms);
         }
-        
+
         for (String gcm : gcms) {
             // GCM ID Label
             Label gcmLabel = new Label(gcm);
@@ -640,7 +570,7 @@ public class PlotUIWindow extends Window implements Bindable {
             // GCM Category Label
             Label gcmCatLabel;
             String gcmCat = gcmCatConfig.get(gcm);
-            
+
             if (gcmCat != null) {
                 gcmCatLabel = new Label(gcmCat);
                 gcmCatLabel.getStyles().put("color", gcmCatColorMap.get(gcmCat));
@@ -657,9 +587,9 @@ public class PlotUIWindow extends Window implements Bindable {
             gcmCatLabels.add(gcmCatBorder);
             gcmCatMap.put(gcm, gcmCatLabel);
         }
-        
+
         for (String gcmCat : gcmCatColorMap.keySet()) {
-            
+
             Label gcmCatLabel = new Label(gcmCat);
             gcmCatLabel.setPreferredHeight(14);
             gcmCatLabel.setPreferredWidth(80);
@@ -670,5 +600,121 @@ public class PlotUIWindow extends Window implements Bindable {
             gcmBorder.getStyles().put("color", "white");
             gcmCatSelectionLabels.add(gcmBorder);
         }
+    }
+
+    private static HashMap<String, RadioButton> initRadioButtonGroup(Map<String, Object> ns, String... ids) {
+
+        HashMap<String, RadioButton> ret = new HashMap();
+        for (String id : ids) {
+            RadioButton rb = (RadioButton) ns.get(id);
+            ret.put(rb.getButtonData().toString(), rb);
+        }
+
+        return ret;
+    }
+
+    private static void setRadioButtonGroup(ButtonGroup bg, HashMap<String, RadioButton> rbMap, HashMap<String, String> config, String var) {
+
+        RadioButton rb = rbMap.get(MapUtil.getValueOr(config, var, ""));
+        if (rb != null) {
+            bg.setSelection(rb);
+        }
+    }
+
+    private static void setSelectionList(ListButton lb, HashMap<String, String> config, String var) { //, String defVal) {
+        String configPlotVar = MapUtil.getValueOr(config, var, "");
+        if (!configPlotVar.equals("")) {
+            for (int i = 0; i < lb.getListData().getLength(); i++) {
+                String plotVar = lb.getListData().get(i).toString();
+                if (plotVar.contains(configPlotVar)) {
+                    lb.setSelectedIndex(i);
+                }
+            }
+        }
+    }
+
+    private ButtonPressListener createGenericDirBPListerner(final TextInput input) {
+        return new ButtonPressListener() {
+            @Override
+            public void buttonPressed(Button button) {
+                final FileBrowserSheet browse;
+
+                if (input.getText().equals("")) {
+                    browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO);
+                } else {
+                    if (!new File(input.getText()).exists()) {
+                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO);
+                    } else {
+                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File(input.getText()).getAbsoluteFile().getParentFile().getPath());
+                    }
+                }
+                browse.open(PlotUIWindow.this, new SheetCloseListener() {
+                    @Override
+                    public void sheetClosed(Sheet sheet) {
+                        if (sheet.getResult()) {
+                            File dir = browse.getSelectedFile();
+                            input.setText(dir.getPath());
+                        }
+                    }
+                });
+            }
+        };
+    }
+
+    private String getSelectedVar(ListButton lb) {
+        String selected = (String) lb.getSelectedItem();
+        if (selected == null) {
+            return "";
+        } else if (lb.getName().equalsIgnoreCase("corplot_plotGroup2LB") && selected.startsWith("No")) {
+            return "No";
+        } else {
+            return selected.substring(selected.lastIndexOf("(") + 1).replaceAll("\\)", "");
+        }
+
+    }
+
+    private void setNonRepeatedSelection(final ListButton lb1, final ListButton lb2) {
+        String lb1OriSelection = (String) lb1.getSelectedItem();
+        String lb2OriSelection = (String) lb2.getSelectedItem();
+        if (lb1OriSelection != null && lb1OriSelection.equals(lb2OriSelection)) {
+            lb2.setSelectedItem(null);
+        }
+        lb1.getListButtonSelectionListeners().add(new ListButtonSelectionListener.Adapter() {
+
+            @Override
+            public void selectedItemChanged(ListButton lb, Object o) {
+                Object newSelected1 = lb.getSelectedItem();
+                Object curSelected = lb2.getSelectedItem();
+                if (newSelected1 != null && curSelected != null && newSelected1.equals(curSelected)) {
+                    if (o == null && lb2.getName().equalsIgnoreCase("corplot_plotGroup2LB")) {
+                        lb2.setSelectedIndex(0);
+                    } else {
+                        lb2.setSelectedItem(o);
+                    }
+                }
+            }
+        });
+        lb2.getListButtonSelectionListeners().add(new ListButtonSelectionListener.Adapter() {
+
+            @Override
+            public void selectedItemChanged(ListButton lb, Object o) {
+                Object newSelected1 = lb.getSelectedItem();
+                Object curSelected = lb1.getSelectedItem();
+                if (newSelected1 != null && curSelected != null && newSelected1.equals(curSelected)) {
+                    if (o != null && o.toString().startsWith("No")) {
+                        int maxIdx = lb1.getListData().getLength() - 1;
+                        int curIdx = lb1.getSelectedIndex();
+                        if (curIdx == maxIdx) {
+                            lb1.setSelectedIndex(0);
+                        } else {
+                            lb1.setSelectedIndex(curIdx + 1);
+                        }
+                    } else {
+                        lb1.setSelectedItem(o);
+                    }
+
+                }
+            }
+        });
     }
 }

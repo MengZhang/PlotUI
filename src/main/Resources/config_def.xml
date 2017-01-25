@@ -7,7 +7,7 @@
     <Configuration name="StandardPlot">
         <title>Result</title>
         <plotType>BoxPlot</plotType>
-        <plotFormat>png</plotFormat>
+        <plotFormat>PNG</plotFormat>
         <plotVar>HWAH_S</plotVar>
         <inputDir></inputDir>
         <outputPath>plot_output</outputPath>
@@ -15,22 +15,21 @@
         <outputGraph>StdPlot</outputGraph>
     </Configuration>
     <Configuration name="CorrelationPlot">
-        <plotFormat>png</plotFormat>
+        <plotFormat>PNG</plotFormat>
         <plotVarX>NUCM_S</plotVarX>
         <plotVarY>HWAH_S</plotVarY>
         <group1>CRID_text</group1>
-        <group2>SOIL_ID</group2>
+        <group2>No</group2>
         <inputDir></inputDir>
         <outputPath>plot_output</outputPath>
         <outputGraph>CorPlot</outputGraph>
     </Configuration>
     <Configuration name="ClimAnomaly">
-        <plotFormat>png</plotFormat>
         <plotVar>TMAX</plotVar>
         <plotType>relative</plotType>
-        <plotFormat>png</plotFormat>
+        <plotFormat>PNG</plotFormat>
         <inputDir></inputDir>
         <outputPath>plot_output</outputPath>
-        <outputGraph>Climate</outputGraph>
+        <outputGraph>ClimAnomaly</outputGraph>
     </Configuration>
 </Configurations>

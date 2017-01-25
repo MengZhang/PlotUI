@@ -1,4 +1,4 @@
-<plotui:PlotUIWindow title="AgMIP Plot Tool" maximized="true"
+<plotui:PlotUIWindow title="AgView - AgMIP Plot Tool -" maximized="true"
                      xmlns:bxml="http://pivot.apache.org/bxml"
                      xmlns:content="org.apache.pivot.wtk.content"
                      xmlns:menus="org.apache.pivot.wtk.menus"
@@ -35,7 +35,7 @@
 
         <TablePane.Row height="1*">
             <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
-                <TabPane styles="{padding:6}" selectedIndex="1">
+                <TabPane bxml:id="plotuiTabs" styles="{padding:6}" selectedIndex="1">
                     
                     <!-- R Environment Config -->
                     <BoxPane orientation="vertical">
@@ -188,7 +188,140 @@
                                         <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Give a name for the plot file" />
                                     </BoxPane>
                                     <BoxPane orientation="horizontal">
-                                        <TextInput bxml:id="stdplot_outputGraph" preferredWidth="300" editable="true" text="output_stdplot" />
+                                        <TextInput bxml:id="stdplot_outputGraph" preferredWidth="300" editable="true" />
+                                    </BoxPane>
+                                </BoxPane>
+                            </Border>
+                        </BoxPane>
+                    </BoxPane>
+                    
+                    <!-- Correlation Plot Config -->
+                    <BoxPane orientation="vertical">
+                        <TabPane.tabData>
+                            <content:ButtonData text="CorrelationPlot"/>
+                        </TabPane.tabData>
+                        <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
+                            <Border styles="{padding:{bottom:16, top: 6, right: 6, left: 6}}" preferredWidth="500">
+                                <!-- Input Directory -->
+                                <BoxPane orientation="vertical">
+                                    <BoxPane orientation="horizontal">
+                                        <Label text="Input ACMO directory:" styles="{font:{bold:true}}"/>
+                                        <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate the folder for ACMO files to plot" />
+                                    </BoxPane>
+                                    <BoxPane orientation="horizontal">
+                                        <TextInput bxml:id="corplot_inputDir" preferredWidth="400" editable="false"/>
+                                        <PushButton bxml:id="corplot_inputDirBrowse" buttonData="Browse"/>
+                                    </BoxPane>
+                                </BoxPane>
+                                <!-- Plot Variable X -->
+                                <BoxPane orientation="vertical">
+                                    <Label text="Select X Output Variable:" styles="{font:{bold:true}}" />
+                                    <ListButton bxml:id="corplot_plotVarXLB" listData="[
+                                        'Simulated harvest yield,dry matter (HWAH_S)',
+                                        'Simulated above-ground biomass at harvest,dry matter (CWAH_S)',
+                                        'Simulated anthesis day (ADAT_S)',
+                                        'Simulated maturity day (MDAT_S)',
+                                        'Simulated harvest day (HADAT_S)',
+                                        'Simulated leaf area index, maximum (LAIX_S)',
+                                        'Total precipitation from planting to harvest (PRCP_S)',
+                                        'Simulated evapotranspiration, planting to harvest (ETCP_S)',
+                                        'Simulated N uptake during season (NUCM_S)',
+                                        'Simulated N leached up to harvest maturity (NLCM_S)',
+                                        'Transpiration, cumulative from planting to harvest (EPCP_S)',
+                                        'Evaporation,soil, cumulative from planting to harvest (ESCP_S)',
+                                        'Solar radiation, average, sowing to harvest (SRAA_S)',
+                                        'Maximum daily air temperature, average, sowing to harvest (TMAXA_S)',
+                                        'Minimum daily air temperature, average, sowing to harvest (TMINA_S)',
+                                        'Daily air temperature, average, sowing to harvest (TAVGA_S)',
+                                        'CO2 concentration, atmospheric average over day (CO2D_S)'
+                                    ]"/>
+                                </BoxPane>
+                                <!-- Plot Variable Y -->
+                                <BoxPane orientation="vertical">
+                                    <Label text="Select Y Output Variable:" styles="{font:{bold:true}}" />
+                                    <ListButton bxml:id="corplot_plotVarYLB" listData="[
+                                        'Simulated harvest yield,dry matter (HWAH_S)',
+                                        'Simulated above-ground biomass at harvest,dry matter (CWAH_S)',
+                                        'Simulated anthesis day (ADAT_S)',
+                                        'Simulated maturity day (MDAT_S)',
+                                        'Simulated harvest day (HADAT_S)',
+                                        'Simulated leaf area index, maximum (LAIX_S)',
+                                        'Total precipitation from planting to harvest (PRCP_S)',
+                                        'Simulated evapotranspiration, planting to harvest (ETCP_S)',
+                                        'Simulated N uptake during season (NUCM_S)',
+                                        'Simulated N leached up to harvest maturity (NLCM_S)',
+                                        'Transpiration, cumulative from planting to harvest (EPCP_S)',
+                                        'Evaporation,soil, cumulative from planting to harvest (ESCP_S)',
+                                        'Solar radiation, average, sowing to harvest (SRAA_S)',
+                                        'Maximum daily air temperature, average, sowing to harvest (TMAXA_S)',
+                                        'Minimum daily air temperature, average, sowing to harvest (TMINA_S)',
+                                        'Daily air temperature, average, sowing to harvest (TAVGA_S)',
+                                        'CO2 concentration, atmospheric average over day (CO2D_S)'
+                                    ]"/>
+                                </BoxPane>
+                                <!-- Plot Group 1 -->
+                                <BoxPane orientation="vertical">
+                                    <Label text="Select Group Method 1:" styles="{font:{bold:true}}" />
+                                    <ListButton bxml:id="corplot_plotGroup1LB" listData="[
+                                        'Crop (CRID_text)' ,
+                                        'Field overlay ID (FIELD_OVERLAY)' ,
+                                        'Seasonal strategy (SEASONAL_STRATEGY)' ,
+                                        'Climate ID (CLIM_ID)' ,
+                                        'Region ID (REG_ID)' ,
+                                        'Weather station ID (WST_ID)' ,
+                                        'Soil ID (SOIL_ID)' ,
+                                        'Cultivar ID (CUL_ID)' ,
+                                        'Cultivar name (CUL_NAME)' ,
+                                        'Crop model (CROP_MODEL)'
+                                    ]"/>
+                                </BoxPane>
+                                <!-- Plot Group 2 -->
+                                <BoxPane orientation="vertical">
+                                    <Label text="Select Group Method 2:" styles="{font:{bold:true}}" />
+                                    <ListButton bxml:id="corplot_plotGroup2LB" listData="[
+                                        'No Grouping' ,
+                                        'Crop (CRID_text)' ,
+                                        'Field overlay ID (FIELD_OVERLAY)' ,
+                                        'Seasonal strategy (SEASONAL_STRATEGY)' ,
+                                        'Climate ID (CLIM_ID)' ,
+                                        'Region ID (REG_ID)' ,
+                                        'Weather station ID (WST_ID)' ,
+                                        'Soil ID (SOIL_ID)' ,
+                                        'Cultivar ID (CUL_ID)' ,
+                                        'Cultivar name (CUL_NAME)' ,
+                                        'Crop model (CROP_MODEL)'
+                                    ]"/>
+                                </BoxPane>
+                                <!-- Plot Format -->
+                                <BoxPane orientation="vertical">
+                                    <Label text="Plot Format:" styles="{font:{bold:true}}" />
+                                    <BoxPane orientation="horizontal">
+                                        <bxml:define>
+                                            <ButtonGroup bxml:id="corplot_plotFormatButtons"/>
+                                        </bxml:define>
+                                        <RadioButton bxml:id="corplot_plotFormat_pdf" buttonData="PDF" buttonGroup="$corplot_plotFormatButtons" selected="true"/>
+                                        <RadioButton bxml:id="corplot_plotFormat_png" buttonData="PNG" buttonGroup="$corplot_plotFormatButtons"/>
+                                    </BoxPane>
+                                </BoxPane>
+                                <!-- Output Directory -->
+                                <BoxPane orientation="vertical">
+                                    <BoxPane orientation="horizontal">
+                                        <Label text="Output directory:" styles="{font:{bold:true}}"/>
+                                        <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate the folder for output plot result" />
+                                    </BoxPane>
+                                    <BoxPane orientation="horizontal">
+                                        <TextInput bxml:id="corplot_outputDir" preferredWidth="400" editable="false"/>
+                                        <PushButton bxml:id="corplot_outputDirBrowse" buttonData="Browse"/>
+                                    </BoxPane>
+                                </BoxPane>
+                                <!-- Output file name -->
+                                <BoxPane orientation="vertical">
+                                    <BoxPane orientation="horizontal">
+                                        <Label text="Output File Name:" styles="{font:{bold:true}}"/>
+                                        <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Give a name for the plot file" />
+                                    </BoxPane>
+                                    <BoxPane orientation="horizontal">
+                                        <TextInput bxml:id="corplot_outputGraph" preferredWidth="300" editable="true" />
                                     </BoxPane>
                                 </BoxPane>
                             </Border>
@@ -197,27 +330,12 @@
                     
                     <BoxPane orientation="vertical">
                         <TabPane.tabData>
-                            <content:ButtonData text="Others Under Construction"/>
+                            <content:ButtonData text="Others"/>
                         </TabPane.tabData>
                         <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
-                            <Border styles="{padding:{bottom:16, top: 6, right: 6, left: 6}}">
-                                <BoxPane orientation="vertical">
-                                    <BoxPane orientation="horizontal">
-                                        <Label text="ACEB File:" styles="{font:{bold:true}}"/>
-                                        <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and load the ACEB file to view" />
-                                    </BoxPane>
-                                    <BoxPane orientation="horizontal">
-                                        <TextInput bxml:id="acebText2" preferredWidth="400" editable="false"/>
-                                        <PushButton bxml:id="browseAcebButton2" buttonData="Browse"/>
-                                    </BoxPane>
-                                </BoxPane>
+                            <Border preferredWidth="500" preferredHeight="300">
+                                <Label text="Under construction, will come soon..." styles="{font:{bold:true}, padding:6, horizontalAlignment:'center', verticalAlignment:'center', wrapText:true}" />
                             </Border>
-                            <BoxPane orientation="horizontal">
-                                <Border bxml:id="dataList2" title="Data List:" styles="{padding:6}" minimumHeight="100" minimumWidth="200">
-                                </Border>
-                                <Border bxml:id="dataDetail2" title="Data Detail:" styles="{padding:6}" minimumHeight="100" minimumWidth="300">
-                                </Border>
-                            </BoxPane>
                         </BoxPane>
                     </BoxPane>
                 </TabPane>

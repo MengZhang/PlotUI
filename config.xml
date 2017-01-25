@@ -7,30 +7,29 @@
     <Configuration name="StandardPlot">
         <title>Result</title>
         <plotType>BoxPlot</plotType>
-        <plotFormat>png</plotFormat>
+        <plotFormat>PDF</plotFormat>
         <plotVar>HWAH_S</plotVar>
-        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\bad_data</inputDir>
+        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\good_data</inputDir>
         <outputPath>plot_output</outputPath>
         <outputACMO>acmo_output.csv</outputACMO>
         <outputGraph>StdPlot</outputGraph>
     </Configuration>
     <Configuration name="CorrelationPlot">
-        <plotFormat>png</plotFormat>
-        <plotVarX>NUCM_S</plotVarX>
+        <plotFormat>PNG</plotFormat>
+        <plotVarX>CWAH_S</plotVarX>
         <plotVarY>HWAH_S</plotVarY>
         <group1>CRID_text</group1>
-        <group2>SOIL_ID</group2>
-        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\good_data</inputDir>
+        <group2>No</group2>
+        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\bad_data</inputDir>
         <outputPath>plot_output</outputPath>
         <outputGraph>CorPlot</outputGraph>
     </Configuration>
     <Configuration name="ClimAnomaly">
-        <plotFormat>png</plotFormat>
         <plotVar>TMAX</plotVar>
         <plotType>relative</plotType>
-        <plotFormat>png</plotFormat>
+        <plotFormat>PNG</plotFormat>
         <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\wth_data</inputDir>
         <outputPath>plot_output</outputPath>
-        <outputGraph>Climate</outputGraph>
+        <outputGraph>ClimAnomaly</outputGraph>
     </Configuration>
 </Configurations>

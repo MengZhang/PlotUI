@@ -73,8 +73,6 @@ public class ValidationTask extends Task<LinkedHashMap<File, ArrayList<HashMap<S
     @Override
     public LinkedHashMap<File, ArrayList<HashMap<String, String>>> execute() throws TaskExecutionException {
         
-        LOG.info("Start validation");
-        
         LinkedHashMap<File, ArrayList<HashMap<String, String>>> ret = new LinkedHashMap();
 
         for (File csvFile : inputCsvFiles) {
@@ -124,8 +122,6 @@ public class ValidationTask extends Task<LinkedHashMap<File, ArrayList<HashMap<S
             }
 
         }
-
-        LOG.info("Finish validation");
         return ret;
     }
 

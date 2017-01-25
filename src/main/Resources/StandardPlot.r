@@ -6,26 +6,10 @@
 #  Created: 01/12/2017
 #################################################################################################
 
-name_unit<-function(inputcode){
-  name<-c("ID","Name of experiment", "Field Overlay","Seaonal Strategy","Rotational Analysis","","Treatment Name","Climate ID code","Climate replication number",	"Region ID","Regional stratum identification number","RAP ID", "Management regimen ID","Names of institutions","Crop rotation", "Weather station ID","Soil ID", "Site Latitude", "Site Longitude",	"Crop type", "Crop model-specific cultivar ID", "Cultivar name", "Start of simulation date",	"Planting date","Observed harvested yield, dry weight", "Observed total above-ground biomass at harvest",	"Observed harvest date",	"Total number of irrigation events",	"Total amount of irrigation",	"Type of irrigation application",	"Total number of fertilizer applications",	"Total N applied",	"Total P applied",	"Total K applied",	"Manure and applied oganic matter",	"Total number of tillage applications",	"Tillage type (hand, animal or mechanized)",	"Experiment ID",	"Weather ID",	"Soil ID",	"DOME ID for Overlay",	"DOME ID for Seasonal",  "DOME ID for Rotational", "Short name of crop model used for simulations",	"Model name and version number", "Simulated harvest yield, dry matter", "Simulated above-ground biomass at harvest, dry matter",	"Simulated anthesis date",	"Simulated maturity date",	"Simulated harvest date",	"Simulated leaf area index, maximum",	"Total precipitation from planting to harvest",	"Simulated evapotranspiration, planting to harvest",	"Simulated N uptake during season", "Simulated N leached up to harvest maturity")
-  unit<-c("text",	"text",	"text",	"text",	"text",	"number",	"text",	"code",	"number",	"code",	"number",	"code",	"code",	"text",	"number",	"text",	"text",	"decimal degrees",	"decimal degrees",	"text",	"text",	"text",	"yyyy-mm-dd",	"yyyy-mm-dd",	"kg/ha",	"kg/ha",	"yyyy-mm-dd",	"number",	"mm",	"text",	"number",	"kg[N]/ha",	"kg[P]/ha",	"kg[K]/ha",	"kg/ha",	"#",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"kg/ha",	"kg/ha",	"das",	"das",	"das",	"m2/m2",	"mm",	"mm",	"kg/ha",	"kg/ha")
-  code<-c("SUITE_ID",	"EXNAME",	"FIELD_OVERLAY",	"SEASONAL_STRATEGY",	"ROTATIONAL_ANALYSIS",	"RUN#",	"TRT_NAME",	"CLIM_ID",	"CLIM_REP",	"REG_ID",	"STRATUM",	"RAP_ID",	"MAN_ID",	"INSTITUTION",	"ROTATION",	"WST_ID",	"SOIL_ID",	"FL_LAT",	"FL_LONG",	"CRID_text",	"CUL_ID",	"CUL_NAME",	"SDAT",	"PDATE",	"HWAH",	"CWAH",	"HDATE",	"IR#C",	"IR_TOT",	"IROP_text",	"FE_#",	"FEN_TOT",	"FEP_TOT",	"FEK_TOT",	"OM_TOT","TI_#",	"TIIMP_text",	"EID",	"WID",	"SID",	"DOID",	"DSID",	"DRID",	"CROP_MODEL",	"MODEL_VER",	"HWAH_S",	"CWAH_S",	"ADAT_S",	"MDAT_S",	"HADAT_S",	"LAIX_S",	"PRCP_S",	"ETCP_S",	"NUCM_S",	"NLCM_S")
-  for (thisi in 1:length(code)) {
-    if (inputcode==code[thisi]) {
-      all<-paste(name[thisi],"(",unit[thisi],")")
-      break
-    }
-  }
-  return(all)
-}
+options(echo = T)
+source("PlotUtil.r")
 
-# RHOME = "D:\\SSD_USER\\Documents\\R projects\\R_lib\\"
-# library(ggplot2, lib.loc = RHOME)
-# library(labeling, lib.loc = RHOME)
-# library(digest, lib.loc = RHOME)
-options(echo = TRUE)
 args <- commandArgs(trailingOnly = TRUE)
-def_lib_path <- "~\\R\\win-library\\3.3"
 if (length(args) == 0) {
   # for R debug purpose
   args <-
@@ -33,7 +17,7 @@ if (length(args) == 0) {
       "~\\R\\win-library\\3.3",
       "Result",
       "HWAH_S",
-      "png",
+      "PNG",
       "HWAH_S",
       "..\\..\\test\\resources\\r_dev\\bad_data",
       "..\\..\\test\\resources\\r_dev\\plot_output",
@@ -42,16 +26,12 @@ if (length(args) == 0) {
       "IEFA:Hot-Dry_0XFX:Base_"
     )
 }
-getwd()
 print(args)
-.libPaths(def_lib_path)
-.libPaths(args[1])
-paths <- .libPaths()
-print(paths)
+setLibPath(args[1])
 library(ggplot2)
 title <- args[2]
 plotType <- args[3]
-plotFormat <- args[4]
+plotFormat <- tolower(args[4])
 plotVarID <- args[5]
 inputFolder <- args[6]
 outputPath <- args[7]
@@ -107,12 +87,6 @@ merged$GCM <- as.factor(merged$GCM)
 print(paste("Detect", gcmNum, "GCMs", sep = " "))
 #str(merged)
 
-# end85 <- read.csv(outputAcmo,
-#                   sep = ",",
-#                   dec = ".",
-#                   skip = 0)
-end85 <- merged
-
 num <- nrow(merged)
 start <- 1
 while (start <= num) {
@@ -122,7 +96,6 @@ while (start <= num) {
   }
   farm <- merged[start:end, ]
   farm <- subset(farm, VALUE != "" & VALUE != -99 )
-  print(farm)
   if (nrow(farm) == 0) {
     start <- end + 1
     next
@@ -140,15 +113,15 @@ while (start <= num) {
   
   start <- end + 1
 }
-print(mergedAve)
-write.csv(mergedAve, outputAcmo)
+#print(mergedAve)
+#write.csv(mergedAve, outputAcmo)
 
 if (plotType == "BoxPlot") {
   ggplot(data = mergedAve, aes(x = MODEL, y = VALUE)) +
     geom_boxplot(
       aes(fill = GCM),
       outlier.colour = NA,
-      width = 0.05 * gcmNum,
+      width = 0.1 * gcmNum,
       color = "black"
     )  +
     coord_cartesian(ylim = range(boxplot(mergedAve$VALUE, plot = FALSE)$stats) *

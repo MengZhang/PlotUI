@@ -25,7 +25,6 @@
         <outputGraph>$!{config.CorrelationPlot.outputGraph}</outputGraph>
     </Configuration>
     <Configuration name="ClimAnomaly">
-        <plotFormat>$!{config.ClimAnomaly.plotFormat}</plotFormat>
         <plotVar>$!{config.ClimAnomaly.plotVar}</plotVar>
         <plotType>$!{config.ClimAnomaly.plotType}</plotType>
         <plotFormat>$!{config.ClimAnomaly.plotFormat}</plotFormat>
