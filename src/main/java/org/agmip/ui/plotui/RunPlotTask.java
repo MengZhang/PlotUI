@@ -27,6 +27,10 @@ public class RunPlotTask extends Task<Integer> {
                 return PlotRunner.runStandardPlot();
             } else if (rScpType.equals(PlotUtil.RScps.CorrelationPlot)) {
                 return PlotRunner.runCorrelationPlot();
+            } else if (rScpType.equals(PlotUtil.RScps.CTWNPlot)) {
+                return PlotRunner.runCTWNPlot();
+            } else if (rScpType.equals(PlotUtil.RScps.HistoricalPlot)) {
+                return PlotRunner.runHistoricalPlot();
             } else if (rScpType.equals(PlotUtil.RScps.ClimAnomaly)) {
                 return PlotRunner.runClimAnomaly();
             } else {

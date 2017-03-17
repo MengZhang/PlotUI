@@ -7,16 +7,17 @@
 #  Updated: 01/16/2017 (Transfer to desktop plot tools)
 #################################################################################################
 
-options(echo = T)
-source("PlotUtil.r")
+options(echo = F)
 
 args <- commandArgs(trailingOnly = TRUE)
+utilScpPath <- "r_lib/PlotUtil.r"
 def_lib_path <- "~\\R\\win-library\\3.3"
 if (length(args) == 0) {
   # for R debug purpose
   args <-
     c(
       "~\\R\\win-library\\3.3",
+      "Result",
       "..\\..\\test\\resources\\r_dev\\good_data",
       "PNG",
       "NUCM_S",
@@ -26,22 +27,25 @@ if (length(args) == 0) {
       "..\\..\\test\\resources\\r_dev\\plot_output",
       "CorPlot"
     )
+  utilScpPath <- "PlotUtil.r"
 }
 
+source(utilScpPath)
 setLibPath(args[1])
 library(ggplot2)
 library(lattice)
 library(MASS)
 
-inputFolder <- args[2]
-plotFormat <- tolower(args[3])
-varNameX <- args[4]#"ETCP_S"
-varNameY <- args[5]#"HWAH_S"
-group1 <- args[6]
-group2 <- args[7]
-outputName <- paste(args[9], varNameX, varNameY, group1, group2, sep = "-")
+title <- args[2]
+inputFolder <- args[3]
+plotFormat <- tolower(args[4])
+varNameX <- args[5]
+varNameY <- args[6]
+group1 <- args[7]
+group2 <- args[8]
+outputName <- paste(args[10], varNameX, varNameY, group1, group2, sep = "-")
 outputPlot <- paste(outputName, plotFormat, sep = ".")
-output <- paste(args[8], outputPlot, sep = "/")
+output <- paste(args[9], outputPlot, sep = "/")
 
 Group <- "No"
 if (group1 != "No" && group2 != "No") {
@@ -116,6 +120,7 @@ xyplot(
   scales = list(cex = 1.2),
   xlab = list(name_unit(varNameX), cex = 1.4),
   ylab = list(name_unit(varNameY), ces = 1.4),
+  main = title
 )
 
 graphics.off()

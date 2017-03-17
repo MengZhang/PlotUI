@@ -6,7 +6,7 @@
 #  Created: 01/23/2017
 #################################################################################################
 
-options(echo = TRUE)
+options(echo = F)
 args <- commandArgs(trailingOnly = TRUE)
 def_lib_path <- "~\\R\\win-library\\3.3"
 if (length(args) == 0) {
@@ -15,7 +15,7 @@ if (length(args) == 0) {
     c(
       "~\\R\\win-library\\3.3",
       "CLIM_ID",
-      "..\\..\\test\\resources\\r_dev\\good_data",
+      "..\\..\\test\\resources\\r_dev\\ACMO-p",
       "gcm.txt"
     )
 }
@@ -31,7 +31,7 @@ plotVarID <- args[2]
 inputFolder <- args[3]
 output <- args[4]
 
-acmoinputs <- list.files(path = inputFolder, pattern = ".*\\.csv")
+acmoinputs <- list.files(path = inputFolder, pattern = ".*\\.csv", recursive = TRUE)
 acmoinputs <- as.character(acmoinputs)
 
 for (i in 1:length(acmoinputs)) {
@@ -40,6 +40,9 @@ for (i in 1:length(acmoinputs)) {
     read.csv(paste(inputFolder, acmoinputs[i], sep = "/"),
              skip = 2,
              header = T)
+  if (is.null(OriData$SUITE_ID)) {
+    next
+  }
   OriData <-
     OriData[, c("SUITE_ID",plotVarID)]
   if (i == 1) {

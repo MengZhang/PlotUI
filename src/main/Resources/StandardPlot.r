@@ -6,146 +6,117 @@
 #  Created: 01/12/2017
 #################################################################################################
 
-options(echo = T)
-source("PlotUtil.r")
+options(echo = F)
 
 args <- commandArgs(trailingOnly = TRUE)
+utilScpPath <- "r_lib/PlotUtil.r"
 if (length(args) == 0) {
-  # for R debug purpose
+  # for debug purpose and sample for commend line arguments
   args <-
     c(
       "~\\R\\win-library\\3.3",
       "Result",
-      "HWAH_S",
+      "CDF",
       "PNG",
       "HWAH_S",
-      "..\\..\\test\\resources\\r_dev\\bad_data",
-      "..\\..\\test\\resources\\r_dev\\plot_output",
-      "acmo_output.csv",
-      "STDPLOT",
-      "IEFA:Hot-Dry_0XFX:Base_"
+      "ABSOLUTE",
+      # "RELATIVE",
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM3",
+      "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM1",
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM3",
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM4",
+      "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM2\\RCP4.5",
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM5\\RCP4.5",
+      "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output",
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output_ui",
+      "true",
+      "CM2CM5",
+      "GWXF:Middle_GIXF:Cool-Wet_GEXF:Cool-Dry_0XXX:Base_GMXF:Hot-Wet_GJXF:Hot-Dry_"
+      # "GWXF:Middle:#333333_GIXF:Cool-Wet:green_GEXF:Cool-Dry:blue_0XXX:Base:#D3D3D3_GMXF:Hot-Wet:yellow_GJXF:Hot-Dry:red_"
     )
+  utilScpPath <- "PlotUtil.r"
 }
 print(args)
+source(utilScpPath)
 setLibPath(args[1])
 library(ggplot2)
+library(plyr)
 title <- args[2]
 plotType <- args[3]
 plotFormat <- tolower(args[4])
 plotVarID <- args[5]
-inputFolder <- args[6]
-outputPath <- args[7]
-outputAcmo <- paste(outputPath, args[8], sep = "/")
+plotMethod <- args[6]
+inputFolder <- args[7]
+inputFolder2 <- args[8]
+outputPath <- args[9]
+outputCsvFlag <- args[10]
+outputAcmo <-
+  paste(paste(args[11], plotType, plotMethod, plotVarID, sep = "-"),
+        "csv",
+        sep = ".")
+outputAcmo <- paste(outputPath, outputAcmo, sep = "/")
 outputPlot <-
-  paste(paste(args[9], args[3], "ABSOLUTE", plotVarID, sep = "-"),
+  paste(paste(args[11], plotType, plotMethod, plotVarID, sep = "-"),
         plotFormat,
         sep = ".")
-gcmCatPairs <- strsplit(args[10], split = "_")[[1]]
+gcmCatPairs <- strsplit(args[12], split = "_")[[1]]
+duration <- 30
 
-acmoinputs <- list.files(path = inputFolder, pattern = ".*\\.csv")
-acmoinputs <- as.character(acmoinputs)
-
-for (i in 1:length(acmoinputs)) {
-  print(acmoinputs[i])
-  OriData <-
-    read.csv(paste(inputFolder, acmoinputs[i], sep = "/"),
-             skip = 2,
-             header = T)
-  OriData <-
-    OriData[, c("CLIM_ID", "CROP_MODEL", plotVarID, "PDATE")]
-  if (i == 1) {
-    merged <- OriData
-  } else {
-    merged <- rbind(merged, OriData)
-  }
-  
-}
-
-if (plotVarID %in% c("ADAT_S", "MDAT_S", "HADAT_S")) {
-  pdate <- as.POSIXct(merged$PDATE, format = "%Y-%m-%d")
-  ndate <- as.POSIXct(merged[[plotVarID]], format = "%Y-%m-%d")
-  dap <- as.numeric(ndate - pdate)
-  merged <- data.frame(
-    GCM = merged$CLIM_ID,
-    MODEL = merged$CROP_MODEL,
-    VALUE = dap
-  )
-  merged <- subset(merged, VALUE != "NA")
-} else {
-  colnames(merged) <- c("GCM", "MODEL", "VALUE")
-}
-
-gcmNum <- length(levels(merged$GCM))
-merged$GCM <- as.character(merged$GCM)
-
+# Initialize GCM category setting
+gcmCatEnv <- new.env()
+gcmEnv <- new.env()
+gcmColorEnv <- getDefColorEnv()
 for (i in 1 : length(gcmCatPairs)) {
   tmp <- strsplit(gcmCatPairs[i], split = ":")[[1]]
-  merged$GCM[merged$GCM == tmp[1]] <- paste(tmp[2], tmp[1], sep = "_")
+  assign(tmp[1], tmp[2], envir=gcmCatEnv)
+  assign(tmp[2], tmp[1], envir=gcmEnv)
+  if (length(tmp) > 2 && tmp[3] != "") { # to support old format of CLIM_ID/GCM mapping (no color)
+    assign(tmp[2], tmp[3], envir=gcmColorEnv)
+  }
 }
-merged$GCM <- as.factor(merged$GCM)
+gcmCats <- getGCMListByOrder(gcmEnv)
 
-print(paste("Detect", gcmNum, "GCMs", sep = " "))
-#str(merged)
-
-num <- nrow(merged)
-start <- 1
-while (start <= num) {
-  end <- start + 29
-  if (end > num) {
-    end <- num
-  }
-  farm <- merged[start:end, ]
-  farm <- subset(farm, VALUE != "" & VALUE != -99 )
-  if (nrow(farm) == 0) {
-    start <- end + 1
-    next
-  }
-  farmData <- data.frame(
-    GCM = farm[1,]$GCM,
-    MODEL = farm[1,]$MODEL,
-    VALUE = ave(farm$VALUE)[1]
-  )
-  if (start == 1) {
-    mergedAve <- farmData
-  } else {
-    mergedAve <- rbind(mergedAve, farmData)
-  }
-  
-  start <- end + 1
+# Load ACMOs and order the data by GCM
+system1 <- readACMOAve(inputFolder, gcmCatEnv, duration, plotVarID)
+system2 <- readACMOAve(inputFolder2, gcmCatEnv, duration, plotVarID)
+if (plotMethod == "RELATIVE") {
+  merged <- diffSystem(system1, system2, gcmCats)
+  plotVarTitle <- paste("Relative Change of", name_unit2(plotVarID, "%"), sep = "\n")
+} else {
+  merged <- combineSystem(system1, system2, gcmCats)
+  plotVarTitle <- name_unit(plotVarID)
 }
-#print(mergedAve)
-#write.csv(mergedAve, outputAcmo)
+gcmCats <- detectGCM(system1, system2, gcmCats)
+qt <- getQuestionType(length(system1), length(system2), merged)
+print(paste("Detect comparison mode as [", qt, "]", sep = ""))
+colors <- getStdPlotColors(qt, gcmCats, gcmColorEnv)
+
+# detect number of GCMs
+# gcmNum <- length(gcmCatPairs)
+gcmNum <- length(levels(as.factor(merged$GCM)))
+print(paste("Detect", gcmNum, "combination of GCM+RAP+MAN", sep = " "))
 
 if (plotType == "BoxPlot") {
-  ggplot(data = mergedAve, aes(x = MODEL, y = VALUE)) +
+  
+  ggplot(data = merged, aes(x = MODEL, y = VALUE)) +
     geom_boxplot(
       aes(fill = GCM),
       outlier.colour = NA,
-      width = 0.1 * gcmNum,
+      width = gcmNum / 12,
       color = "black"
     )  +
-    coord_cartesian(ylim = range(boxplot(mergedAve$VALUE, plot = FALSE)$stats) *
+    coord_cartesian(ylim = range(boxplot(merged$VALUE, plot = FALSE)$stats) *
                       c(.9, 1.3)) +  theme_bw() +
     theme(legend.text = element_text(size = 13),
           legend.title = element_text(size = 13)) +
     theme(axis.text = element_text(size = 13)) +
     theme(axis.title = element_text(size = 13, face = "bold")) +
-    labs(x = "Models", y = plotVarID, colour = "legend") +
+    labs(x = "Models", y = plotVarTitle, colour = "legend", title = title) +
     theme(panel.grid.minor = element_blank()) +
     theme(plot.margin = unit(c(1, 1, 1, 1), "mm")) +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
-    # scale_colour_manual(values = c("black", "green", "red", "blue"))
-  
-  # ggplot( mergedAve, aes( GCM, YIELD)) + geom_boxplot() +
-  #   ggtitle( paste( paste0("Crop", "-Climate Change Ratio"), "RCP", sep="\n")) +
-  #   scale_x_discrete(name =" " ) +
-  #     # coord_cartesian(ylim = range(boxplot(mergedAve$YIELD, plot = FALSE)$stats) *
-  #     #                   c(.9, 1.3)) +
-  #   ylab( "CC Ratio") + #ylim(0, (max( CCRatioBox[2]) + 0.1) ) +
-  #   theme(axis.text.x = element_text(face="bold", color="#993333", size=14, angle=0), axis.text.y = element_text(face="bold", color="#993333", size=14, angle=0) ) +
-  #   theme(plot.title = element_text(lineheight=1, face="bold", size = rel(1.5))) +
-  #   theme(axis.title.y = element_text(size = rel(1.5), angle = 90, face="bold", color="black" )) +
-  #   scale_fill_manual(values=c("turquoise3", "indianred1"),  name="Model", breaks=c("DSSAT", "APSIM"), labels=c("DSSAT", "APSIM"))
+    theme(axis.text.x = element_text(hjust = 0.5)) +
+    theme(plot.title = element_text(size=20, face="bold", hjust = 0.5)) +
+    scale_fill_manual(values=colors)
   
   ggsave(
     filename = outputPlot,
@@ -154,53 +125,65 @@ if (plotType == "BoxPlot") {
     device = plotFormat
   )
   
+  if (!is.null(outputCsvFlag) && outputCsvFlag != "") {
+    write.csv(merged, outputAcmo)
+  }
+  
 } else if (plotType == "CDF") {
-  if (plotFormat == "png") {
-    png(paste(outputPath, outputPlot, sep = "/"),
-        width = 850,
-        height = 500)
-  } else if (plotFormat == "pdf") {
-    pdf(paste(outputPath, outputPlot, sep = "/"),
-        width = 9,
-        height = 5)
-  }
-
-  r <- range(mergedAve$VALUE, na.rm = TRUE)
-  colors <- c("red", "green")
-  models <- levels(mergedAve$MODEL)
-
-  for (i in 1:length(models)) {
-
-    ddsub <- ecdf(subset(mergedAve$VALUE, mergedAve$MODEL == models[i]))
-
-    if (i == 1) {
-      curve(
-        1 - ddsub(x),
-        from = r[1],
-        to = r[2],
-        col = colors[1],
-        xlim = r,
-        main = title,
-        ylab = "Cumulative Frequency",
-        xlab = name_unit(plotVarID)
-      )
-    } else {
-      curve(
-        1 - ddsub(x),
-        from = r[1],
-        to = r[2],
-        col = c(colors[i]),
-        add = TRUE
-      )
+  
+  models <- levels(as.factor(merged$MODEL))
+  gcms <- levels(as.factor(merged$GCM))
+  mergedCDF <- NULL
+  for (i in 1 : length(models)) {
+    for (j in 1 : length(gcms)) {
+      subData <- subset(merged, MODEL == models[i] & GCM == gcms[j])
+      subData$ECDF <- ecdf(subData$VALUE)(subData$VALUE)
+      if (is.null(mergedCDF)) {
+        mergedCDF <- subData
+      } else {
+        mergedCDF <- rbind(mergedCDF, subData)
+      }
     }
-
   }
-  legend("topright",
-         models,
-         col = colors,
-         lty = "solid")
-
-  graphics.off()
+  
+  if (qt != "Cur") {
+    
+    # Multi GCM
+    ggplot(mergedCDF, aes(VALUE, 1 - ECDF, color = GCM)) +
+      geom_step() +
+      facet_wrap(~MODEL, ncol = 1) +
+      xlab(plotVarTitle) +
+      ylab("Cumulative Frequency") +
+      scale_fill_manual(values=colors) +
+      labs(title=title) +
+      theme(axis.title = element_text(size = 13, face = "bold")) +
+      theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5))
+    
+  } else {
+    
+    # Single GCM
+    colors <- c("red", "green")
+    ggplot(mergedCDF, aes(VALUE, 1 - ECDF, color = MODEL)) +
+      geom_step() +
+      xlab(plotVarTitle) +
+      ylab("Cumulative Frequency") +
+      scale_fill_manual(values=colors) +
+      labs(title=title) +
+      theme(axis.title = element_text(size = 13, face = "bold")) +
+      theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5))
+    
+  }
+  
+  ggsave(
+    filename = outputPlot,
+    plot = last_plot(),
+    path = outputPath,
+    device = plotFormat
+  )
+  
+  if (!is.null(outputCsvFlag) && outputCsvFlag != "") {
+    write.csv(mergedCDF, outputAcmo)
+  }
 }
 
 #################################################################

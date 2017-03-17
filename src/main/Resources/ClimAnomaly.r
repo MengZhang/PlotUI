@@ -12,13 +12,13 @@
 #   SiteName: SiteName for showing as the plot title
 #######################################################################################
 
-options(echo = T)
-source("PlotUtil.r")
+options(echo = F)
 
+utilScpPath <- "r_lib/PlotUtil.r"
 args <- commandArgs(trailingOnly = TRUE)
 def_lib_path <- "~\\R\\win-library\\3.3"
 if (length(args) == 0) {
-  # for R debug purpose
+  # for debug purpose and sample for commend line arguments
   args <-
     c(
       "~\\R\\win-library\\3.3",
@@ -29,7 +29,9 @@ if (length(args) == 0) {
       "..\\..\\test\\resources\\r_dev\\plot_output",
       "ClimPlot"
     )
+  utilScpPath <- "PlotUtil.r"
 }
+source(utilScpPath)
 setLibPath(args[1])
 
 fileDir <- args[2]

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import static org.agmip.ui.plotui.PlotUtil.getConfig;
 import static org.agmip.ui.plotui.PlotUtil.getPlotOutputFile;
 import org.apache.pivot.util.concurrent.TaskExecutionException;
 import org.slf4j.Logger;
@@ -20,10 +21,10 @@ public class PlotCmdLine {
 
     private final static Logger LOG = LoggerFactory.getLogger(PlotCmdLine.class);
     private final HashSet<PlotUtil.RScps> cmds;
-//    private final HashMap<String, String> globalConfig = PlotUtil.CONFIG_MAP.get(PlotUtil.GLOBAL_CONFIG);
-    private final HashMap<String, String> stdConfig = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.StandardPlot.toString());
-    private final HashMap<String, String> corConfig = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.CorrelationPlot.toString());
-    private final HashMap<String, String> climConfig = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.ClimAnomaly.toString());
+//    private final HashMap<String, String> globalConfig = getConfig(PlotUtil.GLOBAL_CONFIG);
+    private final HashMap<String, String> stdConfig = getConfig(PlotUtil.RScps.StandardPlot.toString());
+    private final HashMap<String, String> corConfig = getConfig(PlotUtil.RScps.CorrelationPlot.toString());
+    private final HashMap<String, String> ctwnConfig = getConfig(PlotUtil.RScps.CTWNPlot.toString());
 
     public PlotCmdLine(String[] args) {
         this.cmds = PlotUtil.readCommand(args);
@@ -38,8 +39,14 @@ public class PlotCmdLine {
                 PlotRunner.runStandardPlot();
             } else if (rScpType.equals(PlotUtil.RScps.CorrelationPlot)) {
                 PlotRunner.runCorrelationPlot();
+            } else if (rScpType.equals(PlotUtil.RScps.CTWNPlot)) {
+                PlotRunner.runCTWNPlot();
+            } else if (rScpType.equals(PlotUtil.RScps.HistoricalPlot)) {
+                PlotRunner.runHistoricalPlot();
             } else if (rScpType.equals(PlotUtil.RScps.ClimAnomaly)) {
                 PlotRunner.runClimAnomaly();
+            } else {
+                LOG.warn("Unsupported plot type : {}", rScpType.toString());
             }
             LOG.info("Start R script for {} done!", rScpType.toString());
             File plotFile = getPlotOutputFile(rScpType);

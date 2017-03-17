@@ -2,27 +2,49 @@
     <Configuration name="GlobalConfig">
         <RLibPath>D:\SSD_USER\Documents\R\win-library\3.3</RLibPath>
         <RExePath>C:\Program Files\R\R-3.3.2\bin\Rscript.exe</RExePath>
-        <GcmMapping>IEKA:Cool-Dry|IEFA:Hot-Dry|0XFX:Base|ZZZZ:Cool-Wet|</GcmMapping>
+        <WorkDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\src\test\resources\r_dev\ACMO-p</WorkDir>
+        <GcmMapping>I1XF:Hot-Wet:#FFFF00|GWXF:Hot-Dry:red|GIXF:Hot-Wet:#FFFF00|GEXF:Cool-Dry:blue|0XXX:Base:#D3D3D3|GMXF:Cool-Wet:green|IEXF:Cool-Dry:blue|IWXF:Hot-Dry:red|ILXF:Cool-Wet:green|ICXF:Middle:#333333|GJXF:Middle:#333333|</GcmMapping>
     </Configuration>
     <Configuration name="StandardPlot">
-        <title>Result</title>
-        <plotType>BoxPlot</plotType>
-        <plotFormat>PDF</plotFormat>
+        <title>CM1CM2</title>
+        <plotType>CDF</plotType>
+        <plotFormat>PNG</plotFormat>
         <plotVar>HWAH_S</plotVar>
-        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\good_data</inputDir>
-        <outputPath>plot_output</outputPath>
-        <outputACMO>acmo_output.csv</outputACMO>
-        <outputGraph>StdPlot</outputGraph>
+        <plotMethod>ABSOLUTE</plotMethod>
+        <inputDir>CM2\RCP4.5</inputDir>
+        <inputDir2>CM1</inputDir2>
+        <outputPath>plot_output_ui</outputPath>
+        <outputACMO>true</outputACMO>
+        <outputGraph>CM1CM2</outputGraph>
     </Configuration>
     <Configuration name="CorrelationPlot">
+        <title>Result</title>
         <plotFormat>PNG</plotFormat>
         <plotVarX>CWAH_S</plotVarX>
         <plotVarY>HWAH_S</plotVarY>
-        <group1>CRID_text</group1>
-        <group2>No</group2>
-        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\bad_data</inputDir>
-        <outputPath>plot_output</outputPath>
+        <group1>CROP_MODEL</group1>
+        <group2>CMSS</group2>
+        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\ACMO-p\CM5</inputDir>
+        <outputPath>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\plot_output</outputPath>
         <outputGraph>CorPlot</outputGraph>
+    </Configuration>
+    <Configuration name="CTWNPlot">
+        <plotFormat>PDF</plotFormat>
+        <plotVar>HWAH_S</plotVar>
+        <inputDir>CTWN</inputDir>
+        <outputPath>plot_output_ui\CTWNPlot-HWAH_S</outputPath>
+        <outputACMO>true</outputACMO>
+    </Configuration>
+    <Configuration name="HistoricalPlot">
+        <title>CM0</title>
+        <plotType>BoxPlot</plotType>
+        <plotFormat>PDF</plotFormat>
+        <plotVar>HWAH_S</plotVar>
+        <plotMethod>ABSOLUTE</plotMethod>
+        <inputDir>CM0</inputDir>
+        <outputPath>plot_output_ui</outputPath>
+        <outputACMO>true</outputACMO>
+        <outputGraph>CM0</outputGraph>
     </Configuration>
     <Configuration name="ClimAnomaly">
         <plotVar>TMAX</plotVar>

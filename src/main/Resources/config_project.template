@@ -2,7 +2,6 @@
     <Configuration name="GlobalConfig">
         <RLibPath>$!{config.GlobalConfig.RLibPath}</RLibPath>
         <RExePath>$!{config.GlobalConfig.RExePath}</RExePath>
-        <WorkDir>$!{config.GlobalConfig.WorkDir}</WorkDir>
         <GcmMapping>$!{config.GlobalConfig.GcmMapping}</GcmMapping>
     </Configuration>
     <Configuration name="StandardPlot">

@@ -2,8 +2,11 @@ package org.agmip.ui.plotui;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.wtk.Component;
+import org.apache.pivot.wtk.Container;
 import org.apache.pivot.wtk.DragSource;
 import org.apache.pivot.wtk.DropAction;
 import org.apache.pivot.wtk.DropTarget;
@@ -74,6 +77,10 @@ public class DragDropFactory {
                 this.color = (Color) label.getStyles().get("color");
 
                 if (this.text != null) {
+//                    if (label.getName().startsWith("global_gcmCatLabels")) {
+////                        System.out.println("OK");
+//                        
+//                    }
                     label.setText((String) null);
                     this.content = new LocalManifest();
                     this.content.putText(this.text);
@@ -86,16 +93,16 @@ public class DragDropFactory {
 
             @Override
             public void endDrag(Component comp, DropAction dropAction) {
-                if (dropAction == null) {
-                    Label label = (Label) comp;
+                Label label = (Label) comp;
+                if (dropAction == null || !label.getName().startsWith("global_gcmCatLabels")) {
                     label.setText(this.text);
                     label.getStyles().put("color", this.color);
                 }
-
+                
                 this.text = null;
                 this.content = null;
                 this.color = null;
-
+                
             }
 
             @Override
@@ -169,17 +176,28 @@ public class DragDropFactory {
                     int supportedDropActions, int x, int y, DropAction userDropAction) {
                 DropAction dropAction = null;
                 try {
-                    Label label = (Label) comp;
+                    Label target = (Label) comp;
                     Label source = (Label) dragContent.getValue("source");
-                    if (label != source
+                    if (target != source
                             && dragContent.containsText()) {
 
-                        String targetText = label.getText();
-                        Object targetColor = label.getStyles().get("color");
-                        label.setText(dragContent.getText());
-                        label.getStyles().put("color", dragContent.getValue("color"));
-                        source.setText(targetText);
-                        source.getStyles().put("color", targetColor);
+                        String targetText = target.getText();
+                        Object targetColor = target.getStyles().get("color");
+                        if (target.getName().startsWith("global_gcmCatLabels")) {
+                            target.setText(dragContent.getText());
+                            target.getStyles().put("color", dragContent.getValue("color"));
+                            if (source.getName().startsWith("global_gcmCatLabels")) {
+                                source.setText(targetText);
+                                source.getStyles().put("color", targetColor);
+                            }
+                        } else {
+                            if (!source.getName().startsWith("global_gcmCatLabels")) {
+                                target.setText(dragContent.getText());
+                                target.getStyles().put("color", dragContent.getValue("color"));
+                                source.setText(targetText);
+                                source.getStyles().put("color", targetColor);
+                            }
+                        }
                         dropAction = DropAction.MOVE;
 
                     }

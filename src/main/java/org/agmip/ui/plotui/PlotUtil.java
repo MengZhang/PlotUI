@@ -1,5 +1,6 @@
 package org.agmip.ui.plotui;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,7 +26,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.TreeSet;
-import java.util.logging.Level;
 import javax.swing.JFileChooser;
 import org.agmip.common.Functions;
 import org.agmip.util.MapUtil;
@@ -51,13 +52,20 @@ public class PlotUtil {
     protected final static String CONFIG_FILE = "config.xml";
     protected final static String CONFIG_FILE_DEF = "config_def.xml";
     protected final static String CONFIG_FILE_DEF_TEMPLATE = "config_def.template";
+    protected final static String CONFIG_FILE_PROJECT_TEMPLATE = "config_project.template";
     protected final static String REPORT_TEMPLATE = "report.template";
     protected final static String GLOBAL_CONFIG = "GlobalConfig";
     protected static HashMap<String, HashMap<String, String>> CONFIG_MAP;
 
     public enum RScps {
 
-        StandardPlot("StandardPlot.r"), CorrelationPlot("CorrelationPlot.r"), ClimAnomaly("ClimAnomaly.r"), VarDetect("VarDetect.r");
+        StandardPlot("StandardPlot.r"),
+        CorrelationPlot("CorrelationPlot.r"),
+        CTWNPlot("CtwnPlot.r"),
+        HistoricalPlot("HistoricalPlot.r"),
+        ClimAnomaly("ClimAnomaly.r"),
+        VarDetect("VarDetect.r"),
+        PlotUtil("PlotUtil.r");
 
         private final String rScpName;
 
@@ -87,7 +95,8 @@ public class PlotUtil {
 
         for (RScps rScp : RScps.values()) {
             File rScpFile = rScpDir.resolve(rScp.getScpName()).toFile();
-            if (!rScpFile.exists() || isForced) {
+            if (checkDeploy(rScpFile, PlotUtil.class.getResource("/" + rScp.getScpName()))
+                    || isForced) {
                 LOG.info("Deploying {}", rScpFile.getName());
                 InputStream rScriptIs = PlotUtil.class.getResourceAsStream("/" + rScp.getScpName());
                 deployFile(rScriptIs, rScpFile);
@@ -108,6 +117,22 @@ public class PlotUtil {
         setRPath("RExePath", detectRExePath());
 
         LOG.info("Initialization Done!");
+    }
+    
+    public static boolean checkDeploy(File target, URL deploy) {
+        if (!target.exists()) {
+            return true;
+        } else {
+            long tar = target.lastModified();
+            long dep;
+            try {
+                dep = deploy.openConnection().getLastModified();
+            } catch (IOException ex) {
+                LOG.warn(ex.getMessage());
+                return false;
+            }
+            return tar < dep;
+        }
     }
 
     private static void deployFile(InputStream in, File outputFile) {
@@ -149,6 +174,10 @@ public class PlotUtil {
                 cmds.add(PlotUtil.RScps.StandardPlot);
             } else if (args[i].equalsIgnoreCase("-corplot")) {
                 cmds.add(PlotUtil.RScps.CorrelationPlot);
+            } else if (args[i].equalsIgnoreCase("-ctwnplot")) {
+                cmds.add(PlotUtil.RScps.CTWNPlot);
+            } else if (args[i].equalsIgnoreCase("-hisplot")) {
+                cmds.add(PlotUtil.RScps.HistoricalPlot);
             } else if (args[i].equalsIgnoreCase("-climate")) {
                 cmds.add(PlotUtil.RScps.ClimAnomaly);
             }
@@ -156,8 +185,37 @@ public class PlotUtil {
         }
         return cmds;
     }
+    
+    public static HashMap<String, String> getConfig(HashMap<String, HashMap<String, String>> m, String key) {
+        HashMap<String, String> ret = m.get(key);
+        if (ret == null) {
+            ret = new HashMap();
+            m.put(key, ret);
+        }
+        return ret;
+    }
+    
+    public static HashMap<String, String> getConfig(String key) {
+        return getConfig(CONFIG_MAP, key);
+    }
 
+    public static HashMap<String, HashMap<String, String>> readConfig(File configFile, String base) {
+        HashMap<String, HashMap<String, String>> ret = readXml(configFile);
+        HashMap<String, String> globalConfig = getConfig(ret, PlotUtil.GLOBAL_CONFIG);
+        globalConfig.put("WorkDir", base);
+        resolvePath(ret, base);
+        return ret;
+    }
+    
     public static HashMap<String, HashMap<String, String>> readConfig(File configFile) {
+        HashMap<String, HashMap<String, String>> ret = readXml(configFile);
+        HashMap<String, String> globalConfig = getConfig(ret, PlotUtil.GLOBAL_CONFIG);
+        String base = MapUtil.getValueOr(globalConfig, "WorkDir", "");
+        resolvePath(ret, base);
+        return ret;
+    }
+    
+    private static HashMap<String, HashMap<String, String>> readXml(File configFile) {
         HashMap<String, HashMap<String, String>> ret = new HashMap();
         try {
             SAXBuilder builder = new SAXBuilder();
@@ -179,6 +237,22 @@ public class PlotUtil {
             LOG.error(Functions.getStackTrace(ex));
         }
         return ret;
+    }
+    
+    protected static void resolvePath(HashMap<String, HashMap<String, String>> config, String base) {
+        HashMap<String, String> stdConfig = getConfig(config, PlotUtil.RScps.StandardPlot.toString());
+        HashMap<String, String> corConfig = getConfig(config, PlotUtil.RScps.CorrelationPlot.toString());
+        HashMap<String, String> ctwnConfig = getConfig(config, PlotUtil.RScps.CTWNPlot.toString());
+        HashMap<String, String> hisConfig = getConfig(config, PlotUtil.RScps.HistoricalPlot.toString());
+        stdConfig.put("inputDir", resolveAbsPath(base, stdConfig.get("inputDir")));
+        stdConfig.put("inputDir2", resolveAbsPath(base, stdConfig.get("inputDir2")));
+        stdConfig.put("outputPath", resolveAbsPath(base, stdConfig.get("outputPath")));
+        corConfig.put("inputDir", resolveAbsPath(base, corConfig.get("inputDir")));
+        corConfig.put("outputPath", resolveAbsPath(base, corConfig.get("outputPath")));
+        ctwnConfig.put("inputDir", resolveAbsPath(base, ctwnConfig.get("inputDir")));
+        ctwnConfig.put("outputPath", resolveAbsPath(base, ctwnConfig.get("outputPath")));
+        hisConfig.put("inputDir", resolveAbsPath(base, hisConfig.get("inputDir")));
+        hisConfig.put("outputPath", resolveAbsPath(base, hisConfig.get("outputPath")));
     }
 
     private static void setRPath(String key, String defPath) throws ForceStopException {
@@ -210,6 +284,10 @@ public class PlotUtil {
             return rExePath.getPath();
         } else {
             File rInstallPath = new File("C:\\Program Files\\R");
+            if (!rInstallPath.exists()) {
+                LOG.warn("Can not auto-detect R installation directory through default path <{}>.", rInstallPath.getPath());
+                return null;
+            }
             if (rInstallPath.isDirectory()) {
                 for (File dir : rInstallPath.listFiles()) {
                     File f = Paths.get(dir.getPath(), "bin", "Rscript.exe").toFile();
@@ -229,6 +307,10 @@ public class PlotUtil {
             return rLibDir.getPath();
         } else {
             rLibDir = new File(userDocPath + "/R/win-library");
+            if (!rLibDir.exists()) {
+                LOG.warn("Can not auto-detect R library directory through default path <{}>.", rLibDir.getPath());
+                return null;
+            }
             for (File dir : rLibDir.listFiles()) {
                 for (File f : dir.listFiles()) {
                     if (f.getName().equalsIgnoreCase("ggplot2") && f.isDirectory()) {
@@ -360,13 +442,15 @@ public class PlotUtil {
     public static ArrayList<String> getValidateVars(PlotUtil.RScps rScpType) {
         HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(rScpType.toString());
         ArrayList<String> plotVars = new ArrayList();
-        if (rScpType.equals(PlotUtil.RScps.StandardPlot)) {
+        if (rScpType.equals(PlotUtil.RScps.StandardPlot) || rScpType.equals(PlotUtil.RScps.HistoricalPlot)) {
             plotVars.add(config.get("plotVar"));
         } else if (rScpType.equals(PlotUtil.RScps.CorrelationPlot)) {
             plotVars.add(config.get("plotVarX"));
             plotVars.add(config.get("plotVarY"));
             plotVars.add(config.get("group1"));
             plotVars.add(config.get("group2"));
+        } else if (rScpType.equals(PlotUtil.RScps.CTWNPlot)) {
+            plotVars.add(config.get("plotVar"));
         } else if (rScpType.equals(PlotUtil.RScps.ClimAnomaly)) {
             plotVars.add(config.get("plotVar"));
         }
@@ -377,10 +461,10 @@ public class PlotUtil {
         HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(rScpType.toString());
         StringBuilder plotFileName = new StringBuilder();
         String outputPath = config.get("outputPath");
-        if (rScpType.equals(PlotUtil.RScps.StandardPlot)) {
+        if (rScpType.equals(PlotUtil.RScps.StandardPlot) || rScpType.equals(PlotUtil.RScps.HistoricalPlot)) {
             plotFileName.append(config.get("outputGraph"));
             plotFileName.append("-").append(config.get("plotType"));
-            plotFileName.append("-ABSOLUTE");
+            plotFileName.append("-").append(config.get("plotMethod"));
             plotFileName.append("-").append(config.get("plotVar"));
             plotFileName.append(".").append(config.get("plotFormat"));
         } else if (rScpType.equals(PlotUtil.RScps.CorrelationPlot)) {
@@ -395,10 +479,66 @@ public class PlotUtil {
             plotFileName.append("-").append(config.get("plotType"));
             plotFileName.append("-").append(config.get("plotVar"));
             plotFileName.append(".").append(config.get("plotFormat"));
+        } else if (rScpType.equals(PlotUtil.RScps.CTWNPlot)) {
         } else {
             return null;
         }
 
         return Paths.get(outputPath, plotFileName.toString()).toFile();
+    }
+    
+    public static String resolveRelPath(String base, String dir) {
+        if (base == null || base.trim().equals("") || dir == null) {
+            return dir;
+        } else if (dir.startsWith(base)) {
+            int baseLen = base.length();
+            if (!base.endsWith("\\") && !base.endsWith("/")) {
+                baseLen++;
+            }
+            if (baseLen > dir.length()) {
+                return "";
+            } else {
+                return dir.substring(baseLen);
+            }
+        } else {
+            return dir;
+        }
+    }
+    
+    public static String resolveAbsPath(String base, String dir) {
+        if (base == null || base.trim().equals("") || dir == null) {
+            if (dir == null) {
+                dir = "";
+            }
+            return dir;
+        } else if (!new File(dir).isAbsolute()) {
+            return Paths.get(base, dir).toFile().getAbsolutePath();
+        } else {
+            return dir;
+        }
+    }
+    
+    public static String toColorName(Object color) {
+        if (color != null && color instanceof Color) {
+            if (color.equals(Color.RED)) {
+                return "red";
+            } else if (color.equals(Color.GREEN)) {
+                return "green";
+            } else if (color.equals(Color.BLUE)) {
+                return "blue";
+            } else if (color.equals(new Color(255, 215, 0))) {
+                return "yellow";
+            } else if (color.equals(Color.BLACK)) {
+                return "#333333";
+            } else {
+                Color c = (Color) color;
+                int r = c.getRed();
+                int g = c.getGreen();
+                int b = c.getBlue();
+                return String.format("#%02x%02x%02x", r, g, b).toUpperCase();
+            }
+        } else {
+            return "";
+        }
     }
 }

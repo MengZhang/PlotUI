@@ -2,19 +2,23 @@
     <Configuration name="GlobalConfig">
         <RLibPath>default</RLibPath>
         <RExePath>default</RExePath>
-        <GcmMapping>0XFX:Base|</GcmMapping>
+        <WorkDir></WorkDir>
+        <GcmMapping>0XFX:Base:#D3D3D3|</GcmMapping>
     </Configuration>
     <Configuration name="StandardPlot">
-        <title>Result</title>
+        <title>Standard Plot</title>
         <plotType>BoxPlot</plotType>
         <plotFormat>PNG</plotFormat>
         <plotVar>HWAH_S</plotVar>
+        <plotMethod>ABSOLUTE</plotMethod>
         <inputDir></inputDir>
+        <inputDir2></inputDir2>
         <outputPath>plot_output</outputPath>
-        <outputACMO>acmo_output.csv</outputACMO>
+        <outputACMO>true</outputACMO>
         <outputGraph>StdPlot</outputGraph>
     </Configuration>
     <Configuration name="CorrelationPlot">
+        <title>Correlation Plot</title>
         <plotFormat>PNG</plotFormat>
         <plotVarX>NUCM_S</plotVarX>
         <plotVarY>HWAH_S</plotVarY>
@@ -23,6 +27,24 @@
         <inputDir></inputDir>
         <outputPath>plot_output</outputPath>
         <outputGraph>CorPlot</outputGraph>
+    </Configuration>
+    <Configuration name="CTWNPlot">
+        <plotFormat>PNG</plotFormat>
+        <plotVar>HWAH_S</plotVar>
+        <inputDir></inputDir>
+        <outputPath>plot_output\CTWNPlot-HWAH_S</outputPath>
+        <outputACMO>true</outputACMO>
+    </Configuration>
+    <Configuration name="HistoricalPlot">
+        <title>Historical Plot</title>
+        <plotType>BoxPlot</plotType>
+        <plotFormat>PNG</plotFormat>
+        <plotVar>HWAH_S</plotVar>
+        <plotMethod>ABSOLUTE</plotMethod>
+        <inputDir></inputDir>
+        <outputPath>plot_output</outputPath>
+        <outputACMO>true</outputACMO>
+        <outputGraph>HistoricalPlot</outputGraph>
     </Configuration>
     <Configuration name="ClimAnomaly">
         <plotVar>TMAX</plotVar>

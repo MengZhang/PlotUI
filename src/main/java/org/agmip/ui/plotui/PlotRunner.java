@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import org.agmip.common.Functions;
 import org.agmip.ui.plotui.PlotUtil.RScps;
+import static org.agmip.ui.plotui.PlotUtil.resolveAbsPath;
+import org.agmip.util.MapUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,22 +25,25 @@ public class PlotRunner {
         HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.StandardPlot.toString());
         HashMap<String, String> globalConfig = PlotUtil.CONFIG_MAP.get(PlotUtil.GLOBAL_CONFIG);
 
+        String base = MapUtil.getValueOr(globalConfig, "WorkDir", "");
         String title = config.get("title");
         String plotType = config.get("plotType");
         String plotFormat = config.get("plotFormat");
         String plotVar = config.get("plotVar");
-        String inputDir = config.get("inputDir");
-        String outputPath = config.get("outputPath");
+        String plotMethod = config.get("plotMethod");
+        String inputDir = resolveAbsPath(base, config.get("inputDir"));
+        String inputDir2 = resolveAbsPath(base, config.get("inputDir2"));
+        String outputPath = resolveAbsPath(base, config.get("outputPath"));
         String outputACMO = config.get("outputACMO");
         String outputGraph = config.get("outputGraph");
-        String gcmMapping = globalConfig.get("GcmMapping");
+        String gcmMapping = globalConfig.get("GcmMapping").replaceAll("\\|", "_");
 
         Functions.revisePath(outputPath);
         ProcessBuilder pb = new ProcessBuilder(
                 PlotUtil.getRExePath(),
                 PlotUtil.getRScpPath(RScps.StandardPlot),
                 PlotUtil.getRLibPath(),
-                title, plotType, plotFormat, plotVar, inputDir, outputPath, outputACMO, outputGraph, gcmMapping.replaceAll("\\|", "_"));
+                title, plotType, plotFormat, plotVar, plotMethod, inputDir, inputDir2, outputPath, outputACMO, outputGraph, gcmMapping);
         LOG.debug(pb.command().toString());
         return printRProc(pb.start(), RScps.StandardPlot);
     }
@@ -46,14 +51,17 @@ public class PlotRunner {
     public static int runCorrelationPlot() throws IOException {
 
         HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.CorrelationPlot.toString());
+        HashMap<String, String> globalConfig = PlotUtil.CONFIG_MAP.get(PlotUtil.GLOBAL_CONFIG);
 
+        String base = MapUtil.getValueOr(globalConfig, "WorkDir", "");
+        String title = config.get("title");
         String plotFormat = config.get("plotFormat");
         String plotVarX = config.get("plotVarX");
         String plotVarY = config.get("plotVarY");
         String group1 = config.get("group1");
         String group2 = config.get("group2");
-        String inputFile = config.get("inputDir");
-        String outputPath = config.get("outputPath");
+        String inputFile = resolveAbsPath(base, config.get("inputDir"));
+        String outputPath = resolveAbsPath(base, config.get("outputPath"));
         String outputGraph = config.get("outputGraph");
 
         Functions.revisePath(outputPath);
@@ -61,9 +69,57 @@ public class PlotRunner {
                 PlotUtil.getRExePath(),
                 PlotUtil.getRScpPath(RScps.CorrelationPlot),
                 PlotUtil.getRLibPath(),
-                inputFile, plotFormat, plotVarX, plotVarY, group1, group2, outputPath, outputGraph);
+                title, inputFile, plotFormat, plotVarX, plotVarY, group1, group2, outputPath, outputGraph);
         LOG.debug(pb.command().toString());
         return printRProc(pb.start(), RScps.CorrelationPlot);
+    }
+
+    public static int runCTWNPlot() throws IOException {
+
+        HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.CTWNPlot.toString());
+        HashMap<String, String> globalConfig = PlotUtil.CONFIG_MAP.get(PlotUtil.GLOBAL_CONFIG);
+
+        String base = MapUtil.getValueOr(globalConfig, "WorkDir", "");
+        String plotFormat = config.get("plotFormat");
+        String plotVar = config.get("plotVar");
+        String inputDir = resolveAbsPath(base, config.get("inputDir"));
+        String outputPath = resolveAbsPath(base, config.get("outputPath"));
+        String outputACMO = config.get("outputACMO");
+
+        Functions.revisePath(outputPath);
+        ProcessBuilder pb = new ProcessBuilder(
+                PlotUtil.getRExePath(),
+                PlotUtil.getRScpPath(RScps.CTWNPlot),
+                PlotUtil.getRLibPath(),
+                plotFormat, plotVar, inputDir, outputPath, outputACMO);
+        LOG.debug(pb.command().toString());
+        return printRProc(pb.start(), RScps.StandardPlot);
+    }
+
+    public static int runHistoricalPlot() throws IOException {
+
+        HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(PlotUtil.RScps.HistoricalPlot.toString());
+        HashMap<String, String> globalConfig = PlotUtil.CONFIG_MAP.get(PlotUtil.GLOBAL_CONFIG);
+
+        String base = MapUtil.getValueOr(globalConfig, "WorkDir", "");
+        String title = config.get("title");
+        String plotType = config.get("plotType");
+        String plotFormat = config.get("plotFormat");
+        String plotVar = config.get("plotVar");
+        String plotMethod = config.get("plotMethod");
+        String inputDir = resolveAbsPath(base, config.get("inputDir"));
+        String outputPath = resolveAbsPath(base, config.get("outputPath"));
+        String outputACMO = config.get("outputACMO");
+        String outputGraph = config.get("outputGraph");
+
+        Functions.revisePath(outputPath);
+        ProcessBuilder pb = new ProcessBuilder(
+                PlotUtil.getRExePath(),
+                PlotUtil.getRScpPath(RScps.HistoricalPlot),
+                PlotUtil.getRLibPath(),
+                title, plotType, plotFormat, plotVar, plotMethod, inputDir, outputPath, outputACMO, outputGraph);
+        LOG.debug(pb.command().toString());
+        return printRProc(pb.start(), RScps.HistoricalPlot);
     }
 
     public static int runClimAnomaly() throws IOException {

@@ -12,4 +12,6 @@ run.sh
 Rplots.pdf
 r_lib/*
 plot_output/*
-/src/test/resources/r_dev/plot_output/
+/src/test/resources/r_dev/*
+*.RData
+src/main/Resources/.Rhistory

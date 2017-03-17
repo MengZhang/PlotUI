@@ -6,13 +6,23 @@
 #  Created: 01/25/2017
 #################################################################################################
 
-name_unit<-function(inputcode){
-  name<-c("ID","Name of experiment", "Field Overlay","Seaonal Strategy","Rotational Analysis","","Treatment Name","Climate ID code","Climate replication number",	"Region ID","Regional stratum identification number","RAP ID", "Management regimen ID","Names of institutions","Crop rotation", "Weather station ID","Soil ID", "Site Latitude", "Site Longitude",	"Crop type", "Crop model-specific cultivar ID", "Cultivar name", "Start of simulation date",	"Planting date","Observed harvested yield, dry weight", "Observed total above-ground biomass at harvest",	"Observed harvest date",	"Total number of irrigation events",	"Total amount of irrigation",	"Type of irrigation application",	"Total number of fertilizer applications",	"Total N applied",	"Total P applied",	"Total K applied",	"Manure and applied oganic matter",	"Total number of tillage applications",	"Tillage type (hand, animal or mechanized)",	"Experiment ID",	"Weather ID",	"Soil ID",	"DOME ID for Overlay",	"DOME ID for Seasonal",  "DOME ID for Rotational", "Short name of crop model used for simulations",	"Model name and version number", "Simulated harvest yield, dry matter", "Simulated above-ground biomass at harvest, dry matter",	"Simulated anthesis date",	"Simulated maturity date",	"Simulated harvest date",	"Simulated leaf area index, maximum",	"Total precipitation from planting to harvest",	"Simulated evapotranspiration, planting to harvest",	"Simulated N uptake during season", "Simulated N leached up to harvest maturity", "Transpiration, cumulative from planting to harvest")
-  unit<-c("text",	"text",	"text",	"text",	"text",	"number",	"text",	"code",	"number",	"code",	"number",	"code",	"code",	"text",	"number",	"text",	"text",	"decimal degrees",	"decimal degrees",	"text",	"text",	"text",	"yyyy-mm-dd",	"yyyy-mm-dd",	"kg/ha",	"kg/ha",	"yyyy-mm-dd",	"number",	"mm",	"text",	"number",	"kg[N]/ha",	"kg[P]/ha",	"kg[K]/ha",	"kg/ha",	"#",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"kg/ha",	"kg/ha",	"das",	"das",	"das",	"m2/m2",	"mm",	"mm",	"kg/ha",	"kg/ha", "mm")
-  code<-c("SUITE_ID",	"EXNAME",	"FIELD_OVERLAY",	"SEASONAL_STRATEGY",	"ROTATIONAL_ANALYSIS",	"RUN#",	"TRT_NAME",	"CLIM_ID",	"CLIM_REP",	"REG_ID",	"STRATUM",	"RAP_ID",	"MAN_ID",	"INSTITUTION",	"ROTATION",	"WST_ID",	"SOIL_ID",	"FL_LAT",	"FL_LONG",	"CRID_text",	"CUL_ID",	"CUL_NAME",	"SDAT",	"PDATE",	"HWAH",	"CWAH",	"HDATE",	"IR#C",	"IR_TOT",	"IROP_text",	"FE_#",	"FEN_TOT",	"FEP_TOT",	"FEK_TOT",	"OM_TOT","TI_#",	"TIIMP_text",	"EID",	"WID",	"SID",	"DOID",	"DSID",	"DRID",	"CROP_MODEL",	"MODEL_VER",	"HWAH_S",	"CWAH_S",	"ADAT_S",	"MDAT_S",	"HADAT_S",	"LAIX_S",	"PRCP_S",	"ETCP_S",	"NUCM_S",	"NLCM_S", "EPCP_S")
+name_unit <- function(inputcode){
+  return (name_unit2(inputcode, NULL))
+}
+
+
+name_unit2 <- function(inputcode, unitStr){
+  name<-c("ID","Name of experiment", "Field Overlay","Seaonal Strategy","Rotational Analysis","","Treatment Name","Climate ID code","Climate replication number", "Crop model simulation set",	"Region ID","Regional stratum identification number","RAP ID", "Management regimen ID","Names of institutions","Crop rotation", "Weather station ID","Soil ID", "Site Latitude", "Site Longitude",	"Crop type", "Crop model-specific cultivar ID", "Cultivar name", "Start of simulation date",	"Planting date","harvested yield, dry weight", "total above-ground biomass at harvest",	"harvest date",	"Total number of irrigation events",	"Total amount of irrigation",	"Type of irrigation application",	"Total number of fertilizer applications",	"Total N applied",	"Total P applied",	"Total K applied",	"Manure and applied oganic matter",	"Total number of tillage applications",	"Tillage type (hand, animal or mechanized)",	"Experiment ID",	"Weather ID",	"Soil ID",	"DOME ID for Overlay",	"DOME ID for Seasonal",  "DOME ID for Rotational", "Short name of crop model used for simulations",	"Model name and version number", "Simulated harvest yield, dry matter", "Simulated above-ground biomass at harvest, dry matter",	"Simulated anthesis date",	"Simulated maturity date",	"Simulated harvest date",	"Simulated leaf area index, maximum",	"Total precipitation from planting to harvest",	"Simulated evapotranspiration, planting to harvest",	"Simulated N uptake during season", "Simulated N leached up to harvest maturity", "Transpiration, cumulative from planting to harvest")
+  unit<-c("text",	"text",	"text",	"text",	"text",	"number",	"text",	"code",	"number", "code",	"code",	"number",	"code",	"code",	"text",	"number",	"text",	"text",	"decimal degrees",	"decimal degrees",	"text",	"text",	"text",	"yyyy-mm-dd",	"yyyy-mm-dd",	"kg/ha",	"kg/ha",	"yyyy-mm-dd",	"number",	"mm",	"text",	"number",	"kg[N]/ha",	"kg[P]/ha",	"kg[K]/ha",	"kg/ha",	"#",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"kg/ha",	"kg/ha",	"das",	"das",	"das",	"m2/m2",	"mm",	"mm",	"kg/ha",	"kg/ha", "mm")
+  code<-c("SUITE_ID",	"EXNAME",	"FIELD_OVERLAY",	"SEASONAL_STRATEGY",	"ROTATIONAL_ANALYSIS",	"RUN#",	"TRT_NAME",	"CLIM_ID",	"CLIM_REP",	"CMSS", "REG_ID",	"STRATUM",	"RAP_ID",	"MAN_ID",	"INSTITUTION",	"ROTATION",	"WST_ID",	"SOIL_ID",	"FL_LAT",	"FL_LONG",	"CRID_text",	"CUL_ID",	"CUL_NAME",	"SDAT",	"PDATE",	"HWAH",	"CWAH",	"HDATE",	"IR#C",	"IR_TOT",	"IROP_text",	"FE_#",	"FEN_TOT",	"FEP_TOT",	"FEK_TOT",	"OM_TOT","TI_#",	"TIIMP_text",	"EID",	"WID",	"SID",	"DOID",	"DSID",	"DRID",	"CROP_MODEL",	"MODEL_VER",	"HWAH_S",	"CWAH_S",	"ADAT_S",	"MDAT_S",	"HADAT_S",	"LAIX_S",	"PRCP_S",	"ETCP_S",	"NUCM_S",	"NLCM_S", "EPCP_S")
   for (thisi in 1:length(code)) {
     if (inputcode==code[thisi]) {
-      all<-paste(name[thisi],"(",unit[thisi],")")
+      if (is.null(unitStr)) {
+        all<-paste(name[thisi],"(",unit[thisi],")")
+      } else {
+        all<-paste(name[thisi],"(",unitStr,")")
+      }
+      
       break
     }
   }
@@ -23,6 +33,382 @@ name_unit<-function(inputcode){
 # library(ggplot2, lib.loc = RHOME)
 # library(labeling, lib.loc = RHOME)
 # library(digest, lib.loc = RHOME)
+
+readACMO <- function(inputFolder, acmoinput, plotVarID, metaVars, metaNames){
+  print(acmoinput)
+  OriData <-
+    read.csv(paste(inputFolder, acmoinput, sep = "/"),
+             skip = 2,
+             header = T)
+  if (plotVarID %in% c("ADAT_S", "MDAT_S", "HADAT_S")) {
+    OriData <- OriData[, c(metaVars, "PDATE", plotVarID)]
+  } else {
+    OriData <- OriData[, c(metaVars, plotVarID)]
+  }
+  
+  if (nrow(OriData) != 0) {
+    
+    # transfer date value to days after planting
+    if (plotVarID %in% c("ADAT_S", "MDAT_S", "HADAT_S")) {
+      pdate <- as.POSIXct(OriData$PDATE, format = "%Y-%m-%d")
+      ndate <- as.POSIXct(OriData[[plotVarID]], format = "%Y-%m-%d")
+      dap <- as.numeric(ndate - pdate)
+      OriData <- OriData[, metaVars]
+      OriData$VALUE <- dap
+    }
+  }
+  colnames(OriData) <- c(metaNames, "VALUE")
+  
+  return (OriData)
+}
+
+readACMOAve <- function(inputFolder, gcmCatEnv, duration, plotVarID) {
+  acmoinputs <- list.files(path = inputFolder, pattern = "ACMO.*\\.csv")
+  acmoinputs <- as.character(acmoinputs)
+  ret <- list()
+  gcms <- ls(gcmCatEnv)
+  
+  for (i in 1:length(acmoinputs)) {
+    OriData <- readACMO(inputFolder, acmoinputs[i], plotVarID, c("CLIM_ID", "CROP_MODEL", "RAP_ID", "MAN_ID"), c("CLIM_ID", "MODEL", "RAP", "MAN"))
+    # print(acmoinputs[i])
+    # OriData <-
+    #   read.csv(paste(inputFolder, acmoinputs[i], sep = "/"),
+    #            skip = 2,
+    #            header = T)
+    # if (plotVarID %in% c("ADAT_S", "MDAT_S", "HADAT_S")) {
+    #   OriData <- OriData[, c("CLIM_ID", "CROP_MODEL", "RAP_ID", "MAN_ID", plotVarID, "PDATE")]
+    # } else {
+    #   OriData <- OriData[, c("CLIM_ID", "CROP_MODEL", "RAP_ID", "MAN_ID", plotVarID)]
+    # }
+    
+    if (nrow(OriData) != 0) {
+      
+      # # transfer date value to days after planting
+      # if (plotVarID %in% c("ADAT_S", "MDAT_S", "HADAT_S")) {
+      #   pdate <- as.POSIXct(OriData$PDATE, format = "%Y-%m-%d")
+      #   ndate <- as.POSIXct(OriData[[plotVarID]], format = "%Y-%m-%d")
+      #   dap <- as.numeric(ndate - pdate)
+      #   OriData <- data.frame(
+      #     CLIM_ID = OriData$CLIM_ID,
+      #     MODEL = OriData$CROP_MODEL,
+      #     RAP = OriData$RAP_ID,
+      #     MAN = OriData$MAN_ID,
+      #     VALUE = dap
+      #   )
+      # } else {
+      #   colnames(OriData) <- c("CLIM_ID", "MODEL", "RAP", "MAN", "VALUE")
+      # }
+      
+      # Calculate average value for the multi-year simulation results
+      merged <- averageFarmValue(OriData, duration)
+      
+      for (i in 1 : length(gcms)) {
+        
+        gcmCat <- get(gcms[i], envir=gcmCatEnv)
+        merged <- subset(OriData, CLIM_ID == gcms[i])
+        if (nrow(merged) != 0) {
+          
+          # replace climate ID with climate category name
+          merged$MAN <- as.character(merged$MAN)
+          merged$RAP <- as.character(merged$RAP)
+          merged$GCM <- gcmCat
+          merged$GCM[!is.na(merged$MAN) && merged$MAN != ""] <- paste(merged$GCM, merged$MAN, sep = "_")
+          merged$GCM[!is.na(merged$RAP) && merged$RAP != ""] <- paste(merged$GCM, merged$RAP, sep = "_")
+          
+          # merged the ACMO by GCM
+          if (is.null(ret[[gcmCat]])) {
+            ret[[gcmCat]] <- merged
+          } else {
+            ret[[gcmCat]] <- rbind(ret[[gcmCat]], merged)
+          }
+          
+        }  
+      }
+      
+    }
+  }
+  
+  return (ret)
+}
+
+readACMOCM0 <- function(inputFolder, plotVarID, plotHisVarID) {
+  acmoinputs <- list.files(path = inputFolder, pattern = "ACMO.*\\.csv")
+  acmoinputs <- as.character(acmoinputs)
+  ret <- NULL
+  
+  if (length(acmoinputs) > 0) {
+    
+    ret <- readACMO(inputFolder, acmoinputs[1], plotHisVarID, c("EXNAME"), c("EXNAME"))
+    ret$GROUP <- "Historical"
+    
+    for (i in 1:length(acmoinputs)) {
+      
+      OriData <- readACMO(inputFolder, acmoinputs[i], plotVarID, c("EXNAME", "CROP_MODEL"), c("EXNAME", "GROUP"))
+      ret <- rbind(ret, OriData)
+      
+    }
+  }
+  
+  return (ret)
+}
+
+getHistVarID <- function(plotVarID) {
+  # HWAH_S	CWAH_S	HADAT_S
+  if (plotVarID == "HWAH_S") {
+    return ("HWAH")
+  } else if (plotVarID == "CWAH_S") {
+    return ("CWAH")
+  } else if (plotVarID == "HADAT_S") {
+    return ("HDATE")
+  } else {
+    print.warnings("Unsupported plot variable for historical plot script")
+    return ("UNKNOW")
+  }
+}
+
+averageFarmValue <- function(merged, duration) {
+  
+  num <- nrow(merged)
+  start <- 1
+  while (start <= num) {
+    end <- start + duration - 1
+    if (end > num) {
+      end <- num
+    }
+    farm <- merged[start:end, ]
+    farm <- subset(farm, !is.na(VALUE) & VALUE != "" & VALUE != -99)
+    if (nrow(farm) == 0) {
+      start <- end + 1
+      next
+    }
+    
+    farmData <- data.frame(
+      # GCM = farm[1,]$GCM,
+      CLIM_ID = farm[1,]$CLIM_ID,
+      MODEL = farm[1,]$MODEL,
+      RAP = farm[1,]$RAP,
+      MAN = farm[1,]$MAN,
+      VALUE = ave(farm$VALUE)[1]
+    )
+    if (start == 1) {
+      mergedAve <- farmData
+    } else {
+      mergedAve <- rbind(mergedAve, farmData)
+    }
+    
+    start <- end + 1
+  }
+  # print(mergedAve)
+  # write.csv(mergedAve, outputAcmo)
+  return (mergedAve)
+}
+
+getGCMListByOrder <- function(gcmEnv) {
+  # ordered as base, cool-wet, cool-dry, middle, hot-wet, hot-dry
+  
+  gcmsOrder <- c("Base", "Cool-Wet", "Cool-Dry", "Middle", "Hot-Wet", "Hot-Dry")
+  ret <- c()
+  count <- 1
+  for (i in 1 : length(gcmsOrder)) {
+    gcm <- get(gcmsOrder[i], envir=gcmEnv)
+    if (!is.null(gcm)) {
+      ret[count] <- gcmsOrder[i]
+      count <- count + 1
+    }
+  }
+  return(ret)
+}
+
+diffSystem <- function(system1, system2, gcmCats) {
+  merged <- NULL
+  gcmNumSys1 <- length(system1)
+  gcmNumSys2 <- length(system2)
+  
+  if (gcmNumSys1 == 1 || gcmNumSys2 == 1) {
+    if (gcmNumSys1 == 1) {
+      base <- system1[[1]]
+      compSys <- system2
+    } else {
+      base <- system2[[1]]
+      compSys <- system1
+    }
+    for (i in 1 : length(gcmCats)) {
+      gcmCat <- gcmCats[i]
+      compare <- compSys[[gcmCat]]
+      merged <- diffACMOByGCM(merged, base, compare)
+    }
+  } else {
+    for (i in 1 : length(gcmCats)) {
+      gcmCat <- gcmCats[i]
+      base <- system1[[gcmCat]]
+      compare <- system2[[gcmCat]]
+      merged <- diffACMOByGCM(merged, base, compare)
+    }
+  }
+  
+  return (merged)
+}
+
+diffSystemCM0 <- function(CM0Data) {
+  merged <- NULL
+  histData <- subset(CM0Data, GROUP == "Historical")
+  modelData <- subset(CM0Data, GROUP != "Historical")
+  models <- levels(as.factor(modelData$GROUP))
+  
+  for ( i in 1 : length(models)) {
+    diffData <- subset(modelData, GROUP == models[i])
+    diffData$VALUE <- (diffData$VALUE - histData$VALUE) / histData$VALUE * 100
+    if (is.null(merged)) {
+      merged <- diffData
+    } else {
+      merged <- rbind(merged, diffData)
+    }
+  }
+  
+  return (merged)
+  
+}
+
+diffACMOByGCM <- function(merged, base, compare) {
+  if (!is.null(base) && !is.null(compare)) {
+    diffed <- compare
+    diffed$VALUE = 100 * (compare$VALUE - base$VALUE) / base$VALUE
+    if (is.null(merged)) {
+      merged <- diffed
+    } else {
+      merged <- rbind(merged, diffed)
+    }
+  }
+  return (merged)
+}
+
+combineSystem <- function(system1, system2, gcmCats) {
+  
+  merged <- NULL
+  
+  for (i in 1 : length(gcmCats)) {
+    merged <- mergedACMOByGCM(merged, system1, gcmCats[i])
+    merged <- mergedACMOByGCM(merged, system2, gcmCats[i])
+  }
+  return (merged)
+}
+
+detectGCM <- function(system1, system2, gcmCats) {
+  ret <- c()
+  idx <- 1
+  for (i in 1 : length(gcmCats)) {
+    if (!is.null(system1[[gcmCats[i]]]) || !is.null(system2[[gcmCats[i]]])) {
+      ret[idx] <- gcmCats[i]
+      idx <- idx + 1
+    }
+  }
+  return (ret)
+}
+
+mergedACMOByGCM <- function(merged, acmoSys, gcmCat) {
+  data <- acmoSys[[gcmCat]]
+  if (!is.null(data)) {
+    # print(paste("data: ", nrow(data)))
+    if (is.null(merged)) {
+      merged <- data
+    } else {
+      merged <- rbind(merged, data)
+    }
+  }
+  return (merged)
+}
+
+getQuestionType <- function(gcmNumSys1, gcmNumSys2, merged) {
+  gcms <- as.factor(merged$GCM)
+  gcmNum <- length(levels(gcms))
+  # print(gcmNum)
+  climIds <- as.factor(merged$CLIM_ID)
+  climNum <- length(levels(climIds))
+  # print(climNum)
+  ret <- ""
+  if (climNum == 1) {
+    if (gcmNum == climNum) {
+      ret <- "Cur"
+    } else {
+      ret <- "Cur-Cur"
+    }
+  } else if (climNum > 1) {
+    if (gcmNum == climNum) {
+      ret <- "Fur"
+    } else if (gcmNumSys1 == 1 || gcmNumSys2 == 1) {
+      ret <- "Cur-Fur"
+    } else {
+      ret <- "Fur-Fur"
+    }
+  }
+  
+  return (ret)
+}
+
+
+getStdPlotColors <- function(qt, gcmCats, gcmColorEnv) {
+  # TODO: need to change black to a grey color to make middle line visable
+  ret <- c()
+  
+  if (qt == "Cur-Cur") {
+    
+    color <- get(gcmCats[1], envir=gcmColorEnv)
+    ret[1] <- color
+    ret[2] <- getSys2Color(color)
+    
+  } else if (qt == "Fur-Fur") {
+    
+    for (i in 1 : length(gcmCats)) {
+      color <- get(gcmCats[i], envir=gcmColorEnv)
+      idx <- (i - 1) * 2 + 1
+      ret[idx] <- color
+      ret[idx + 1] <- getSys2Color(color)
+    }
+    
+  } else {
+    
+    for (i in 1 : length(gcmCats)) {
+      ret[i] <- get(gcmCats[i], envir=gcmColorEnv)
+    }
+    
+  }
+  
+  return (ret)
+}
+
+getSys2Color <- function(color) {
+  
+  ret <- "white"
+  if (is.null(color)) {
+    ret <- "white"
+  } else if (color == "green") {
+    ret <- "springgreen"
+  } else if (color == "blue") {
+    ret <- "mediumblue"
+  } else if (color == "yellow") {
+    ret <- "gold"
+  } else if (color == "red") {
+    ret <- "orangered"
+  } else if (startsWith(color, "#") && nchar(color) == 7) {
+    r <- as.numeric(as.hexmode(substr(color, 2, 3))) / 255 * 0.5
+    g <- as.numeric(as.hexmode(substr(color, 4, 5))) / 255 * 0.5
+    b <- as.numeric(as.hexmode(substr(color, 6, 7))) / 255 * 0.5
+    ret <- rgb(r, g, b)
+  }
+  return (ret)
+}
+
+getDefColorEnv <- function() {
+  # "GWXF:Middle:black_GIXF:Cool-Wet:green_GEXF:Cool-Dry:blue_0XXX:Base:#D3D3D3_GMXF:Hot-Wet:yellow_GJXF:Hot-Dry:red_"
+  ret <- new.env()
+  assign("Middle", "#333333", envir=ret)
+  assign("Cool-Wet", "green", envir=ret)
+  assign("Cool-Dry", "blue", envir=ret)
+  assign("Hot-Wet", "yellow", envir=ret)
+  assign("Hot-Dry", "red", envir=ret)
+  assign("Base", "#D3D3D3", envir=ret)
+  return (ret)
+}
 
 setLibPath <- function(path) {
   def_lib_path <- "~\\R\\win-library\\3.3"
