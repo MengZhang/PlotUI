@@ -49,16 +49,16 @@
             <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
                 <TabPane bxml:id="plotuiTabs" styles="{padding:6}" selectedIndex="0">
 
-                    <!-- Global Config -->
-                    <BoxPane orientation="vertical">
+                    <!-- StartPage Config -->
+                    <BoxPane orientation="vertical" name="start">
                         <TabPane.tabData>
-                            <content:ButtonData text="     Start     "/>
+                            <content:ButtonData text="    Start    "/>
                         </TabPane.tabData>
                         <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
                             <Border title="Project Configuration:" styles="{padding:6}" minimumWidth="300">
                                 <BoxPane orientation="vertical">
                                     <BoxPane orientation="horizontal">
-                                        <Label text="Work Diretory:" styles="{font:{bold:true}}"/>
+                                        <Label text="Work Directory:" styles="{font:{bold:true}}"/>
                                         <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate a folder as the base directory for your ACMO data" />
                                     </BoxPane>
                                     <BoxPane orientation="horizontal">
@@ -86,16 +86,16 @@
                         </BoxPane>
                     </BoxPane>
                     
-                    <!-- Standard Plot Config -->
-                    <BoxPane orientation="vertical">
+                    <!-- Historical Plot Config -->
+                    <BoxPane orientation="vertical" name="HistoricalPlot">
                         <TabPane.tabData>
-                            <content:ButtonData text=" Standard Plot "/>
+                            <content:ButtonData text="Historical Plot"/>
                         </TabPane.tabData>
-                        <bxml:include bxml:id="stdPlotTab" src="tabStdPlot.bxml"/>
+                        <bxml:include bxml:id="hisPlotTab" src="tabHisPlot.bxml"/>
                     </BoxPane>
                     
                     <!-- Correlation Plot Config -->
-                    <BoxPane orientation="vertical">
+                    <BoxPane orientation="vertical" name="CorrelationPlot">
                         <TabPane.tabData>
                             <content:ButtonData text="Correlation Plot"/>
                         </TabPane.tabData>
@@ -103,22 +103,22 @@
                     </BoxPane>
                     
                     <!-- CTWN Plot Config -->
-                    <BoxPane orientation="vertical">
+                    <BoxPane orientation="vertical" name="CTWNPlot">
                         <TabPane.tabData>
-                            <content:ButtonData text="   CTWN Plot   "/>
+                            <content:ButtonData text="   CTWN Plot   " />
                         </TabPane.tabData>
                         <bxml:include bxml:id="ctwnPlotTab" src="tabCtwnPlot.bxml"/>
                     </BoxPane>
                     
-                    <!-- Historical Plot Config -->
-                    <BoxPane orientation="vertical">
+                    <!-- Standard Plot Config -->
+                    <BoxPane orientation="vertical" name="StandardPlot">
                         <TabPane.tabData>
-                            <content:ButtonData text="Historical Plot"/>
+                            <content:ButtonData text=" Standard Plot "/>
                         </TabPane.tabData>
-                        <bxml:include bxml:id="hisPlotTab" src="tabHisPlot.bxml"/>
+                        <bxml:include bxml:id="stdPlotTab" src="tabStdPlot.bxml"/>
                     </BoxPane>
                     
-                    <BoxPane orientation="vertical">
+                    <BoxPane orientation="vertical" name="help">
                         <TabPane.tabData>
                             <content:ButtonData text="     Help      "/>
                         </TabPane.tabData>

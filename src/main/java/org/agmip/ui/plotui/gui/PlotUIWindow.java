@@ -175,30 +175,27 @@ public class PlotUIWindow extends Window implements Bindable {
 
             @Override
             public void selectedIndexChanged(TabPane tp, int i) {
-                int maxIdx = tp.getTabs().getLength() - 1;
-                int curIdx = tp.getSelectedIndex();
-                if (curIdx == 0) {
-                    saveConfig.setEnabled(true);
-                    runRScp.setEnabled(false);
-                } else if (curIdx == maxIdx) {
+                String tabName = tp.getSelectedTab().getName();
+                if (null != tabName) switch (tabName) {
+                    case "start":
+                        saveConfig.setEnabled(true);
+                        runRScp.setEnabled(false);
+                        curTab = null;
+                        break;
+                    case "help":
+                        saveConfig.setEnabled(false);
+                        runRScp.setEnabled(false);
+                        curTab = null;
+                        break;
+                    default:
+                        saveConfig.setEnabled(true);
+                        runRScp.setEnabled(true);
+                        curTab = PlotUtil.RScps.valueOf(tabName);
+                        break;
+                } else {
                     saveConfig.setEnabled(false);
                     runRScp.setEnabled(false);
-                } else {
-                    saveConfig.setEnabled(true);
-                    runRScp.setEnabled(true);
-                    if (curIdx == 1) {
-                        curTab = PlotUtil.RScps.StandardPlot;
-                    } else if (curIdx == 2) {
-                        curTab = PlotUtil.RScps.CorrelationPlot;
-                    } else if (curIdx == 3) {
-                        curTab = PlotUtil.RScps.CTWNPlot;
-                    } else if (curIdx == 4) {
-                        curTab = PlotUtil.RScps.HistoricalPlot;
-//                    } else if (curIdx == 5) {
-//                        curTab = PlotUtil.RScps.ClimAnomaly;
-                    } else {
-                        curTab = null;
-                    }
+                    curTab = null;
                 }
             }
         });
