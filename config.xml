@@ -3,7 +3,7 @@
         <RLibPath>D:\SSD_USER\Documents\R\win-library\3.3</RLibPath>
         <RExePath>C:\Program Files\R\R-3.3.2\bin\Rscript.exe</RExePath>
         <WorkDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\src\test\resources\r_dev\ACMO-p</WorkDir>
-        <GcmMapping>ILXF:Cool-Wet:green|GIXF:Hot-Wet:#FFFF00|GEXF:Cool-Dry:blue|IWXF:Hot-Dry:red|GJXF:Middle:#333333|GMXF:Cool-Wet:green|IEXF:Cool-Dry:blue|I1XF:Hot-Wet:#FFFF00|GWXF:Hot-Dry:red|0XXX:Base:#D3D3D3|ICXF:Middle:#333333|</GcmMapping>
+        <GcmMapping>I1XF:Hot-Wet:#FFFF00|GWXF:Hot-Dry:red|GIXF:Hot-Wet:#FFFF00|GEXF:Cool-Dry:blue|0XXX:Base:#D3D3D3|GMXF:Cool-Wet:green|IEXF:Cool-Dry:blue|IWXF:Hot-Dry:red|ILXF:Cool-Wet:green|ICXF:Middle:#333333|GJXF:Middle:#333333|</GcmMapping>
     </Configuration>
     <Configuration name="StandardPlot">
         <title>CM5CM6</title>
@@ -18,15 +18,16 @@
         <outputGraph>CM5CM6</outputGraph>
     </Configuration>
     <Configuration name="CorrelationPlot">
-        <title>Result</title>
+        <title>Yield-Biomass</title>
         <plotFormat>PNG</plotFormat>
-        <plotVarX>CWAH_S</plotVarX>
-        <plotVarY>HWAH_S</plotVarY>
-        <group1>CROP_MODEL</group1>
-        <group2>CMSS</group2>
-        <inputDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\target\test-classes\r_dev\ACMO-p\CM5</inputDir>
-        <outputPath>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\plot_output</outputPath>
-        <outputGraph>CorPlot</outputGraph>
+        <plotVarX>HWAH_S</plotVarX>
+        <plotVarY>CWAH_S</plotVarY>
+        <group1>SOIL_ID</group1>
+        <group2>CLIM_ID</group2>
+        <inputDir>CM2</inputDir>
+        <outputPath>plot_output_ui</outputPath>
+        <outputACMO>true</outputACMO>
+        <outputGraph>Correlation</outputGraph>
     </Configuration>
     <Configuration name="CTWNPlot">
         <plotFormat>PDF</plotFormat>
@@ -37,10 +38,10 @@
     </Configuration>
     <Configuration name="HistoricalPlot">
         <title>CM0</title>
-        <plotType>CDF</plotType>
+        <plotType>ScatterPlot</plotType>
         <plotFormat>PDF</plotFormat>
-        <plotVar>HWAH_S</plotVar>
-        <plotMethod>ABSOLUTE</plotMethod>
+        <plotVar>HADAT_S</plotVar>
+        <plotMethod>RELATIVE</plotMethod>
         <inputDir>CM0</inputDir>
         <outputPath>plot_output_ui</outputPath>
         <outputACMO>true</outputACMO>
