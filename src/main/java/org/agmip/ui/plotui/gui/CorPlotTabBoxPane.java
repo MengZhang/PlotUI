@@ -10,6 +10,7 @@ import org.apache.pivot.beans.Bindable;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.util.Resources;
 import org.apache.pivot.wtk.ButtonGroup;
+import org.apache.pivot.wtk.Checkbox;
 import org.apache.pivot.wtk.ListButton;
 import org.apache.pivot.wtk.PushButton;
 import org.apache.pivot.wtk.RadioButton;
@@ -37,6 +38,7 @@ public class CorPlotTabBoxPane extends PlotTabBoxPane implements Bindable {
     private ListButton plotGroup2LB = null;
     private ButtonGroup plotFormat = null;
     private HashMap<String, RadioButton> plotFormatRBMap = null;
+    private Checkbox outputACMO = null;
     
     public CorPlotTabBoxPane() {
         super(PlotUtil.RScps.CorrelationPlot.toString());
@@ -58,6 +60,7 @@ public class CorPlotTabBoxPane extends PlotTabBoxPane implements Bindable {
         plotGroup2LB = (ListButton) ns.get("plotGroup2LB");
         plotFormat = (ButtonGroup) ns.get("plotFormatButtons");
         plotFormatRBMap = initRadioButtonGroup(ns, "plotFormat_pdf", "plotFormat_png");
+        outputACMO = (Checkbox) ns.get("outputACMO");
 
         // Define listeners for buttons
         inputDirBrowse.getButtonPressListeners().add(createGenericDirBPListerner(inputDir));
@@ -82,6 +85,7 @@ public class CorPlotTabBoxPane extends PlotTabBoxPane implements Bindable {
         setSelectionList(plotGroup2LB, config, "group2");
         plotFormat.setSelection(plotFormatRBMap.get(MapUtil.getValueOr(config, "plotFormat", "")));
         setRadioButtonGroup(plotFormat, plotFormatRBMap, config, "plotFormat");
+        outputACMO.setSelected(!MapUtil.getValueOr(config, "outputACMO", "").equalsIgnoreCase("false"));
         
     }
 
@@ -99,5 +103,6 @@ public class CorPlotTabBoxPane extends PlotTabBoxPane implements Bindable {
         config.put("plotVarY", getSelectedVar(plotVarYLB));
         config.put("group1", getSelectedVar(plotGroup1LB));
         config.put("group2", getSelectedVar(plotGroup2LB));
+        config.put("outputACMO", outputACMO.isSelected() + "");
     }
 }

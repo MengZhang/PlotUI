@@ -140,6 +140,9 @@
             <BoxPane orientation="horizontal">
                 <TextInput bxml:id="outputGraph" preferredWidth="300" editable="true" />
             </BoxPane>
+            <BoxPane orientation="horizontal">
+                <Checkbox bxml:id="outputACMO" buttonData=" Output processed data as CSV file"/>
+            </BoxPane>
         </BoxPane>
     </Border>
 </plotui:CorPlotTabBoxPane>

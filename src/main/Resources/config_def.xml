@@ -26,6 +26,7 @@
         <group2>No</group2>
         <inputDir></inputDir>
         <outputPath>plot_output</outputPath>
+        <outputACMO>true</outputACMO>
         <outputGraph>CorPlot</outputGraph>
     </Configuration>
     <Configuration name="CTWNPlot">

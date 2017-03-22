@@ -18,13 +18,14 @@ if (length(args) == 0) {
     c(
       "~\\R\\win-library\\3.3",
       "Result",
-      "..\\..\\test\\resources\\r_dev\\good_data",
+      "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM2",
       "PNG",
-      "NUCM_S",
       "HWAH_S",
-      "CRID_text",
-      "SOIL_ID",
+      "CWAH_S",
+      "CLIM_ID",
+      "No",
       "..\\..\\test\\resources\\r_dev\\plot_output",
+      "true",
       "CorPlot"
     )
   utilScpPath <- "PlotUtil.r"
@@ -43,9 +44,16 @@ varNameX <- args[5]
 varNameY <- args[6]
 group1 <- args[7]
 group2 <- args[8]
-outputName <- paste(args[10], varNameX, varNameY, group1, group2, sep = "-")
+outputPath <- args[9]
+outputCsvFlag <- args[10]
+outputName <- paste(args[11], varNameX, varNameY, group1, group2, sep = "-")
 outputPlot <- paste(outputName, plotFormat, sep = ".")
-output <- paste(args[9], outputPlot, sep = "/")
+output <- paste(outputPath, outputPlot, sep = "/")
+outputAcmo <-
+  paste(paste(args[11], varNameX, varNameY, group1, group2, sep = "-"),
+        "csv",
+        sep = ".")
+outputAcmo <- paste(outputPath, outputAcmo, sep = "/")
 
 Group <- "No"
 if (group1 != "No" && group2 != "No") {
@@ -65,7 +73,7 @@ if (group1 != "No" && group2 != "No") {
 }
 
 # OriData <- read.csv(acmocsv, skip = 2, header = T)
-acmoinputs <- list.files(path = inputFolder, pattern = ".*\\.csv")
+acmoinputs <- list.files(path = inputFolder, pattern = "ACMO.*\\.csv", recursive = T)
 acmoinputs <- as.character(acmoinputs)
 
 for (i in 1:length(acmoinputs)) {
@@ -124,4 +132,7 @@ xyplot(
 )
 
 graphics.off()
-#}
+
+if (!is.null(outputCsvFlag) && outputCsvFlag != "") {
+  write.csv(merged, outputAcmo)
+}

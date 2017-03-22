@@ -62,6 +62,7 @@ public class PlotRunner {
         String group2 = config.get("group2");
         String inputFile = resolveAbsPath(base, config.get("inputDir"));
         String outputPath = resolveAbsPath(base, config.get("outputPath"));
+        String outputACMO = config.get("outputACMO");
         String outputGraph = config.get("outputGraph");
 
         Functions.revisePath(outputPath);
@@ -69,7 +70,7 @@ public class PlotRunner {
                 PlotUtil.getRExePath(),
                 PlotUtil.getRScpPath(RScps.CorrelationPlot),
                 PlotUtil.getRLibPath(),
-                title, inputFile, plotFormat, plotVarX, plotVarY, group1, group2, outputPath, outputGraph);
+                title, inputFile, plotFormat, plotVarX, plotVarY, group1, group2, outputPath, outputACMO, outputGraph);
         LOG.debug(pb.command().toString());
         return printRProc(pb.start(), RScps.CorrelationPlot);
     }

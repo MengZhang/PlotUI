@@ -25,6 +25,7 @@
         <group2>$!{config.CorrelationPlot.group2}</group2>
         <inputDir>$!{config.CorrelationPlot.inputDir}</inputDir>
         <outputPath>$!{config.CorrelationPlot.outputPath}</outputPath>
+        <outputACMO>$!{config.CorrelationPlot.outputACMO}</outputACMO>
         <outputGraph>$!{config.CorrelationPlot.outputGraph}</outputGraph>
     </Configuration>
     <Configuration name="CTWNPlot">
