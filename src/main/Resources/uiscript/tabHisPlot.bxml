@@ -1,0 +1,95 @@
+<plotui:HisPlotTabBoxPane bxml:id="stdPlotTab" orientation="vertical" styles="{padding:{bottom:6, left: 6}}"
+                          xmlns:bxml="http://pivot.apache.org/bxml"
+                          xmlns:plotui="org.agmip.ui.plotui.gui"
+                          xmlns="org.apache.pivot.wtk">
+    <Border styles="{padding:{bottom:16, top: 6, right: 6, left: 6}}" preferredWidth="500">
+        <!-- Input Directory For Historical ACMO files -->
+        <BoxPane orientation="vertical">
+            <BoxPane orientation="horizontal">
+                <Label text="Input ACMO directory for hisotical data:" styles="{font:{bold:true}}"/>
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate the folder for ACMO files to plot" />
+            </BoxPane>
+            <BoxPane orientation="horizontal">
+                <TextInput bxml:id="inputDir" preferredWidth="400" editable="false"/>
+                <PushButton bxml:id="inputDirBrowse" buttonData="Browse"/>
+            </BoxPane>
+        </BoxPane>
+        <!-- Plot Title -->
+        <BoxPane orientation="vertical">
+            <BoxPane orientation="horizontal">
+                <Label text="Plot Title:" styles="{font:{bold:true}}"/>
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Give a name for the plot" />
+            </BoxPane>
+            <BoxPane orientation="horizontal">
+                <TextInput bxml:id="title" preferredWidth="300" editable="true" text="Historical Plot Result" />
+            </BoxPane>
+        </BoxPane>
+        <!-- Plot Variable -->
+        <BoxPane orientation="vertical">
+            <Label text="Plot Variable" styles="{font:{bold:true}}" />
+            <ListButton bxml:id="plotVarLB"
+                        listData="[
+                            'Simulated harvest yield,dry matter (HWAH_S)',
+                            'Simulated above-ground biomass at harvest,dry matter (CWAH_S)',
+                            'Simulated harvest day (HADAT_S)'
+                        ]"/>
+        </BoxPane>
+        <!-- Plot Type -->
+        <BoxPane orientation="vertical">
+            <Label text="Plot Method" styles="{font:{bold:true}}" />
+            <BoxPane orientation="horizontal">
+                <bxml:define>
+                    <ButtonGroup bxml:id="plotMethodButtons"/>
+                </bxml:define>
+                <RadioButton bxml:id="plotMethod_abs" buttonData="ABSOLUTE" buttonGroup="$plotMethodButtons" selected="true"/>
+                <RadioButton bxml:id="plotMethod_rel" buttonData="RELATIVE" buttonGroup="$plotMethodButtons"/>
+            </BoxPane>
+        </BoxPane>
+        <!-- Plot Type -->
+        <BoxPane orientation="vertical">
+            <Label text="Plot Type:" styles="{font:{bold:true}}" />
+            <BoxPane orientation="horizontal">
+                <bxml:define>
+                    <ButtonGroup bxml:id="plotTypeButtons"/>
+                </bxml:define>
+                <RadioButton bxml:id="plotType_box" buttonData="BoxPlot" buttonGroup="$plotTypeButtons" selected="true"/>
+                <RadioButton bxml:id="plotType_cdf" buttonData="CDF" buttonGroup="$plotTypeButtons"/>
+            </BoxPane>
+        </BoxPane>
+        <!-- Plot Format -->
+        <BoxPane orientation="vertical">
+            <Label text="Plot Format:" styles="{font:{bold:true}}" />
+            <BoxPane orientation="horizontal">
+                <bxml:define>
+                    <ButtonGroup bxml:id="plotFormatButtons"/>
+                </bxml:define>
+                <RadioButton bxml:id="plotFormat_pdf" buttonData="PDF" buttonGroup="$plotFormatButtons" selected="true"/>
+                <RadioButton bxml:id="plotFormat_png" buttonData="PNG" buttonGroup="$plotFormatButtons"/>
+            </BoxPane>
+        </BoxPane>
+        <!-- Output Directory -->
+        <BoxPane orientation="vertical">
+            <BoxPane orientation="horizontal">
+                <Label text="Output directory:" styles="{font:{bold:true}}"/>
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate the folder for output plot result" />
+            </BoxPane>
+            <BoxPane orientation="horizontal">
+                <TextInput bxml:id="outputDir" preferredWidth="400" editable="false"/>
+                <PushButton bxml:id="outputDirBrowse" buttonData="Browse"/>
+            </BoxPane>
+        </BoxPane>
+        <!-- Output file name -->
+        <BoxPane orientation="vertical">
+            <BoxPane orientation="horizontal">
+                <Label text="Output File Name:" styles="{font:{bold:true}}"/>
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Give a name for the plot file" />
+            </BoxPane>
+            <BoxPane orientation="horizontal">
+                <TextInput bxml:id="outputGraph" preferredWidth="300" editable="true" />
+            </BoxPane>
+            <BoxPane orientation="horizontal">
+                <Checkbox bxml:id="outputACMO" buttonData=" Output processed data as CSV file"/>
+            </BoxPane>
+        </BoxPane>
+    </Border>
+</plotui:HisPlotTabBoxPane>

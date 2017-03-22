@@ -1,5 +1,6 @@
 package org.agmip.ui.plotui;
 
+import org.agmip.ui.plotui.gui.PlotUIWindow;
 import org.apache.pivot.beans.BXMLSerializer;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class PlotUIApp extends Application.Adapter {
     @Override
     public void startup(Display display, Map<String, String> props) throws Exception {
         BXMLSerializer bxml = new BXMLSerializer();
-        window = (PlotUIWindow) bxml.readObject(getClass().getResource("/plotui.bxml"));
+        window = (PlotUIWindow) bxml.readObject(getClass().getResource("/uiscript/plotui.bxml"));
         window.setPlotUIVersion(version);
         window.open(display);
     }

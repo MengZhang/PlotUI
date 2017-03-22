@@ -1,0 +1,163 @@
+<plotui:PlotUIWindow title="AgView - AgMIP Plot Tool -" maximized="true"
+                     xmlns:bxml="http://pivot.apache.org/bxml"
+                     xmlns:content="org.apache.pivot.wtk.content"
+                     xmlns:menus="org.apache.pivot.wtk.menus"
+                     xmlns:plotui="org.agmip.ui.plotui.gui"
+                     xmlns:collections="org.apache.pivot.collections"
+                     xmlns="org.apache.pivot.wtk">
+
+    <actionMappings>
+        <Window.ActionMapping action="fileQuit" keyStroke="CMD-Q" />
+    </actionMappings>
+
+    <TablePane styles="{horizontalSpacing:6, verticalSpacing:6, showVerticalGridLines:true, padding:2}">
+        <columns>
+            <TablePane.Column width="1*" />
+        </columns>
+
+        <TablePane.Row height="-1">
+            <Border styles="{backgroundColor: '#EDEDED'}">
+                <MenuBar>
+                    <MenuBar.Item buttonData="File">
+                        <Menu>
+                            <Menu.Section>
+                                <Menu.Item action="fileQuit">
+                                    <buttonData>
+                                        <content:MenuItemData text="Quit" keyboardShortcut="CMD-Q" />
+                                    </buttonData>
+                                </Menu.Item>
+                            </Menu.Section>
+                        </Menu>
+                    </MenuBar.Item>
+                </MenuBar>
+            </Border>
+        </TablePane.Row>
+
+        <TablePane.Row height="1*">
+            <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
+                <TabPane bxml:id="plotuiTabs" styles="{padding:6}" selectedIndex="0">
+                    
+                    <!-- Global Config -->
+                    <BoxPane orientation="vertical">
+                        <TabPane.tabData>
+                            <content:ButtonData text="Start"/>
+                        </TabPane.tabData>
+                        <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
+                            <Border title="R Environment Setting:" styles="{padding:6}">
+                                <BoxPane orientation="vertical">
+                                    <BoxPane orientation="horizontal">
+                                        <Label text="R Excutable File (RScript.exe):" styles="{font:{bold:true}}"/>
+                                        <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate the R Excutable File (RScript.exe)" />
+                                    </BoxPane>
+                                    <BoxPane orientation="horizontal">
+                                        <TextInput bxml:id="start_rExePath" preferredWidth="400" editable="false"/>
+                                        <PushButton bxml:id="start_browseRExePath" buttonData="Browse"/>
+                                    </BoxPane>
+                                </BoxPane>
+                                <BoxPane orientation="vertical">
+                                    <BoxPane orientation="horizontal">
+                                        <Label text="R library path" styles="{font:{bold:true}}"/>
+                                        <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate the directory which contains third-party library, such like ggplot2" />
+                                    </BoxPane>
+                                    <BoxPane orientation="horizontal">
+                                        <TextInput bxml:id="start_rLibPath" preferredWidth="400" editable="false"/>
+                                        <PushButton bxml:id="start_browseRLibPath" buttonData="Browse"/>
+                                    </BoxPane>
+                                </BoxPane>
+                            </Border>
+                        </BoxPane>
+                        <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
+                            <Border title="Climate Category Mapping:" styles="{padding:6}" minimumWidth="300">
+                                <BoxPane orientation="vertical">
+                                    <BoxPane orientation="horizontal">
+                                        <Label text="Work Diretory:" styles="{font:{bold:true}}"/>
+                                        <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate a folder as the base directory for your ACMO data" />
+                                    </BoxPane>
+                                    <BoxPane orientation="horizontal">
+                                        <TextInput bxml:id="start_workDir" preferredWidth="400" editable="false"/>
+                                        <PushButton bxml:id="start_browseWorkDir" buttonData="Browse"/>
+                                    </BoxPane>
+                                </BoxPane>
+                                <BoxPane orientation="horizontal" styles="{padding:{top:6}}">
+                                    <Label text="Mapping:" styles="{font:{bold:true}}"/>
+                                    <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Drag and drop the category with corresponding GCM ID" />
+                                    <ActivityIndicator bxml:id="mappingIndicator" preferredWidth="16" preferredHeight="16" styles="{color:'#777777'}"/>
+                                </BoxPane>
+                                <BoxPane orientation="horizontal">
+                                    <BoxPane bxml:id="start_gcmLabels" orientation="vertical">
+                                        <Label text="GCM ID" preferredWidth="60" />
+                                    </BoxPane>
+                                    <BoxPane bxml:id="start_gcmCatLabels" orientation="vertical">
+                                        <Label text="GCM Category" preferredWidth="100"/>
+                                    </BoxPane>
+                                    <BoxPane bxml:id="start_gcmCatSelectionLabels" orientation="vertical">
+                                        <Label text="Selections" preferredWidth="80"/>
+                                    </BoxPane>
+                                </BoxPane>
+                            </Border>
+                        </BoxPane>
+                    </BoxPane>
+                    
+                    <!-- Standard Plot Config -->
+                    <BoxPane orientation="vertical">
+                        <TabPane.tabData>
+                            <content:ButtonData text="StandardPlot"/>
+                        </TabPane.tabData>
+                        <bxml:include bxml:id="stdPlotTab" src="tabStdPlot.bxml"/>
+                    </BoxPane>
+                    
+                    <!-- Correlation Plot Config -->
+                    <BoxPane orientation="vertical">
+                        <TabPane.tabData>
+                            <content:ButtonData text="CorrelationPlot"/>
+                        </TabPane.tabData>
+                        <bxml:include bxml:id="corPlotTab" src="tabCorPlot.bxml"/>
+                    </BoxPane>
+                    
+                    <!-- CTWN Plot Config -->
+                    <BoxPane orientation="vertical">
+                        <TabPane.tabData>
+                            <content:ButtonData text="CTWNPlot"/>
+                        </TabPane.tabData>
+                        <bxml:include bxml:id="ctwnPlotTab" src="tabCtwnPlot.bxml"/>
+                    </BoxPane>
+                    
+                    <!-- Historical Plot Config -->
+                    <BoxPane orientation="vertical">
+                        <TabPane.tabData>
+                            <content:ButtonData text="HistoricalPlot"/>
+                        </TabPane.tabData>
+                        <bxml:include bxml:id="hisPlotTab" src="tabHisPlot.bxml"/>
+                    </BoxPane>
+                    
+                    <BoxPane orientation="vertical">
+                        <TabPane.tabData>
+                            <content:ButtonData text="Help"/>
+                        </TabPane.tabData>
+                        <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
+                            <Border preferredWidth="500" preferredHeight="300">
+                                <Label text="Under construction, will come soon..." styles="{font:{bold:true}, padding:6, horizontalAlignment:'center', verticalAlignment:'center', wrapText:true}" />
+                            </Border>
+                        </BoxPane>
+                    </BoxPane>
+                </TabPane>
+            </ScrollPane>
+        </TablePane.Row>
+        
+        <TablePane.Row height="-1">
+            <BoxPane orientation="vertical" styles="{padding:{top:20, bottom:16, left: 16}}">
+                <BoxPane orientation="horizontal">
+                    <PushButton bxml:id="saveConfig" buttonData="Save" styles="{padding:{left:16,right:16}}"/>
+                    <PushButton bxml:id="runRScp" buttonData="Run" styles="{padding:{left:20,right:20}}" enabled="false"/>
+                    <ActivityIndicator bxml:id="runIndicator" preferredWidth="16" preferredHeight="16" styles="{color:'#777777'}"/>
+                </BoxPane>
+            </BoxPane>
+        </TablePane.Row>
+        
+        <TablePane.Row height="-1">
+            <Border styles="{padding:2, color: '#777777'}">
+                <Label bxml:id="txtVersion" />
+            </Border>
+        </TablePane.Row>
+    </TablePane>
+</plotui:PlotUIWindow>

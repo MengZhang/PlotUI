@@ -1,5 +1,6 @@
 package org.agmip.ui.plotui;
 
+import org.agmip.ui.plotui.gui.PlotUIWindow;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -48,14 +49,14 @@ public class PlotUtil {
     private final static Logger LOG = LoggerFactory.getLogger(PlotUtil.class);
 //    private static String R_EXE_PATH = detectRExePath();
 //    private static String R_LIB_PATH = detectRLibPath();
-    protected final static String R_SCP_PATH = "r_lib";
-    protected final static String CONFIG_FILE = "config.xml";
-    protected final static String CONFIG_FILE_DEF = "config_def.xml";
-    protected final static String CONFIG_FILE_DEF_TEMPLATE = "config_def.template";
-    protected final static String CONFIG_FILE_PROJECT_TEMPLATE = "config_project.template";
-    protected final static String REPORT_TEMPLATE = "report.template";
-    protected final static String GLOBAL_CONFIG = "GlobalConfig";
-    protected static HashMap<String, HashMap<String, String>> CONFIG_MAP;
+    public final static String R_SCP_PATH = "r_lib";
+    public final static String CONFIG_FILE = "config.xml";
+    public final static String CONFIG_FILE_DEF = "config_def.xml";
+    public final static String CONFIG_FILE_DEF_TEMPLATE = "config_def.template";
+    public final static String CONFIG_FILE_PROJECT_TEMPLATE = "config_project.template";
+    public final static String REPORT_TEMPLATE = "report.template";
+    public final static String GLOBAL_CONFIG = "GlobalConfig";
+    public static HashMap<String, HashMap<String, String>> CONFIG_MAP;
 
     public enum RScps {
 
@@ -239,7 +240,7 @@ public class PlotUtil {
         return ret;
     }
     
-    protected static void resolvePath(HashMap<String, HashMap<String, String>> config, String base) {
+    public static void resolvePath(HashMap<String, HashMap<String, String>> config, String base) {
         HashMap<String, String> stdConfig = getConfig(config, PlotUtil.RScps.StandardPlot.toString());
         HashMap<String, String> corConfig = getConfig(config, PlotUtil.RScps.CorrelationPlot.toString());
         HashMap<String, String> ctwnConfig = getConfig(config, PlotUtil.RScps.CTWNPlot.toString());
