@@ -99,7 +99,7 @@ public class GuiUtil {
         String selected = (String) lb.getSelectedItem();
         if (selected == null) {
             return "";
-        } else if (lb.getName().equalsIgnoreCase("corplot_plotGroup2LB") && selected.startsWith("No")) {
+        } else if (lb.getName().equalsIgnoreCase("plotGroup2LB") && selected.startsWith("No")) {
             return "No";
         } else {
             return selected.substring(selected.lastIndexOf("(") + 1).replaceAll("\\)", "");
@@ -120,7 +120,7 @@ public class GuiUtil {
                 Object newSelected1 = lb.getSelectedItem();
                 Object curSelected = lb2.getSelectedItem();
                 if (newSelected1 != null && curSelected != null && newSelected1.equals(curSelected)) {
-                    if (o == null && lb2.getName().equalsIgnoreCase("corplot_plotGroup2LB")) {
+                    if (o == null && lb2.getName().equalsIgnoreCase("plotGroup2LB")) {
                         lb2.setSelectedIndex(0);
                     } else {
                         lb2.setSelectedItem(o);
