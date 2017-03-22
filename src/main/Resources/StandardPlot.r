@@ -111,7 +111,7 @@ if (plotType == "BoxPlot") {
           legend.title = element_text(size = 13)) +
     theme(axis.text = element_text(size = 13)) +
     theme(axis.title = element_text(size = 13, face = "bold")) +
-    labs(x = "Models", y = plotVarTitle, colour = "legend", title = title) +
+    labs(x = "Models", y = plotVarTitle, colour = "Legend", title = title) +
     theme(panel.grid.minor = element_blank()) +
     theme(plot.margin = unit(c(1, 1, 1, 1), "mm")) +
     theme(axis.text.x = element_text(hjust = 0.5)) +

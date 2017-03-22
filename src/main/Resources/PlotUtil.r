@@ -70,34 +70,8 @@ readACMOAve <- function(inputFolder, gcmCatEnv, duration, plotVarID) {
   
   for (i in 1:length(acmoinputs)) {
     OriData <- readACMO(inputFolder, acmoinputs[i], plotVarID, c("CLIM_ID", "CROP_MODEL", "RAP_ID", "MAN_ID"), c("CLIM_ID", "MODEL", "RAP", "MAN"))
-    # print(acmoinputs[i])
-    # OriData <-
-    #   read.csv(paste(inputFolder, acmoinputs[i], sep = "/"),
-    #            skip = 2,
-    #            header = T)
-    # if (plotVarID %in% c("ADAT_S", "MDAT_S", "HADAT_S")) {
-    #   OriData <- OriData[, c("CLIM_ID", "CROP_MODEL", "RAP_ID", "MAN_ID", plotVarID, "PDATE")]
-    # } else {
-    #   OriData <- OriData[, c("CLIM_ID", "CROP_MODEL", "RAP_ID", "MAN_ID", plotVarID)]
-    # }
     
     if (nrow(OriData) != 0) {
-      
-      # # transfer date value to days after planting
-      # if (plotVarID %in% c("ADAT_S", "MDAT_S", "HADAT_S")) {
-      #   pdate <- as.POSIXct(OriData$PDATE, format = "%Y-%m-%d")
-      #   ndate <- as.POSIXct(OriData[[plotVarID]], format = "%Y-%m-%d")
-      #   dap <- as.numeric(ndate - pdate)
-      #   OriData <- data.frame(
-      #     CLIM_ID = OriData$CLIM_ID,
-      #     MODEL = OriData$CROP_MODEL,
-      #     RAP = OriData$RAP_ID,
-      #     MAN = OriData$MAN_ID,
-      #     VALUE = dap
-      #   )
-      # } else {
-      #   colnames(OriData) <- c("CLIM_ID", "MODEL", "RAP", "MAN", "VALUE")
-      # }
       
       # Calculate average value for the multi-year simulation results
       merged <- averageFarmValue(OriData, duration)
