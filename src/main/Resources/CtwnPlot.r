@@ -72,6 +72,8 @@
 
 # To make this file stand alone, all the defined functions are moved from utilility script file to here.
 
+options(echo = F)
+
 # Convert variable from ICASA name to description text with unit
 name_unit <- function(inputcode){
   return (name_unit2(inputcode, NULL))
@@ -209,7 +211,12 @@ pasteOps <- function(str1, str2, sep = " ") {
 drawPlot <- function(title, ctwnCat, legend, model, years, outputPlotDir, plotFormat, plotVarID) {
   catNum <- length(ctwnCat)
   # setCtwnOutput(paste0("LinePlot ", title), outputPlotDir, plotFormat)
-  plot(0,xlim=c(min(years), max(years)),ylim=c(min(model[,ctwnCat], na.rm=TRUE),max(model[,ctwnCat], na.rm=TRUE)+1000),type="n",xlab="Years",ylab=name_unit(plotVarID), main = title)
+  plot(0, xlim=c(min(years), max(years)),
+       ylim=c(min(model[,ctwnCat], na.rm=TRUE), max(model[,ctwnCat], na.rm=TRUE)+1000),
+       type="n",
+       xlab=bquote(bold("Years")),
+       ylab=bquote(bold(.(name_unit(plotVarID)))),
+       main = bquote(bold(.(title))))
   matlines(years, model[,ctwnCat], type = "l", lty = 1:catNum, lwd = 1, pch = NULL,
            col = 1:catNum, xlab="Years", ylab=name_unit(plotVarID))
   legend("topright", cex=0.75, pch=16, col=1:catNum, legend=legend, ncol=2)
@@ -218,7 +225,7 @@ drawPlot <- function(title, ctwnCat, legend, model, years, outputPlotDir, plotFo
 }
 
 drawCDFPlot <- function(title, mergedCDF, outputPlotDir, plotFormat, plotVarID) {
-  
+
   plotVarTitle <- paste("Relative Change of", name_unit2(plotVarID, "%"), sep = "\n")
   
   p <- ggplot(subMergedCDF, aes(VALUE, 1 - ECDF, color = MODEL)) +
@@ -227,7 +234,7 @@ drawCDFPlot <- function(title, mergedCDF, outputPlotDir, plotFormat, plotVarID) 
     xlab(plotVarTitle) +
     ylab("Cumulative Frequency") +
     scale_fill_manual(values=colors) +
-    labs(title=title) +
+    labs(title=bquote(bold(.(title)))) +
     theme(axis.title = element_text(size = 12, face = "bold")) +
     theme(plot.title = element_text(size = 15, face = "bold", hjust = 0.5))
   
@@ -244,7 +251,14 @@ drawCDFPlot <- function(title, mergedCDF, outputPlotDir, plotFormat, plotVarID) 
 drawBoxPlot <- function(title, ctwnCat, legend, model, years, outputPlotDir, plotFormat, plotVarID) {
   catNum <- length(ctwnCat)
   setCtwnOutput(paste("Boxplot", title), outputPlotDir, plotFormat)
-  boxplot(model[,ctwnCat], ylab = name_unit(plotVarID), xlab = "CO2 Level (ppm)", las = 2, col = c("red","cyan2","red","cyan2","red","cyan2","red","cyan2","red","cyan2"), at=c(1,2, 4,5, 7,8, 10,11, 13,14), names=c("360"," ","450"," ","540"," ","630"," ","720"," "), boxwex=0.5)
+  boxplot(model[,ctwnCat],
+          ylab = name_unit(plotVarID),
+          xlab = expression("CO"^2*" Level (ppm)"),
+          las = 2,
+          col = c("red","cyan2","red","cyan2","red","cyan2","red","cyan2","red","cyan2"),
+          at=c(1,2, 4,5, 7,8, 10,11, 13,14),
+          names=c("360"," ","450"," ","540"," ","630"," ","720"," "),
+          boxwex=0.5)
   # Plot means on top of boxplots
   col1 <- seq(1, by = 2, len = 5) 
   col2 <- seq(2, by = 2, len = 5)
@@ -358,7 +372,7 @@ setCtwnOutput("LinePlot Summary", outputPlotDir, plotFormat)
 # co2 <- paste0(co2, "ppm")
 # N30Cat <- as.vector(outer(models, ctwnCats[1:5], paste, sep = "_"))
 # Draw plot
-drawPlot("CO2 Sensitivity at N=30kg/ha", N30Cat, as.vector(outer(models, co2, pasteOps)), model, years, outputPlotDir, plotFormat, plotVarID )
+drawPlot(bquote("CO"[2] * " Sensitivity at N=30kg/ha"), N30Cat, as.vector(outer(models, co2, pasteOps)), model, years, outputPlotDir, plotFormat, plotVarID )
 
 # title <- "CO2 Sensitivity at N=30kg/ha"
 # legend <- as.vector(outer(models, co2, pasteOps))
@@ -379,7 +393,7 @@ drawPlot("CO2 Sensitivity at N=30kg/ha", N30Cat, as.vector(outer(models, co2, pa
 # co2 <- paste0(co2, "ppm")
 # N180Cat <- as.vector(outer(models, ctwnCats[6:10], paste, sep = "_"))
 # Draw plot
-drawPlot("CO2 Sensitivity at N=180kg/ha", N180Cat, as.vector(outer(models, co2, pasteOps)), model, years, outputPlotDir, plotFormat, plotVarID )
+drawPlot(bquote("CO"[2] * " Sensitivity at N=180kg/ha"), N180Cat, as.vector(outer(models, co2, pasteOps)), model, years, outputPlotDir, plotFormat, plotVarID )
 
 
 # Section 2.3 #
@@ -464,7 +478,7 @@ graphics.off()
 merged <- OriData
 models <- levels(as.factor(merged$MODEL))
 climates <- levels(as.factor(merged$CLIM_ID))
-climateTexts <- c(paste0("CO2 = ", co2), paste0("CO2 = ", co2), Tmaxmin, Rainfall, paste0("N = ", Fertilizer, "kg/ha"))
+climateTexts <- c(co2, co2, Tmaxmin, Rainfall, paste0("N = ", Fertilizer, "kg/ha"))
 mergedCDF <- NULL
 for (i in 1 : length(models)) {
   for (j in 1 : length(climates)) {
@@ -486,7 +500,7 @@ if (!is.null(outputCsvFlag) && outputCsvFlag != "") {
 # Section 3.1 #
 #CO2 at 30 N________________________
 
-title <- "Prob of Exceedance\nCO2 Sensitivity at N=30kg/ha"
+title <- bquote("Prob of Exceedance for CO"[2] * " Sensitivity at N=30kg/ha")
 subMergedCDF <- subset(mergedCDF, CLIM_ID %in% c(paste0("S20", 1:5)))
 # plots <- c(plots, drawCDFPlot(title, subMergedCDF, outputPlotDir, plotFormat, plotVarID))
 p31 <- drawCDFPlot(title, subMergedCDF, outputPlotDir, plotFormat, plotVarID)
@@ -494,7 +508,7 @@ p31 <- drawCDFPlot(title, subMergedCDF, outputPlotDir, plotFormat, plotVarID)
 # Section 3.2 #
 #CO2 at 180 N________________________
 
-title <- "Prob of Exceedance\nCO2 Sensitivity at N=180kg/ha"
+title <- bquote("Prob of Exceedance for CO"[2] * " Sensitivity at N=180kg/ha")
 subMergedCDF <- subset(mergedCDF, CLIM_ID %in% c(paste0("S20", 6:9), "S210"))
 # plots <- c(plots, drawCDFPlot(title, subMergedCDF, outputPlotDir, plotFormat, plotVarID))
 p32 <- drawCDFPlot(title, subMergedCDF, outputPlotDir, plotFormat, plotVarID)
@@ -502,7 +516,7 @@ p32 <- drawCDFPlot(title, subMergedCDF, outputPlotDir, plotFormat, plotVarID)
 # Section 3.3 #
 #Tmax/Tmin________________________
 
-title <- "Prob of Exceedance\nTmaxTmin Sensitivity"
+title <- "Prob of Exceedance for TmaxTmin Sensitivity"
 subMergedCDF <- subset(mergedCDF, CLIM_ID %in% c(paste0("S2", 11:16)))
 # plots <- c(plots, drawCDFPlot(title, subMergedCDF, outputPlotDir, plotFormat, plotVarID))
 p33 <- drawCDFPlot(title, subMergedCDF, outputPlotDir, plotFormat, plotVarID)
@@ -510,7 +524,7 @@ p33 <- drawCDFPlot(title, subMergedCDF, outputPlotDir, plotFormat, plotVarID)
 # Section 3.4 #
 #Rainfall________________________
 
-title <- "Prob of Exceedance\nRainfall Sensitivity"
+title <- "Prob of Exceedance for Rainfall Sensitivity"
 subMergedCDF <- subset(mergedCDF, CLIM_ID %in% c(paste0("S2", 17:24)))
 subMergedCDF$CLIM_TEXT <- factor(as.factor(subMergedCDF$CLIM_TEXT), levels = Rainfall) # fix the default order of rainfall level
 # plots <- c(plots, drawCDFPlot(title, subMergedCDF, outputPlotDir, plotFormat, plotVarID))
@@ -519,7 +533,7 @@ p34 <- drawCDFPlot(title, subMergedCDF, outputPlotDir, plotFormat, plotVarID)
 # Section 3.5 #
 #Fertilizer (N)________________________
 
-title <- "Prob of Exceedance\nFertilizer Sensitivity"
+title <- "Prob of Exceedance for Fertilizer Sensitivity"
 subMergedCDF <- subset(mergedCDF, CLIM_ID %in% c(paste0("S2", 25:32)))
 # plots <- c(plots, drawCDFPlot(title, subMergedCDF, outputPlotDir, plotFormat, plotVarID))
 p35 <- drawCDFPlot(title, subMergedCDF, outputPlotDir, plotFormat, plotVarID)
@@ -557,9 +571,18 @@ modname <- models
 setCtwnOutput("Boxplot Summary", outputPlotDir, plotFormat)
 
 # Create the plot
-title <- "CO2 Sensitivity at N=30kg/ha"
+title <- expression(bold("CO"[2] * " Sensitivity at N=30kg/ha"))
+# title <- "CO2 Sensitivity at N=30kg/ha"
 # setCtwnOutput(paste("Boxplot", title, sep = " "), outputPlotDir, plotFormat)
-boxplot(multimod[,1:10], ylab = name_unit(plotVarID), xlab = "CO2 Level (ppm)", las = 2, col = c("red","cyan2","red","cyan2","red","cyan2","red","cyan2","red","cyan2"), at=c(1,2, 4,5, 7,8, 10,11, 13,14), names=c("360"," ","450"," ","540"," ","630"," ","720"," "), boxwex=0.5, main = title)
+boxplot(multimod[,1:10],
+        ylab = name_unit(plotVarID),
+        xlab = expression("CO"[2] * " Level (ppm)"),
+        las = 2,
+        col = c("red","cyan2","red","cyan2","red","cyan2","red","cyan2","red","cyan2"),
+        at=c(1,2, 4,5, 7,8, 10,11, 13,14),
+        names=c("360"," ","450"," ","540"," ","630"," ","720"," "),
+        boxwex=0.5,
+        main = title)
 # Plot means on top of boxplots
 col1 <- seq(1, by = 2, len = 5) 
 col2 <- seq(2, by = 2, len = 5)
@@ -575,9 +598,17 @@ legend("topright", cex=0.75, pch=16, col=c("red","cyan2","darkgoldenrod1","chart
 #CO2 at 180 N________________________
 
 # Create the plot
-title <- "CO2 Sensitivity at N=180kg/ha"
+title <- expression(bold("CO"[2] * " Sensitivity at N=180kg/ha"))
+# title <- "CO2 Sensitivity at N=180kg/ha"
 # setCtwnOutput(paste("Boxplot", title, sep = " "), outputPlotDir, plotFormat)
-boxplot(multimod[,11:20], ylab = name_unit(plotVarID), xlab = "CO2 Level (ppm)", las = 2, col = c("red","cyan2","red","cyan2","red","cyan2","red","cyan2","red","cyan2"), at=c(1,2, 4,5, 7,8, 10,11, 13,14), names=c("360"," ","450"," ","540"," ","630"," ","720"," "), boxwex=0.5, main = title)
+boxplot(multimod[,11:20],
+        ylab = name_unit(plotVarID),
+        xlab = expression("CO"[2] * " Level (ppm)"),
+        las = 2,
+        col = c("red","cyan2","red","cyan2","red","cyan2","red","cyan2","red","cyan2"),
+        at=c(1,2, 4,5, 7,8, 10,11, 13,14), names=c("360"," ","450"," ","540"," ","630"," ","720"," "),
+        boxwex=0.5,
+        main = title)
 # Plot means on top of boxplots
 col1 <- seq(11, by = 2, len = 5) 
 col2 <- seq(12, by = 2, len = 5)
