@@ -20,9 +20,10 @@ if (length(args) == 0) {
       # "CDF", #3
       "ScatterPlot", #3
       "PNG", #4
-      "HWAH_S", #5
+      # "PDF", #4
+      # "HWAH_S", #5
       # "CWAH_S", #5
-      # "HADAT_S", #5
+      "HADAT_S", #5
       # "ABSOLUTE", #6
       "RELATIVE", #6
       "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM0", #7
@@ -57,14 +58,15 @@ outputPlot <-
         sep = ".")
 
 merged <- readACMOCM0(inputFolder, plotVarID, getHistVarID(plotVarID))
+
 if (plotMethod == "RELATIVE") {
   merged <- diffSystemCM0(merged)
   plotVarTitle <- paste("Relative Change of", name_unit2(plotVarID, "%"), sep = "\n")
   colors <- c("red","cyan2")
-  rangeFactors <- c(1.1, 1.1)
+  rangeFactors <- c(0.9, 1.1)
 } else {
-  plotVarTitle <- name_unit(plotVarID)
-  colors <- c("red","cyan2", "D3D3D3")
+  plotVarTitle <- name_unit(getHistVarID(plotVarID))
+  colors <- c("red","cyan2", "green")
   rangeFactors <- c(0.9, 1.3)
 }
 # merged <- subset(merged, !is.null(VALUE) & VALUE != "" & VALUE != "-99")
@@ -79,7 +81,7 @@ if (plotType == "BoxPlot") {
       width = groupNum / 12,
       color = "black"
     ) +
-    coord_cartesian(ylim = range(boxplot(merged$VALUE, plot = FALSE)$stats) * rangeFactors) +
+    coord_cartesian(ylim = adjustRange(range(boxplot(merged$VALUE, plot = FALSE)$stats), rangeFactors)) +
     theme_bw() +
     theme(legend.text = element_text(size = 13),
           legend.title = element_text(size = 13)) +
@@ -89,8 +91,8 @@ if (plotType == "BoxPlot") {
     theme(panel.grid.minor = element_blank()) +
     theme(plot.margin = unit(c(1, 1, 1, 1), "mm")) +
     theme(axis.text.x = element_text(hjust = 0.5)) +
-    theme(plot.title = element_text(size=20, face="bold", hjust = 0.5))
-  # scale_fill_manual(values=colors)
+    theme(plot.title = element_text(size=20, face="bold", hjust = 0.5)) +
+    scale_fill_manual(values=colors)
   
   ggsave(
     filename = outputPlot,
@@ -121,7 +123,7 @@ if (plotType == "BoxPlot") {
     geom_step() +
     xlab(plotVarTitle) +
     ylab("Cumulative Frequency") +
-    # scale_fill_manual(values=colors) +
+    scale_color_manual(values=colors) +
     labs(title=title) +
     theme(axis.title = element_text(size = 13, face = "bold")) +
     theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5))
@@ -153,13 +155,15 @@ if (plotType == "BoxPlot") {
       mergedScatter <- subset(merged, GROUP == models[1])
       mergedScatter$VALUE2 <- subset(merged, GROUP == models[2])$VALUE
       mergedScatter <- mergedScatter[,c("EXNAME", "VALUE", "VALUE2")]
-      # colnames(mergedScatter) <- c("EXNAME", models)
-      
-      ggplot(data = mergedScatter, aes(x = VALUE, y = VALUE2)) +
+      colnames(mergedScatter) <- c("EXNAME", "VALUE_X", "VALUE_Y")
+      range(boxplot(merged$VALUE, plot = FALSE)$stats)[1]
+      range(boxplot(merged$VALUE, plot = FALSE)$stats)[2]
+      ggplot(data = mergedScatter, aes(x = VALUE_X, y = VALUE_Y)) +
         geom_point() + 
         geom_smooth(method=lm, se=FALSE, fullrange=TRUE) +
-        coord_cartesian(xlim = range(boxplot(merged$VALUE, plot = FALSE)$stats) * rangeFactors,
-                        ylim = range(boxplot(merged$VALUE, plot = FALSE)$stats) * rangeFactors) +
+        
+        coord_cartesian(xlim = adjustRange(range(boxplot(merged$VALUE, plot = FALSE)$stats), rangeFactors),
+                        ylim = adjustRange(range(boxplot(merged$VALUE, plot = FALSE)$stats), rangeFactors)) +
         theme_bw() +
         theme(legend.text = element_text(size = 13),
               legend.title = element_text(size = 13)) +
@@ -197,8 +201,8 @@ if (plotType == "BoxPlot") {
       geom_point() + 
       # geom_text(EXNAME) +
       geom_smooth(method=lm, se=FALSE, fullrange=TRUE) +
-      coord_cartesian(xlim = range(boxplot(merged$VALUE, plot = FALSE)$stats) * rangeFactors,
-                      ylim = range(boxplot(merged$VALUE, plot = FALSE)$stats) * rangeFactors) +
+      coord_cartesian(xlim = adjustRange(range(boxplot(merged$VALUE, plot = FALSE)$stats), rangeFactors),
+                      ylim = adjustRange(range(boxplot(merged$VALUE, plot = FALSE)$stats), rangeFactors)) +
       theme_bw() +
       theme(legend.text = element_text(size = 13),
             legend.title = element_text(size = 13)) +
@@ -209,7 +213,7 @@ if (plotType == "BoxPlot") {
       theme(plot.margin = unit(c(1, 1, 1, 1), "mm")) +
       theme(axis.text.x = element_text(hjust = 0.5)) +
       theme(plot.title = element_text(size=20, face="bold", hjust = 0.5)) +
-      scale_color_manual(values=c("red","black"))
+      scale_color_manual(values=colors)
   }
   
   

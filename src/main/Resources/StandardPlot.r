@@ -107,7 +107,7 @@ if (plotType == "BoxPlot") {
       width = gcmNum / 12,
       color = "black"
     )  +
-    coord_cartesian(ylim = range(boxplot(merged$VALUE, plot = FALSE)$stats) * rangeFactors) +
+    coord_cartesian(ylim = adjustRange(range(boxplot(merged$VALUE, plot = FALSE)$stats), rangeFactors)) +
     theme_bw() +
     theme(legend.text = element_text(size = 13),
           legend.title = element_text(size = 13)) +

@@ -12,8 +12,8 @@ name_unit <- function(inputcode){
 
 
 name_unit2 <- function(inputcode, unitStr){
-  name<-c("ID","Name of experiment", "Field Overlay","Seaonal Strategy","Rotational Analysis","","Treatment Name","Climate ID code","Climate replication number", "Crop model simulation set",	"Region ID","Regional stratum identification number","RAP ID", "Management regimen ID","Names of institutions","Crop rotation", "Weather station ID","Soil ID", "Site Latitude", "Site Longitude",	"Crop type", "Crop model-specific cultivar ID", "Cultivar name", "Start of simulation date",	"Planting date","harvested yield, dry weight", "total above-ground biomass at harvest",	"harvest date",	"Total number of irrigation events",	"Total amount of irrigation",	"Type of irrigation application",	"Total number of fertilizer applications",	"Total N applied",	"Total P applied",	"Total K applied",	"Manure and applied oganic matter",	"Total number of tillage applications",	"Tillage type (hand, animal or mechanized)",	"Experiment ID",	"Weather ID",	"Soil ID",	"DOME ID for Overlay",	"DOME ID for Seasonal",  "DOME ID for Rotational", "Short name of crop model used for simulations",	"Model name and version number", "Simulated harvest yield, dry matter", "Simulated above-ground biomass at harvest, dry matter",	"Simulated anthesis date",	"Simulated maturity date",	"Simulated harvest date",	"Simulated leaf area index, maximum",	"Total precipitation from planting to harvest",	"Simulated evapotranspiration, planting to harvest",	"Simulated N uptake during season", "Simulated N leached up to harvest maturity", "Transpiration, cumulative from planting to harvest")
-  unit<-c("text",	"text",	"text",	"text",	"text",	"number",	"text",	"code",	"number", "code",	"code",	"number",	"code",	"code",	"text",	"number",	"text",	"text",	"decimal degrees",	"decimal degrees",	"text",	"text",	"text",	"yyyy-mm-dd",	"yyyy-mm-dd",	"kg/ha",	"kg/ha",	"yyyy-mm-dd",	"number",	"mm",	"text",	"number",	"kg[N]/ha",	"kg[P]/ha",	"kg[K]/ha",	"kg/ha",	"#",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"kg/ha",	"kg/ha",	"das",	"das",	"das",	"m2/m2",	"mm",	"mm",	"kg/ha",	"kg/ha", "mm")
+  name<-c("ID","Name of experiment", "Field Overlay","Seaonal Strategy","Rotational Analysis","","Treatment Name","Climate ID code","Climate replication number", "Crop model simulation set",	"Region ID","Regional stratum identification number","RAP ID", "Management regimen ID","Names of institutions","Crop rotation", "Weather station ID","Soil ID", "Site Latitude", "Site Longitude",	"Crop type", "Crop model-specific cultivar ID", "Cultivar name", "Start of simulation date",	"Planting date","Harvested yield, dry weight", "Total above-ground biomass at harvest",	"Harvest date",	"Total number of irrigation events",	"Total amount of irrigation",	"Type of irrigation application",	"Total number of fertilizer applications",	"Total N applied",	"Total P applied",	"Total K applied",	"Manure and applied oganic matter",	"Total number of tillage applications",	"Tillage type (hand, animal or mechanized)",	"Experiment ID",	"Weather ID",	"Soil ID",	"DOME ID for Overlay",	"DOME ID for Seasonal",  "DOME ID for Rotational", "Short name of crop model used for simulations",	"Model name and version number", "Simulated harvest yield, dry matter", "Simulated above-ground biomass at harvest, dry matter",	"Simulated anthesis date",	"Simulated maturity date",	"Simulated harvest date",	"Simulated leaf area index, maximum",	"Total precipitation from planting to harvest",	"Simulated evapotranspiration, planting to harvest",	"Simulated N uptake during season", "Simulated N leached up to harvest maturity", "Transpiration, cumulative from planting to harvest")
+  unit<-c("text",	"text",	"text",	"text",	"text",	"number",	"text",	"code",	"number", "code",	"code",	"number",	"code",	"code",	"text",	"number",	"text",	"text",	"decimal degrees",	"decimal degrees",	"text",	"text",	"text",	"yyyy-mm-dd",	"yyyy-mm-dd",	"kg/ha",	"kg/ha",	"days after planting",	"number",	"mm",	"text",	"number",	"kg[N]/ha",	"kg[P]/ha",	"kg[K]/ha",	"kg/ha",	"#",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"text",	"kg/ha",	"kg/ha",	"days after planting",	"days after planting",	"days after planting",	"m2/m2",	"mm",	"mm",	"kg/ha",	"kg/ha", "mm")
   code<-c("SUITE_ID",	"EXNAME",	"FIELD_OVERLAY",	"SEASONAL_STRATEGY",	"ROTATIONAL_ANALYSIS",	"RUN#",	"TRT_NAME",	"CLIM_ID",	"CLIM_REP",	"CMSS", "REG_ID",	"STRATUM",	"RAP_ID",	"MAN_ID",	"INSTITUTION",	"ROTATION",	"WST_ID",	"SOIL_ID",	"FL_LAT",	"FL_LONG",	"CRID_text",	"CUL_ID",	"CUL_NAME",	"SDAT",	"PDATE",	"HWAH",	"CWAH",	"HDATE",	"IR#C",	"IR_TOT",	"IROP_text",	"FE_#",	"FEN_TOT",	"FEP_TOT",	"FEK_TOT",	"OM_TOT","TI_#",	"TIIMP_text",	"EID",	"WID",	"SID",	"DOID",	"DSID",	"DRID",	"CROP_MODEL",	"MODEL_VER",	"HWAH_S",	"CWAH_S",	"ADAT_S",	"MDAT_S",	"HADAT_S",	"LAIX_S",	"PRCP_S",	"ETCP_S",	"NUCM_S",	"NLCM_S", "EPCP_S")
   for (thisi in 1:length(code)) {
     if (inputcode==code[thisi]) {
@@ -40,7 +40,7 @@ readACMO <- function(inputFolder, acmoinput, plotVarID, metaVars, metaNames){
     read.csv(paste(inputFolder, acmoinput, sep = "/"),
              skip = 2,
              header = T)
-  if (plotVarID %in% c("ADAT_S", "MDAT_S", "HADAT_S")) {
+  if (plotVarID %in% c("ADAT_S", "MDAT_S", "HADAT_S", "HDATE")) {
     OriData <- OriData[, c(metaVars, "PDATE", plotVarID)]
   } else {
     OriData <- OriData[, c(metaVars, plotVarID)]
@@ -49,12 +49,12 @@ readACMO <- function(inputFolder, acmoinput, plotVarID, metaVars, metaNames){
   if (nrow(OriData) != 0) {
     
     # transfer date value to days after planting
-    if (plotVarID %in% c("ADAT_S", "MDAT_S", "HADAT_S")) {
+    if (plotVarID %in% c("ADAT_S", "MDAT_S", "HADAT_S", "HDATE")) {
       pdate <- as.POSIXct(OriData$PDATE, format = "%Y-%m-%d")
       ndate <- as.POSIXct(OriData[[plotVarID]], format = "%Y-%m-%d")
       dap <- as.numeric(ndate - pdate)
-      OriData <- OriData[, metaVars]
       OriData$VALUE <- dap
+      OriData <- OriData[,c(metaVars, "VALUE")]
     }
   }
   colnames(OriData) <- c(metaNames, "VALUE")
@@ -175,6 +175,22 @@ averageFarmValue <- function(merged, duration) {
   # print(mergedAve)
   # write.csv(mergedAve, outputAcmo)
   return (mergedAve)
+}
+
+adjustRange <- function(ranges, factors) {
+  min <- ranges[1]
+  max <- ranges[2]
+  if (max > 0) {
+    max <- max * factors[2]
+  } else {
+    max <- max * factors[1]
+  }
+  if (min > 0) {
+    min <- min * factors[1]
+  } else {
+    min <- min * factors[2]
+  }
+  return (c(min, max))
 }
 
 getGCMListByOrder <- function(gcmEnv) {
