@@ -82,9 +82,11 @@ system2 <- readACMOAve(inputFolder2, gcmCatEnv, duration, plotVarID)
 if (plotMethod == "RELATIVE") {
   merged <- diffSystem(system1, system2, gcmCats)
   plotVarTitle <- paste("Relative Change of", name_unit2(plotVarID, "%"), sep = "\n")
+  rangeFactors <- c(1.1, 1.1)
 } else {
   merged <- combineSystem(system1, system2, gcmCats)
   plotVarTitle <- name_unit(plotVarID)
+  rangeFactors <- c(0.9, 1.3)
 }
 gcmCats <- detectGCM(system1, system2, gcmCats)
 qt <- getQuestionType(length(system1), length(system2), merged)
@@ -105,8 +107,8 @@ if (plotType == "BoxPlot") {
       width = gcmNum / 12,
       color = "black"
     )  +
-    coord_cartesian(ylim = range(boxplot(merged$VALUE, plot = FALSE)$stats) *
-                      c(.9, 1.3)) +  theme_bw() +
+    coord_cartesian(ylim = range(boxplot(merged$VALUE, plot = FALSE)$stats) * rangeFactors) +
+    theme_bw() +
     theme(legend.text = element_text(size = 13),
           legend.title = element_text(size = 13)) +
     theme(axis.text = element_text(size = 13)) +

@@ -59,7 +59,7 @@ public class HisPlotTabBoxPane extends PlotTabBoxPane implements Bindable {
         plotMethod = (ButtonGroup) ns.get("plotMethodButtons");
         plotMethodRBMap = initRadioButtonGroup(ns, "plotMethod_abs", "plotMethod_rel");
         plotType = (ButtonGroup) ns.get("plotTypeButtons");
-        plotTypeRBMap = initRadioButtonGroup(ns, "plotType_box", "plotType_cdf");
+        plotTypeRBMap = initRadioButtonGroup(ns, "plotType_box", "plotType_cdf", "plotType_scatter");
         plotFormat = (ButtonGroup) ns.get("plotFormatButtons");
         plotFormatRBMap = initRadioButtonGroup(ns, "plotFormat_pdf", "plotFormat_png");
         outputACMO = (Checkbox) ns.get("outputACMO");

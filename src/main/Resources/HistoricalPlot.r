@@ -16,7 +16,9 @@ if (length(args) == 0) {
     c(
       "~\\R\\win-library\\3.3", #1
       "CM0 historical", #2
-      "BoxPlot", #3
+      # "BoxPlot", #3
+      # "CDF", #3
+      "ScatterPlot", #3
       "PNG", #4
       "HWAH_S", #5
       # "CWAH_S", #5
@@ -59,9 +61,11 @@ if (plotMethod == "RELATIVE") {
   merged <- diffSystemCM0(merged)
   plotVarTitle <- paste("Relative Change of", name_unit2(plotVarID, "%"), sep = "\n")
   colors <- c("red","cyan2")
+  rangeFactors <- c(1.1, 1.1)
 } else {
   plotVarTitle <- name_unit(plotVarID)
   colors <- c("red","cyan2", "D3D3D3")
+  rangeFactors <- c(0.9, 1.3)
 }
 # merged <- subset(merged, !is.null(VALUE) & VALUE != "" & VALUE != "-99")
 groupNum <- length(levels(as.factor(merged$GROUP)))
@@ -75,13 +79,13 @@ if (plotType == "BoxPlot") {
       width = groupNum / 12,
       color = "black"
     ) +
-    coord_cartesian(ylim = range(boxplot(merged$VALUE, plot = FALSE)$stats) *
-                      c(.9, 1.3)) +  theme_bw() +
+    coord_cartesian(ylim = range(boxplot(merged$VALUE, plot = FALSE)$stats) * rangeFactors) +
+    theme_bw() +
     theme(legend.text = element_text(size = 13),
           legend.title = element_text(size = 13)) +
     theme(axis.text = element_text(size = 13)) +
     theme(axis.title = element_text(size = 13, face = "bold")) +
-    labs(x = "Groups", y = plotVarTitle, colour = "legend", title = title) +
+    labs(x = "Groups", y = plotVarTitle, colour = "Legend", title = title) +
     theme(panel.grid.minor = element_blank()) +
     theme(plot.margin = unit(c(1, 1, 1, 1), "mm")) +
     theme(axis.text.x = element_text(hjust = 0.5)) +
@@ -131,5 +135,92 @@ if (plotType == "BoxPlot") {
   
   if (!is.null(outputCsvFlag) && outputCsvFlag != "") {
     write.csv(mergedCDF, outputAcmo)
+  }
+  
+} else if (plotType == "ScatterPlot") {
+  
+  if (plotMethod == "RELATIVE") {
+    
+    # Currently limited to 2 model comparison.
+    models <- levels(as.factor(merged$GROUP))
+    if (length(models) != 2) {
+      
+      warning("Current Scatter Plot only support for 2 models, please contact IT team to update the script")
+      
+    } else {
+      
+      models <- levels(as.factor(merged$GROUP))
+      mergedScatter <- subset(merged, GROUP == models[1])
+      mergedScatter$VALUE2 <- subset(merged, GROUP == models[2])$VALUE
+      mergedScatter <- mergedScatter[,c("EXNAME", "VALUE", "VALUE2")]
+      # colnames(mergedScatter) <- c("EXNAME", models)
+      
+      ggplot(data = mergedScatter, aes(x = VALUE, y = VALUE2)) +
+        geom_point() + 
+        geom_smooth(method=lm, se=FALSE, fullrange=TRUE) +
+        coord_cartesian(xlim = range(boxplot(merged$VALUE, plot = FALSE)$stats) * rangeFactors,
+                        ylim = range(boxplot(merged$VALUE, plot = FALSE)$stats) * rangeFactors) +
+        theme_bw() +
+        theme(legend.text = element_text(size = 13),
+              legend.title = element_text(size = 13)) +
+        theme(axis.text = element_text(size = 13)) +
+        theme(axis.title = element_text(size = 13, face = "bold")) +
+        labs(x = paste(models[1], plotVarTitle), y = paste(models[2], plotVarTitle), title = title) +
+        theme(panel.grid.minor = element_blank()) +
+        theme(plot.margin = unit(c(1, 1, 1, 1), "mm")) +
+        theme(axis.text.x = element_text(hjust = 0.5)) +
+        theme(plot.title = element_text(size=20, face="bold", hjust = 0.5))
+    }
+    
+  } else {
+    
+    histData <- subset(merged, GROUP == "Historical")[, c("EXNAME", "VALUE")]
+    modelData <- subset(merged, GROUP != "Historical")
+    models <- levels(as.factor(modelData$GROUP))
+    mergedScatter <- NULL
+    
+    for ( i in 1 : length(models)) {
+      data <- subset(modelData, GROUP == models[i])
+      tmp <- histData
+      tmp$MODEL <- models[i]
+      tmp$VALUE_S <- data$VALUE
+      
+      if (is.null(mergedScatter)) {
+        mergedScatter <- tmp
+      } else {
+        mergedScatter <- rbind(mergedScatter, tmp)
+      }
+    }
+    
+    ggplot(data = mergedScatter, aes(x = VALUE, y = VALUE_S, color=MODEL, shape=MODEL)) +
+      # facet_wrap(~MODEL) +
+      geom_point() + 
+      # geom_text(EXNAME) +
+      geom_smooth(method=lm, se=FALSE, fullrange=TRUE) +
+      coord_cartesian(xlim = range(boxplot(merged$VALUE, plot = FALSE)$stats) * rangeFactors,
+                      ylim = range(boxplot(merged$VALUE, plot = FALSE)$stats) * rangeFactors) +
+      theme_bw() +
+      theme(legend.text = element_text(size = 13),
+            legend.title = element_text(size = 13)) +
+      theme(axis.text = element_text(size = 13)) +
+      theme(axis.title = element_text(size = 13, face = "bold")) +
+      labs(x = plotVarTitle, y = gsub("Simulated", "Observed", plotVarTitle), title = title) +
+      theme(panel.grid.minor = element_blank()) +
+      theme(plot.margin = unit(c(1, 1, 1, 1), "mm")) +
+      theme(axis.text.x = element_text(hjust = 0.5)) +
+      theme(plot.title = element_text(size=20, face="bold", hjust = 0.5)) +
+      scale_color_manual(values=c("red","black"))
+  }
+  
+  
+  ggsave(
+    filename = outputPlot,
+    plot = last_plot(),
+    path = outputPath,
+    device = plotFormat
+  )
+  
+  if (!is.null(outputCsvFlag) && outputCsvFlag != "") {
+    write.csv(mergedScatter, outputAcmo)
   }
 }

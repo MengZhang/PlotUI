@@ -52,8 +52,9 @@
                 <bxml:define>
                     <ButtonGroup bxml:id="plotTypeButtons"/>
                 </bxml:define>
-                <RadioButton bxml:id="plotType_box" buttonData="BoxPlot" buttonGroup="$plotTypeButtons" selected="true"/>
-                <RadioButton bxml:id="plotType_cdf" buttonData="CDF" buttonGroup="$plotTypeButtons"/>
+                <RadioButton bxml:id="plotType_box" buttonData="BoxPlot" buttonGroup="$plotTypeButtons"/>
+                <RadioButton bxml:id="plotType_cdf" buttonData="CDF" buttonGroup="$plotTypeButtons" selected="true"/>
+                <RadioButton bxml:id="plotType_scatter" buttonData="ScatterPlot" buttonGroup="$plotTypeButtons"/>
             </BoxPane>
         </BoxPane>
         <!-- Plot Format -->
