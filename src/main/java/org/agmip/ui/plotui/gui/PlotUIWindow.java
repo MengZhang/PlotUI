@@ -14,13 +14,11 @@ import org.agmip.ui.plotui.PlotUtil;
 import org.agmip.ui.plotui.RunPlotTask;
 import org.agmip.ui.plotui.ValidationTask;
 import static org.agmip.ui.plotui.PlotUtil.*;
-import static org.agmip.ui.plotui.gui.GuiUtil.createGenericDirBPListerner;
 import org.agmip.util.MapUtil;
 import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.beans.Bindable;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.serialization.SerializationException;
-import org.apache.pivot.util.Filter;
 import org.apache.pivot.util.Resources;
 import org.apache.pivot.util.concurrent.Task;
 import org.apache.pivot.util.concurrent.TaskListener;
@@ -34,6 +32,7 @@ import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonPressListener;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.DesktopApplicationContext;
+import org.apache.pivot.wtk.Dialog;
 import org.apache.pivot.wtk.DragSource;
 import org.apache.pivot.wtk.DropTarget;
 import org.apache.pivot.wtk.FileBrowserSheet;
@@ -64,11 +63,6 @@ public class PlotUIWindow extends Window implements Bindable {
     private PushButton saveConfig = null;
     private PushButton runRScp = null;
     private ActivityIndicator runIndicator = null;
-
-    private TextInput start_rExePath = null;
-    private PushButton start_browseRExePath = null;
-    private TextInput start_rLibPath = null;
-    private PushButton start_browseRLibPath = null;
     
     private PlotUtil.RScps curTab = null;
     private BoxPane gcmLabels = null;
@@ -93,6 +87,20 @@ public class PlotUIWindow extends Window implements Bindable {
                 DesktopApplicationContext.exit();
             }
         });
+        final Window curWindow = this.getWindow();
+        Action.getNamedActions().put("REnvConfig", new Action() {
+            @Override
+            public void perform(Component src) {
+                BXMLSerializer bxml = new BXMLSerializer();
+                Dialog dialog;
+                try {
+                    dialog = (Dialog) bxml.readObject(getClass().getResource("/uiscript/dialogREnvConfig.bxml"));
+                    dialog.open(curWindow.getWindow());
+                } catch (IOException | SerializationException ex) {
+                    LOG.error(Functions.getStackTrace(ex));
+                }
+            }
+        });
     }
 
     public void setPlotUIVersion(String plotUIVersion) {
@@ -103,11 +111,6 @@ public class PlotUIWindow extends Window implements Bindable {
     public void initialize(Map<String, Object> ns, URL url, Resources rsrcs) {
 
         // Initialization
-        // Menu Bar
-        start_rExePath = (TextInput) ns.get("start_rExePath");
-        start_browseRExePath = (PushButton) ns.get("start_browseRExePath");
-        start_rLibPath = (TextInput) ns.get("start_rLibPath");
-        start_browseRLibPath = (PushButton) ns.get("start_browseRLibPath");
         // Start Tab
         start_workDir = (TextInput) ns.get("start_workDir");
         start_browseWorkDir = (PushButton) ns.get("start_browseWorkDir");
@@ -199,55 +202,17 @@ public class PlotUIWindow extends Window implements Bindable {
                 }
             }
         });
-
-        start_browseRExePath.getButtonPressListeners().add(new ButtonPressListener() {
-            @Override
-            public void buttonPressed(Button button) {
-                final FileBrowserSheet browse;
-
-                if (!new File(start_rExePath.getText()).exists()) {
-                    browse = new FileBrowserSheet(FileBrowserSheet.Mode.OPEN, new File("").getAbsolutePath());
-                } else {
-                    browse = new FileBrowserSheet(FileBrowserSheet.Mode.OPEN, new File(start_rExePath.getText()).getAbsoluteFile().getParentFile().getPath());
-                }
-                browse.setDisabledFileFilter(new Filter<File>() {
-
-                    @Override
-                    public boolean include(File file) {
-                        return (file.isFile() && (!file.getName().equalsIgnoreCase("Rscript.exe")));
-                    }
-                });
-                browse.open(PlotUIWindow.this, new SheetCloseListener() {
-                    @Override
-                    public void sheetClosed(Sheet sheet) {
-                        if (sheet.getResult()) {
-                            File dir = browse.getSelectedFile();
-                            start_rExePath.setText(dir.getPath());
-                        }
-                    }
-                });
-            }
-        });
-
-        start_browseRLibPath.getButtonPressListeners().add(createGenericDirBPListerner(start_rLibPath));
+        
         start_browseWorkDir.getButtonPressListeners().add(new ButtonPressListener() {
             @Override
             public void buttonPressed(Button button) {
                 final FileBrowserSheet browse;
-
-//                if (start_workDir.getText().equals("")) {
-//                    if (!new File(stdplot_inputDir.getText()).exists()) {
-//                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File("").getAbsolutePath());
-//                    } else {
-//                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File(stdplot_inputDir.getText()).getAbsoluteFile().getParentFile().getPath());
-//                    }
-//                } else {
+                
                 if (!new File(start_workDir.getText()).exists()) {
                     browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File("").getAbsolutePath());
                 } else {
                     browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File(start_workDir.getText()).getAbsoluteFile().getParentFile().getPath());
                 }
-//                }
                 browse.open(PlotUIWindow.this, new SheetCloseListener() {
                     @Override
                     public void sheetClosed(Sheet sheet) {
@@ -275,10 +240,6 @@ public class PlotUIWindow extends Window implements Bindable {
                     corPlotTab.updateConfig();
                     ctwnPlotTab.updateConfig();
                     hisPlotTab.updateConfig();
-//                    stdConfig = getConfig(PlotUtil.RScps.StandardPlot.toString());
-//                    corConfig = getConfig(PlotUtil.RScps.CorrelationPlot.toString());
-//                    ctwnConfig = getConfig(PlotUtil.RScps.CTWNPlot.toString());
-//                    hisConfig = getConfig(PlotUtil.RScps.HistoricalPlot.toString());
                     loadAllConfig();
                     LOG.info("Load config file from working directory <{}>", ti.getText());
                 } else {
@@ -292,8 +253,6 @@ public class PlotUIWindow extends Window implements Bindable {
         // Load configuration from XML into GUI
         loadAllConfig();
         // Global
-        start_rExePath.setText(MapUtil.getValueOr(globalConfig, "RExePath", ""));
-        start_rLibPath.setText(MapUtil.getValueOr(globalConfig, "RLibPath", ""));
         start_workDir.setText(MapUtil.getValueOr(globalConfig, "WorkDir", ""));
 
     }
@@ -317,8 +276,6 @@ public class PlotUIWindow extends Window implements Bindable {
         LOG.info("Saving {} ...", CONFIG_FILE);
 
         // GloBal
-        globalConfig.put("RExePath", start_rExePath.getText());
-        globalConfig.put("RLibPath", start_rLibPath.getText());
         globalConfig.put("WorkDir", start_workDir.getText());
         StringBuilder sbGcmMapping = new StringBuilder();
         for (String gcm : gcmCatMap.keySet()) {

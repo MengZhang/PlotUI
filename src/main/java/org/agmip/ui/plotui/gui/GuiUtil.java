@@ -55,16 +55,19 @@ public class GuiUtil {
     }
 
     public static ButtonPressListener createGenericDirBPListerner(final TextInput input) {
+        return createGenericDirBPListerner(input, new File(MapUtil.getValueOr(PlotUtil.getConfig(PlotUtil.GLOBAL_CONFIG), "WorkDir", "")), FileBrowserSheet.Mode.SAVE_TO);
+    }
+
+    public static ButtonPressListener createGenericDirBPListerner(final TextInput input, final File workDir, final FileBrowserSheet.Mode mode) {
         return new ButtonPressListener() {
             @Override
             public void buttonPressed(Button button) {
                 final FileBrowserSheet browse;
                 if (!new File(input.getText()).exists()) {
-                    File workDir = new File(MapUtil.getValueOr(PlotUtil.getConfig(PlotUtil.GLOBAL_CONFIG), "WorkDir", ""));
-                    if (workDir.exists()) {
-                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, workDir.getAbsolutePath());
+                    if (workDir != null && workDir.exists()) {
+                        browse = new FileBrowserSheet(mode, workDir.getAbsolutePath());
                     } else {
-                        browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File("").getAbsolutePath());
+                        browse = new FileBrowserSheet(mode, new File("").getAbsolutePath());
                     }
                     
                 } else {

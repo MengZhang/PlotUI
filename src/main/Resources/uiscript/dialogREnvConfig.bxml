@@ -1,0 +1,43 @@
+<plotui:REnvConfigDialog bxml:id="configDialog" title="R Environment Setting" modal="true"
+                             xmlns:bxml="http://pivot.apache.org/bxml"
+                             xmlns:plotui="org.agmip.ui.plotui.gui"
+                             xmlns="org.apache.pivot.wtk">
+    <TablePane preferredWidth="420" preferredHeight="120">
+        <columns>
+            <TablePane.Column width="1*"/>
+        </columns>
+ 
+        <TablePane.Row>
+            <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
+                <BoxPane orientation="horizontal">
+                    <Label text="R Excutable File (RScript.exe):" styles="{font:{bold:true}}"/>
+                    <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate the R Excutable File (RScript.exe)" />
+                </BoxPane>
+                <BoxPane orientation="horizontal">
+                    <TextInput bxml:id="start_rExePath" preferredWidth="300" editable="false"/>
+                    <PushButton bxml:id="start_browseRExePath" buttonData="Browse"/>
+                </BoxPane>
+            </BoxPane>
+        </TablePane.Row>
+        <TablePane.Row>
+            <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
+                <BoxPane orientation="horizontal">
+                    <Label text="R library path" styles="{font:{bold:true}}"/>
+                    <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate the directory which contains third-party library, such like ggplot2" />
+                </BoxPane>
+                <BoxPane orientation="horizontal">
+                    <TextInput bxml:id="start_rLibPath" preferredWidth="300" editable="false"/>
+                    <PushButton bxml:id="start_browseRLibPath" buttonData="Browse"/>
+                </BoxPane>
+            </BoxPane>
+        </TablePane.Row>
+        
+ 
+        <TablePane.Row height="-1">
+            <BoxPane styles="{padding:{top: 10}, horizontalAlignment:'center'}">
+                <PushButton buttonData="Close"
+                            ButtonPressListener.buttonPressed="configDialog.close()"/>
+            </BoxPane>
+        </TablePane.Row>
+    </TablePane>
+</plotui:REnvConfigDialog>

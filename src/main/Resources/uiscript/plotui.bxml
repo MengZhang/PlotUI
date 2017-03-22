@@ -8,6 +8,7 @@
 
     <actionMappings>
         <Window.ActionMapping action="fileQuit" keyStroke="CMD-Q" />
+        <Window.ActionMapping action="REnvConfig" keyStroke="CMD-C" />
     </actionMappings>
 
     <TablePane styles="{horizontalSpacing:6, verticalSpacing:6, showVerticalGridLines:true, padding:2}">
@@ -23,7 +24,18 @@
                             <Menu.Section>
                                 <Menu.Item action="fileQuit">
                                     <buttonData>
-                                        <content:MenuItemData text="Quit" keyboardShortcut="CMD-Q" />
+                                        <content:MenuItemData text="Quit"/>
+                                    </buttonData>
+                                </Menu.Item>
+                            </Menu.Section>
+                        </Menu>
+                    </MenuBar.Item>
+                    <MenuBar.Item buttonData="Config">
+                        <Menu>
+                            <Menu.Section>
+                                <Menu.Item action="REnvConfig">
+                                    <buttonData>
+                                        <content:MenuItemData text="R Enviroment"/>
                                     </buttonData>
                                 </Menu.Item>
                             </Menu.Section>
@@ -36,38 +48,14 @@
         <TablePane.Row height="1*">
             <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" verticalScrollBarPolicy="fill_to_capacity">
                 <TabPane bxml:id="plotuiTabs" styles="{padding:6}" selectedIndex="0">
-                    
+
                     <!-- Global Config -->
                     <BoxPane orientation="vertical">
                         <TabPane.tabData>
-                            <content:ButtonData text="Start"/>
+                            <content:ButtonData text="     Start     "/>
                         </TabPane.tabData>
                         <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
-                            <Border title="R Environment Setting:" styles="{padding:6}">
-                                <BoxPane orientation="vertical">
-                                    <BoxPane orientation="horizontal">
-                                        <Label text="R Excutable File (RScript.exe):" styles="{font:{bold:true}}"/>
-                                        <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate the R Excutable File (RScript.exe)" />
-                                    </BoxPane>
-                                    <BoxPane orientation="horizontal">
-                                        <TextInput bxml:id="start_rExePath" preferredWidth="400" editable="false"/>
-                                        <PushButton bxml:id="start_browseRExePath" buttonData="Browse"/>
-                                    </BoxPane>
-                                </BoxPane>
-                                <BoxPane orientation="vertical">
-                                    <BoxPane orientation="horizontal">
-                                        <Label text="R library path" styles="{font:{bold:true}}"/>
-                                        <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate the directory which contains third-party library, such like ggplot2" />
-                                    </BoxPane>
-                                    <BoxPane orientation="horizontal">
-                                        <TextInput bxml:id="start_rLibPath" preferredWidth="400" editable="false"/>
-                                        <PushButton bxml:id="start_browseRLibPath" buttonData="Browse"/>
-                                    </BoxPane>
-                                </BoxPane>
-                            </Border>
-                        </BoxPane>
-                        <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
-                            <Border title="Climate Category Mapping:" styles="{padding:6}" minimumWidth="300">
+                            <Border title="Project Configuration:" styles="{padding:6}" minimumWidth="300">
                                 <BoxPane orientation="vertical">
                                     <BoxPane orientation="horizontal">
                                         <Label text="Work Diretory:" styles="{font:{bold:true}}"/>
@@ -79,7 +67,7 @@
                                     </BoxPane>
                                 </BoxPane>
                                 <BoxPane orientation="horizontal" styles="{padding:{top:6}}">
-                                    <Label text="Mapping:" styles="{font:{bold:true}}"/>
+                                    <Label text="Climate Category Mapping:" styles="{font:{bold:true}}"/>
                                     <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Drag and drop the category with corresponding GCM ID" />
                                     <ActivityIndicator bxml:id="mappingIndicator" preferredWidth="16" preferredHeight="16" styles="{color:'#777777'}"/>
                                 </BoxPane>
@@ -101,7 +89,7 @@
                     <!-- Standard Plot Config -->
                     <BoxPane orientation="vertical">
                         <TabPane.tabData>
-                            <content:ButtonData text="StandardPlot"/>
+                            <content:ButtonData text=" Standard Plot "/>
                         </TabPane.tabData>
                         <bxml:include bxml:id="stdPlotTab" src="tabStdPlot.bxml"/>
                     </BoxPane>
@@ -109,7 +97,7 @@
                     <!-- Correlation Plot Config -->
                     <BoxPane orientation="vertical">
                         <TabPane.tabData>
-                            <content:ButtonData text="CorrelationPlot"/>
+                            <content:ButtonData text="Correlation Plot"/>
                         </TabPane.tabData>
                         <bxml:include bxml:id="corPlotTab" src="tabCorPlot.bxml"/>
                     </BoxPane>
@@ -117,7 +105,7 @@
                     <!-- CTWN Plot Config -->
                     <BoxPane orientation="vertical">
                         <TabPane.tabData>
-                            <content:ButtonData text="CTWNPlot"/>
+                            <content:ButtonData text="   CTWN Plot   "/>
                         </TabPane.tabData>
                         <bxml:include bxml:id="ctwnPlotTab" src="tabCtwnPlot.bxml"/>
                     </BoxPane>
@@ -125,14 +113,14 @@
                     <!-- Historical Plot Config -->
                     <BoxPane orientation="vertical">
                         <TabPane.tabData>
-                            <content:ButtonData text="HistoricalPlot"/>
+                            <content:ButtonData text="Historical Plot"/>
                         </TabPane.tabData>
                         <bxml:include bxml:id="hisPlotTab" src="tabHisPlot.bxml"/>
                     </BoxPane>
                     
                     <BoxPane orientation="vertical">
                         <TabPane.tabData>
-                            <content:ButtonData text="Help"/>
+                            <content:ButtonData text="     Help      "/>
                         </TabPane.tabData>
                         <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
                             <Border preferredWidth="500" preferredHeight="300">
