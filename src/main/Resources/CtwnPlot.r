@@ -166,9 +166,12 @@ setCtwnOutput <- function(outputPlot, outputPath, plotFormat) {
 
 # read ACMO CSV file from given directory and return the data by climate ID
 readACMO <- function(inputFolder, plotVarID) {
-  acmoinputs <- list.files(path = inputFolder, pattern = "ACMO.*\\.csv")
+  acmoinputs <- list.files(path = inputFolder, pattern = "ACMO.*\\.csv", recursive = T)
   acmoinputs <- as.character(acmoinputs)
   ret <- NULL
+  if (length(acmoinputs) == 0) {
+    return (ret)
+  }
   
   for (i in 1:length(acmoinputs)) {
     print(acmoinputs[i])
