@@ -483,7 +483,11 @@ public class PlotUtil {
             plotVars.add(config.get("plotVarX"));
             plotVars.add(config.get("plotVarY"));
             plotVars.add(config.get("group1"));
-            plotVars.add(config.get("group2"));
+            String group2 = config.get("group2");
+            if (!"No".equalsIgnoreCase(group2)) {
+                plotVars.add(group2);
+            }
+            
         } else if (rScpType.equals(PlotUtil.RScps.CTWNPlot)) {
             plotVars.add(config.get("plotVar"));
         } else if (rScpType.equals(PlotUtil.RScps.ClimAnomaly)) {

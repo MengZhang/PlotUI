@@ -320,7 +320,7 @@ public class PlotUIWindow extends Window implements Bindable {
             Alert.alert(MessageType.ERROR, "Invalid plot variables!", PlotUIWindow.this);
             runIndicator.setActive(false);
         } else {
-            ValidationTask task = new ValidationTask(PlotUtil.getAllInputFiles(false, new File(inputDir)), plotVars.toArray(new String[]{}));
+            ValidationTask task = new ValidationTask(PlotUtil.getAllInputFiles(new File(inputDir)), plotVars.toArray(new String[]{}));
             TaskListener lisener = new TaskListener<LinkedHashMap<File, ArrayList<HashMap<String, String>>>>() {
 
                 @Override

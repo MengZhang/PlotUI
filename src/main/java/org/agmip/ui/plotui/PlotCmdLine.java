@@ -70,7 +70,7 @@ public class PlotCmdLine {
         } else if (plotVars.isEmpty()) {
             LOG.warn("Invalid plot variables for validation!");
         } else {
-            ValidationTask task = new ValidationTask(PlotUtil.getAllInputFiles(false, new File(inputDir)), plotVars.toArray(new String[]{}));
+            ValidationTask task = new ValidationTask(PlotUtil.getAllInputFiles(new File(inputDir)), plotVars.toArray(new String[]{}));
             LinkedHashMap<File, ArrayList<HashMap<String, String>>> result = task.execute();
             if (!result.isEmpty()) {
 
