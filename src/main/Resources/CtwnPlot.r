@@ -68,10 +68,7 @@
 # 31 180
 # 32 210
 
-#----------------------Define Commom Functions---------------#
-
-# To make this file stand alone, all the defined functions are moved from utilility script file to here.
-
+#----------------------Define Variables ---------------#
 options(echo = F)
 
 setLibPath <- function(path) {
@@ -81,6 +78,51 @@ setLibPath <- function(path) {
   paths <- .libPaths()
   print(paths)
 }
+
+# Envirorment Initialization and read input arguments (added by Meng Zhang)
+args <- commandArgs(trailingOnly = TRUE)
+# utilScpPath <- "r_lib/PlotUtil.r"
+if (length(args) == 0) {
+  # for debug purpose and sample for commend line arguments
+  args <-
+    c(
+      "~\\R\\win-library\\3.3", #1
+      "PDF", #2
+      "HWAH_S", #3
+      "..\\..\\test\\resources\\r_dev\\ACMO-Niroro-Peanut\\CTWN", #4
+      "..\\..\\test\\resources\\r_dev\\ACMO-Niroro-Peanut\\plot_output\\CTWNPLOT-HWAH_S", #5
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CTWN", #4
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output\\CTWNPLOT-HWAH_S", #5
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output_ui\\CTWNPLOT-HWAH_S", #5
+      "true" #6
+    )
+  # utilScpPath <- "PlotUtil.r"
+}
+print(args)
+# source(utilScpPath)
+setLibPath(args[1])
+library(ggplot2)
+plotFormat <- tolower(args[2])
+plotVarID <- args[3]
+inputFolder <- args[4]
+outputPlotDir <- args[5]
+outputCsvFlag <- args[6]
+outputAcmo <-
+  paste(paste("CTWNPlot", plotVarID, "Matrix", sep = "-"),
+        "csv",
+        sep = ".")
+outputAcmo <- paste(outputPlotDir, outputAcmo, sep = "/")
+outputAcmoCDF <-
+  paste(paste("CTWNPlot", plotVarID, "CDF", sep = "-"),
+        "csv",
+        sep = ".")
+outputAcmoCDF <- paste(outputPlotDir, outputAcmoCDF, sep = "/")
+
+#----------------------Define Commom Functions---------------#
+
+# To make this file stand alone, all the defined functions are moved from utilility script file to here.
+
+
 
 # Convert variable from ICASA name to description text with unit
 name_unit <- function(inputcode){
@@ -220,7 +262,7 @@ drawPlot <- function(title, ctwnCat, legend, model, years, outputPlotDir, plotFo
   catNum <- length(ctwnCat)
   # setCtwnOutput(paste0("LinePlot ", title), outputPlotDir, plotFormat)
   plot(0, xlim=c(min(years), max(years)),
-       ylim=c(min(model[,ctwnCat], na.rm=TRUE), max(model[,ctwnCat], na.rm=TRUE)+1000),
+       ylim=c(min(model[,ctwnCat], na.rm=TRUE), max(model[,ctwnCat], na.rm=TRUE)*1.1),
        type="n",
        xlab=bquote(bold("Years")),
        ylab=bquote(bold(.(name_unit(plotVarID)))),
@@ -233,7 +275,7 @@ drawPlot <- function(title, ctwnCat, legend, model, years, outputPlotDir, plotFo
 }
 
 drawCDFPlot <- function(title, mergedCDF, outputPlotDir, plotFormat, plotVarID) {
-
+  
   plotVarTitle <- paste("Relative Change of", name_unit2(plotVarID, "%"), sep = "\n")
   
   p <- ggplot(subMergedCDF, aes(VALUE, 1 - ECDF, color = MODEL)) +
@@ -279,45 +321,6 @@ drawBoxPlot <- function(title, ctwnCat, legend, model, years, outputPlotDir, plo
 }
 
 #----------------------Start Routine-------------------------#
-
-# Section 0 - Envirorment Initialization and read input arguments (added by Meng Zhang)
-args <- commandArgs(trailingOnly = TRUE)
-# utilScpPath <- "r_lib/PlotUtil.r"
-if (length(args) == 0) {
-  # for debug purpose and sample for commend line arguments
-  args <-
-    c(
-      "~\\R\\win-library\\3.3", #1
-      "PDF", #2
-      "HWAH_S", #3
-      "..\\..\\test\\resources\\r_dev\\ACMO-Niroro-Peanut\\CTWN", #4
-      "..\\..\\test\\resources\\r_dev\\ACMO-Niroro-Peanut\\plot_output\\CTWNPLOT-HWAH_S", #5
-      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CTWN", #4
-      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output\\CTWNPLOT-HWAH_S", #5
-      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output_ui\\CTWNPLOT-HWAH_S", #5
-      "true" #6
-    )
-  # utilScpPath <- "PlotUtil.r"
-}
-print(args)
-# source(utilScpPath)
-setLibPath(args[1])
-plotFormat <- tolower(args[2])
-plotVarID <- args[3]
-inputFolder <- args[4]
-outputPlotDir <- args[5]
-outputCsvFlag <- args[6]
-outputAcmo <-
-  paste(paste("CTWNPlot", plotVarID, "Matrix", sep = "-"),
-        "csv",
-        sep = ".")
-outputAcmo <- paste(outputPlotDir, outputAcmo, sep = "/")
-outputAcmoCDF <-
-  paste(paste("CTWNPlot", plotVarID, "CDF", sep = "-"),
-        "csv",
-        sep = ".")
-outputAcmoCDF <- paste(outputPlotDir, outputAcmoCDF, sep = "/")
-
 
 # Section 1 - Read in ACMO files and assign arrays #
 ## Modified by Meng Zhang, Auto detect some of the information from ACMO files #
@@ -572,13 +575,13 @@ multimod <- model
 modname <- models
 
 # Three model matrix
- # multimod <- matrix(0,30,96)
- # cols1 <- seq(1, by = 3, len = 96)
- # cols2 <- seq(2, by = 3, len = 96)
- # cols3 <- seq(3, by = 3, len = 96)
- # multimod[,cols1] <- APSIM # CHANGE: FILL IN MODEL NAME HERE
- # multimod[,cols2] <- DSSAT # CHANGE: FILL IN MODEL NAME HERE
- # multimod[,cols3] <- INFO # CHANGE: FILL IN MODEL NAME HERE
+# multimod <- matrix(0,30,96)
+# cols1 <- seq(1, by = 3, len = 96)
+# cols2 <- seq(2, by = 3, len = 96)
+# cols3 <- seq(3, by = 3, len = 96)
+# multimod[,cols1] <- APSIM # CHANGE: FILL IN MODEL NAME HERE
+# multimod[,cols2] <- DSSAT # CHANGE: FILL IN MODEL NAME HERE
+# multimod[,cols3] <- INFO # CHANGE: FILL IN MODEL NAME HERE
 
 # Section 4.1 #
 #CO2 at 30 N________________________
