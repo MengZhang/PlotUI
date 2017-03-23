@@ -77,7 +77,7 @@ public class DragDropFactory {
                 this.color = (Color) label.getStyles().get("color");
 
                 if (this.text != null) {
-//                    if (label.getName().startsWith("global_gcmCatLabels")) {
+//                    if (label.getName().startsWith("gcmCatLabels")) {
 ////                        System.out.println("OK");
 //                        
 //                    }
@@ -94,7 +94,7 @@ public class DragDropFactory {
             @Override
             public void endDrag(Component comp, DropAction dropAction) {
                 Label label = (Label) comp;
-                if (dropAction == null || !label.getName().startsWith("global_gcmCatLabels")) {
+                if (dropAction == null || !label.getName().startsWith("gcmCatLabels")) {
                     label.setText(this.text);
                     label.getStyles().put("color", this.color);
                 }
@@ -183,15 +183,15 @@ public class DragDropFactory {
 
                         String targetText = target.getText();
                         Object targetColor = target.getStyles().get("color");
-                        if (target.getName().startsWith("global_gcmCatLabels")) {
+                        if (target.getName().startsWith("gcmCatLabels")) {
                             target.setText(dragContent.getText());
                             target.getStyles().put("color", dragContent.getValue("color"));
-                            if (source.getName().startsWith("global_gcmCatLabels")) {
+                            if (source.getName().startsWith("gcmCatLabels")) {
                                 source.setText(targetText);
                                 source.getStyles().put("color", targetColor);
                             }
                         } else {
-                            if (!source.getName().startsWith("global_gcmCatLabels")) {
+                            if (!source.getName().startsWith("gcmCatLabels")) {
                                 target.setText(dragContent.getText());
                                 target.getStyles().put("color", dragContent.getValue("color"));
                                 source.setText(targetText);

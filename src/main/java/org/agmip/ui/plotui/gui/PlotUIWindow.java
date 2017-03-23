@@ -70,8 +70,8 @@ public class PlotUIWindow extends Window implements Bindable {
     private BoxPane gcmCatSelectionLabels = null;
     private ActivityIndicator mappingIndicator = null;
     HashMap<String, Label> gcmCatMap = new HashMap();
-    private TextInput start_workDir = null;
-    private PushButton start_browseWorkDir = null;
+    private TextInput workDirInput = null;
+    private PushButton browseWorkDir = null;
     
     PlotTabBoxPane stdPlotTab = null;
     PlotTabBoxPane corPlotTab = null;
@@ -112,11 +112,11 @@ public class PlotUIWindow extends Window implements Bindable {
 
         // Initialization
         // Start Tab
-        start_workDir = (TextInput) ns.get("start_workDir");
-        start_browseWorkDir = (PushButton) ns.get("start_browseWorkDir");
-        gcmLabels = (BoxPane) ns.get("start_gcmLabels");
-        gcmCatLabels = (BoxPane) ns.get("start_gcmCatLabels");
-        gcmCatSelectionLabels = (BoxPane) ns.get("start_gcmCatSelectionLabels");
+        workDirInput = (TextInput) ns.get("workDir");
+        browseWorkDir = (PushButton) ns.get("browseWorkDir");
+        gcmLabels = (BoxPane) ns.get("gcmLabels");
+        gcmCatLabels = (BoxPane) ns.get("gcmCatLabels");
+        gcmCatSelectionLabels = (BoxPane) ns.get("gcmCatSelectionLabels");
         mappingIndicator = (ActivityIndicator) ns.get("mappingIndicator");
         runIndicator = (ActivityIndicator) ns.get("runIndicator");
         plotuiTabs = (TabPane) ns.get("plotuiTabs");
@@ -200,22 +200,22 @@ public class PlotUIWindow extends Window implements Bindable {
             }
         });
         
-        start_browseWorkDir.getButtonPressListeners().add(new ButtonPressListener() {
+        browseWorkDir.getButtonPressListeners().add(new ButtonPressListener() {
             @Override
             public void buttonPressed(Button button) {
                 final FileBrowserSheet browse;
                 
-                if (!new File(start_workDir.getText()).exists()) {
+                if (!new File(workDirInput.getText()).exists()) {
                     browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File("").getAbsolutePath());
                 } else {
-                    browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File(start_workDir.getText()).getAbsoluteFile().getParentFile().getPath());
+                    browse = new FileBrowserSheet(FileBrowserSheet.Mode.SAVE_TO, new File(workDirInput.getText()).getAbsoluteFile().getParentFile().getPath());
                 }
                 browse.open(PlotUIWindow.this, new SheetCloseListener() {
                     @Override
                     public void sheetClosed(Sheet sheet) {
                         if (sheet.getResult()) {
                             File dir = browse.getSelectedFile();
-                            start_workDir.setText(dir.getPath());
+                            workDirInput.setText(dir.getPath());
                             setGcmCatMapping(PlotUtil.getGcms(dir));
                         }
                         mappingIndicator.setActive(false);
@@ -225,7 +225,7 @@ public class PlotUIWindow extends Window implements Bindable {
             }
         });
 
-        start_workDir.getTextInputContentListeners().add(new TextInputContentListener.Adapter() {
+        workDirInput.getTextInputContentListeners().add(new TextInputContentListener.Adapter() {
 
             @Override
             public void textChanged(TextInput ti) {
@@ -250,7 +250,7 @@ public class PlotUIWindow extends Window implements Bindable {
         // Load configuration from XML into GUI
         loadAllConfig();
         // Global
-        start_workDir.setText(MapUtil.getValueOr(globalConfig, "WorkDir", ""));
+        workDirInput.setText(MapUtil.getValueOr(globalConfig, "WorkDir", ""));
 
     }
 
@@ -273,7 +273,7 @@ public class PlotUIWindow extends Window implements Bindable {
         LOG.info("Saving {} ...", CONFIG_FILE);
 
         // GloBal
-        globalConfig.put("WorkDir", start_workDir.getText());
+        globalConfig.put("WorkDir", workDirInput.getText());
         StringBuilder sbGcmMapping = new StringBuilder();
         for (String gcm : gcmCatMap.keySet()) {
             if (gcmCatMap.get(gcm).getText() != null) {
@@ -298,7 +298,7 @@ public class PlotUIWindow extends Window implements Bindable {
 
         deployFileByTemplate(new File(CONFIG_FILE), CONFIG_FILE_DEF_TEMPLATE, CONFIG_MAP, "config");
         deployFileByTemplate(Paths.get(MapUtil.getValueOr(globalConfig, "WorkDir", ""), CONFIG_FILE).toFile(), CONFIG_FILE_PROJECT_TEMPLATE, CONFIG_MAP, "config");
-        PlotUtil.resolvePath(PlotUtil.CONFIG_MAP, start_workDir.getText());
+        PlotUtil.resolvePath(PlotUtil.CONFIG_MAP, workDirInput.getText());
     }
 
     private void validateInput() {
@@ -529,7 +529,7 @@ public class PlotUIWindow extends Window implements Bindable {
             } else {
                 gcmCatLabel = new Label();
             }
-            gcmCatLabel.setName("start_gcmCatLabels_" + gcm);
+            gcmCatLabel.setName("gcmCatLabels_" + gcm);
             gcmCatLabel.setPreferredHeight(14);
             gcmCatLabel.setPreferredWidth(100);
             gcmCatLabel.setDragSource(ds);
@@ -543,7 +543,7 @@ public class PlotUIWindow extends Window implements Bindable {
         for (String gcmCat : gcmCatColorMap.keySet()) {
 
             Label gcmCatLabel = new Label(gcmCat);
-            gcmCatLabel.setName("start_gcmCatSelectionLabels_" + gcmCat);
+            gcmCatLabel.setName("gcmCatSelectionLabels_" + gcmCat);
             gcmCatLabel.setPreferredHeight(14);
             gcmCatLabel.setPreferredWidth(80);
             gcmCatLabel.getStyles().put("color", gcmCatColorMap.get(gcmCat));
