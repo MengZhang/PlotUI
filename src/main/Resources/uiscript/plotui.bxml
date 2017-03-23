@@ -62,8 +62,8 @@
                                         <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Browse your local file system and locate a folder as the base directory for your ACMO data" />
                                     </BoxPane>
                                     <BoxPane orientation="horizontal">
-                                        <TextInput bxml:id="start_workDir" preferredWidth="400" editable="false"/>
-                                        <PushButton bxml:id="start_browseWorkDir" buttonData="Browse"/>
+                                        <TextInput bxml:id="workDir" preferredWidth="400" editable="false"/>
+                                        <PushButton bxml:id="browseWorkDir" buttonData="Browse"/>
                                     </BoxPane>
                                 </BoxPane>
                                 <BoxPane orientation="horizontal" styles="{padding:{top:6}}">
@@ -72,13 +72,13 @@
                                     <ActivityIndicator bxml:id="mappingIndicator" preferredWidth="16" preferredHeight="16" styles="{color:'#777777'}"/>
                                 </BoxPane>
                                 <BoxPane orientation="horizontal">
-                                    <BoxPane bxml:id="start_gcmLabels" orientation="vertical">
+                                    <BoxPane bxml:id="gcmLabels" orientation="vertical">
                                         <Label text="GCM ID" preferredWidth="60" />
                                     </BoxPane>
-                                    <BoxPane bxml:id="start_gcmCatLabels" orientation="vertical">
+                                    <BoxPane bxml:id="gcmCatLabels" orientation="vertical">
                                         <Label text="GCM Category" preferredWidth="100"/>
                                     </BoxPane>
-                                    <BoxPane bxml:id="start_gcmCatSelectionLabels" orientation="vertical">
+                                    <BoxPane bxml:id="gcmCatSelectionLabels" orientation="vertical">
                                         <Label text="Selections" preferredWidth="80"/>
                                     </BoxPane>
                                 </BoxPane>
@@ -124,7 +124,7 @@
                         </TabPane.tabData>
                         <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
                             <Border preferredWidth="500" preferredHeight="300">
-                                <Label text="Under construction, will come soon..." styles="{font:{bold:true}, padding:6, horizontalAlignment:'center', verticalAlignment:'center', wrapText:true}" />
+                                <TextArea text="@help.txt" styles="{padding:10, wrapText:true}" editable="false"/>
                             </Border>
                         </BoxPane>
                     </BoxPane>
