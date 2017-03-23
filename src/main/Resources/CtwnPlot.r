@@ -291,11 +291,11 @@ if (length(args) == 0) {
       "PDF", #2
       "HWAH_S", #3
       "..\\..\\test\\resources\\r_dev\\ACMO-Niroro-Peanut\\CTWN", #4
-      "..\\..\\test\\resources\\r_dev\\ACMO-Niroro-Peanut\\plot_output\\CTWNPLOT-HWAH_S", $5
+      "..\\..\\test\\resources\\r_dev\\ACMO-Niroro-Peanut\\plot_output\\CTWNPLOT-HWAH_S", #5
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CTWN", #4
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output\\CTWNPLOT-HWAH_S", #5
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output_ui\\CTWNPLOT-HWAH_S", #5
-      "true" $6
+      "true" #6
     )
   # utilScpPath <- "PlotUtil.r"
 }
