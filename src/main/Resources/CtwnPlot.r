@@ -74,6 +74,14 @@
 
 options(echo = F)
 
+setLibPath <- function(path) {
+  def_lib_path <- "~\\R\\win-library\\3.3"
+  .libPaths(def_lib_path)
+  .libPaths(path)
+  paths <- .libPaths()
+  print(paths)
+}
+
 # Convert variable from ICASA name to description text with unit
 name_unit <- function(inputcode){
   return (name_unit2(inputcode, NULL))
@@ -279,13 +287,15 @@ if (length(args) == 0) {
   # for debug purpose and sample for commend line arguments
   args <-
     c(
-      "~\\R\\win-library\\3.3",
-      "PDF",
-      "HWAH_S",
-      "..\\..\\test\\resources\\r_dev\\ACMO-p\\CTWN",
-      "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output\\CTWNPLOT-HWAH_S",
-      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output_ui\\CTWNPLOT-HWAH_S",
-      "true"
+      "~\\R\\win-library\\3.3", #1
+      "PDF", #2
+      "HWAH_S", #3
+      "..\\..\\test\\resources\\r_dev\\ACMO-Niroro-Peanut\\CTWN", #4
+      "..\\..\\test\\resources\\r_dev\\ACMO-Niroro-Peanut\\plot_output\\CTWNPLOT-HWAH_S", $5
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CTWN", #4
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output\\CTWNPLOT-HWAH_S", #5
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output_ui\\CTWNPLOT-HWAH_S", #5
+      "true" $6
     )
   # utilScpPath <- "PlotUtil.r"
 }
@@ -483,7 +493,11 @@ mergedCDF <- NULL
 for (i in 1 : length(models)) {
   for (j in 1 : length(climates)) {
     subData <- subset(merged, MODEL == models[i] & CLIM_ID == climates[j])
-    subData$ECDF <- ecdf(subData$VALUE)(subData$VALUE)
+    if (nrow(subset(subData, !is.na(VALUE))) > 0) {
+      subData$ECDF <- ecdf(subData$VALUE)(subData$VALUE)
+    } else {
+      subData$ECDF <- NA
+    }
     subData$CLIM_TEXT <- climateTexts[j]
     if (is.null(mergedCDF)) {
       mergedCDF <- subData
@@ -544,7 +558,7 @@ print(p32)
 print(p33)
 print(p34)
 print(p35)
-dev.off()
+graphics.off()
 
 # Section 4 #
 #___________________________________________#
