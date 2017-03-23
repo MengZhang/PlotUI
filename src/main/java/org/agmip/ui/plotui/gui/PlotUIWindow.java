@@ -2,6 +2,7 @@ package org.agmip.ui.plotui.gui;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -230,18 +231,19 @@ public class PlotUIWindow extends Window implements Bindable {
             @Override
             public void textChanged(TextInput ti) {
                 File config = Paths.get(ti.getText(), PlotUtil.CONFIG_FILE).toFile();
-                if (config.isFile()) {
-                    CONFIG_MAP = PlotUtil.readConfig(config, ti.getText());
-                    globalConfig = getConfig(PlotUtil.GLOBAL_CONFIG);
-                    stdPlotTab.updateConfig();
-                    corPlotTab.updateConfig();
-                    ctwnPlotTab.updateConfig();
-                    hisPlotTab.updateConfig();
-                    loadAllConfig();
-                    LOG.info("Load config file from working directory <{}>", ti.getText());
-                } else {
+                if (!config.exists()) {
                     LOG.info("Not detect existing config under working directory, will create a new config file instead");
+                    InputStream configIs = PlotUtil.class.getResourceAsStream("/" + CONFIG_FILE_PROJECT);
+                    PlotUtil.deployFile(configIs, config);
                 }
+                CONFIG_MAP = transferREnv(PlotUtil.readConfig(config, ti.getText()));
+                globalConfig = getConfig(PlotUtil.GLOBAL_CONFIG);
+                stdPlotTab.updateConfig();
+                corPlotTab.updateConfig();
+                ctwnPlotTab.updateConfig();
+                hisPlotTab.updateConfig();
+                loadAllConfig();
+                LOG.info("Load config file from working directory <{}>", ti.getText());
                 globalConfig.put("WorkDir", ti.getText());
             }
         });
@@ -252,6 +254,13 @@ public class PlotUIWindow extends Window implements Bindable {
         // Global
         workDirInput.setText(MapUtil.getValueOr(globalConfig, "WorkDir", ""));
 
+    }
+    
+    private HashMap<String, HashMap<String, String>> transferREnv(HashMap<String, HashMap<String, String>> config) {
+        HashMap<String, String> global = config.get(PlotUtil.GLOBAL_CONFIG);
+        global.put("RExePath", MapUtil.getValueOr(getConfig(PlotUtil.GLOBAL_CONFIG), "RExePath", ""));
+        global.put("RLibPath", MapUtil.getValueOr(getConfig(PlotUtil.GLOBAL_CONFIG), "RLibPath", ""));
+        return config;
     }
 
     private void loadAllConfig() {

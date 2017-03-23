@@ -2,7 +2,6 @@
     <Configuration name="GlobalConfig">
         <RLibPath>default</RLibPath>
         <RExePath>default</RExePath>
-        <WorkDir></WorkDir>
         <GcmMapping>0XFX:Base:#D3D3D3|</GcmMapping>
     </Configuration>
     <Configuration name="StandardPlot">

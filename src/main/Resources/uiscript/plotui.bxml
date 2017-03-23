@@ -124,7 +124,7 @@
                         </TabPane.tabData>
                         <BoxPane orientation="vertical" styles="{padding:{bottom:6, left: 6}}">
                             <Border preferredWidth="500" preferredHeight="300">
-                                <TextArea text="@help.txt" styles="{padding:10, wrapText:true}" editable="false"/>
+                                <TextArea text="@help.txt" styles="{wrapText:true}" editable="false"/>
                             </Border>
                         </BoxPane>
                     </BoxPane>

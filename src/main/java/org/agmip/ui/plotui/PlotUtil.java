@@ -53,6 +53,7 @@ public class PlotUtil {
     public final static String R_SCP_PATH = "r_lib";
     public final static String CONFIG_FILE = "config.xml";
     public final static String CONFIG_FILE_DEF = "config_def.xml";
+    public final static String CONFIG_FILE_PROJECT = "config_project.xml";
     public final static String CONFIG_FILE_DEF_TEMPLATE = "config_def.template";
     public final static String CONFIG_FILE_PROJECT_TEMPLATE = "config_project.template";
     public final static String REPORT_TEMPLATE = "report.template";
@@ -137,7 +138,7 @@ public class PlotUtil {
         }
     }
 
-    private static void deployFile(InputStream in, File outputFile) {
+    public static void deployFile(InputStream in, File outputFile) {
         try (
                 BufferedReader br = new BufferedReader(new InputStreamReader(in));
                 BufferedWriter wr = new BufferedWriter(new FileWriter(outputFile))) {
