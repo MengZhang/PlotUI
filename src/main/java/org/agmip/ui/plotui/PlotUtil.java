@@ -592,6 +592,8 @@ public class PlotUtil {
                 return "green";
             } else if (color.equals(Color.BLUE)) {
                 return "blue";
+            } else if (color.equals(Color.YELLOW)) {
+                return "yellow";
             } else if (color.equals(new Color(255, 215, 0))) {
                 return "yellow";
             } else if (color.equals(Color.BLACK)) {

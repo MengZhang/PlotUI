@@ -494,7 +494,12 @@ public class PlotUIWindow extends Window implements Bindable {
             for (String gcmPair : gcmPairs) {
                 String[] mapping = gcmPair.split(":");
                 if (mapping.length > 2) {
-                    gcmCatColorMap.put(mapping[1], mapping[2]);
+                    if ("yellow".equals(mapping[2]) || "#FFFF00".equals(mapping[2])) {
+                        gcmCatColorMap.put(mapping[1], "#FFD700");
+                    } else {
+                        gcmCatColorMap.put(mapping[1], mapping[2]);
+                    }
+                    
                 }
             }
         }

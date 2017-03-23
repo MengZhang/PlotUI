@@ -16,21 +16,22 @@ if (length(args) == 0) {
     c(
       "~\\R\\win-library\\3.3",
       "Result",
-      "CDF",
+      "BoxPlot",
+      # "CDF",
       "PNG",
       "HWAH_S",
       "ABSOLUTE",
       # "RELATIVE",
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM3",
-      "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM1",
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM1",
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM3",
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM4",
       "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM2\\RCP4.5",
-      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM5\\RCP4.5",
+      "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM5\\RCP4.5",
       "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output",
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output_ui",
       "true",
-      "CM2CM5",
+      "CM1CM2RCP4",
       "GWXF:Middle_GIXF:Cool-Wet_GEXF:Cool-Dry_0XXX:Base_GMXF:Hot-Wet_GJXF:Hot-Dry_"
       # "GWXF:Middle:#333333_GIXF:Cool-Wet:green_GEXF:Cool-Dry:blue_0XXX:Base:#D3D3D3_GMXF:Hot-Wet:yellow_GJXF:Hot-Dry:red_"
     )
@@ -105,7 +106,7 @@ if (plotType == "BoxPlot") {
       aes(fill = GCM),
       outlier.colour = NA,
       width = gcmNum / 12,
-      color = "black"
+      color = "darkgrey"
     )  +
     coord_cartesian(ylim = adjustRange(range(boxplot(merged$VALUE, plot = FALSE)$stats), rangeFactors)) +
     theme_bw() +
@@ -156,7 +157,7 @@ if (plotType == "BoxPlot") {
       facet_wrap(~MODEL, ncol = 1) +
       xlab(plotVarTitle) +
       ylab("Cumulative Frequency") +
-      scale_fill_manual(values=colors) +
+      scale_color_manual(values=colors) +
       labs(title=title) +
       theme(axis.title = element_text(size = 13, face = "bold")) +
       theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5))
@@ -169,7 +170,7 @@ if (plotType == "BoxPlot") {
       geom_step() +
       xlab(plotVarTitle) +
       ylab("Cumulative Frequency") +
-      scale_fill_manual(values=colors) +
+      scale_color_manual(values=colors) +
       labs(title=title) +
       theme(axis.title = element_text(size = 13, face = "bold")) +
       theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5))

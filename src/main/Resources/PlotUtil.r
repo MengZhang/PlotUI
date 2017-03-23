@@ -63,10 +63,13 @@ readACMO <- function(inputFolder, acmoinput, plotVarID, metaVars, metaNames){
 }
 
 readACMOAve <- function(inputFolder, gcmCatEnv, duration, plotVarID) {
-  acmoinputs <- list.files(path = inputFolder, pattern = "ACMO.*\\.csv")
+  acmoinputs <- list.files(path = inputFolder, pattern = "ACMO.*\\.csv", recursive = T)
   acmoinputs <- as.character(acmoinputs)
   ret <- list()
   gcms <- ls(gcmCatEnv)
+  if (length(acmoinputs) == 0) {
+    return (ret)
+  }
   
   for (i in 1:length(acmoinputs)) {
     OriData <- readACMO(inputFolder, acmoinputs[i], plotVarID, c("CLIM_ID", "CROP_MODEL", "RAP_ID", "MAN_ID"), c("CLIM_ID", "MODEL", "RAP", "MAN"))
@@ -106,9 +109,12 @@ readACMOAve <- function(inputFolder, gcmCatEnv, duration, plotVarID) {
 }
 
 readACMOCM0 <- function(inputFolder, plotVarID, plotHisVarID) {
-  acmoinputs <- list.files(path = inputFolder, pattern = "ACMO.*\\.csv")
+  acmoinputs <- list.files(path = inputFolder, pattern = "ACMO.*\\.csv", recursive = T)
   acmoinputs <- as.character(acmoinputs)
   ret <- NULL
+  if (length(acmoinputs) == 0) {
+    return (ret)
+  }
   
   if (length(acmoinputs) > 0) {
     
@@ -213,6 +219,7 @@ diffSystem <- function(system1, system2, gcmCats) {
   merged <- NULL
   gcmNumSys1 <- length(system1)
   gcmNumSys2 <- length(system2)
+  gcmLevels <- c()
   
   if (gcmNumSys1 == 1 || gcmNumSys2 == 1) {
     if (gcmNumSys1 == 1) {
@@ -226,6 +233,7 @@ diffSystem <- function(system1, system2, gcmCats) {
       gcmCat <- gcmCats[i]
       compare <- compSys[[gcmCat]]
       merged <- diffACMOByGCM(merged, base, compare)
+      gcmLevels <- c(gcmLevels, levels(as.factor(compare$GCM)))
     }
   } else {
     for (i in 1 : length(gcmCats)) {
@@ -233,9 +241,11 @@ diffSystem <- function(system1, system2, gcmCats) {
       base <- system1[[gcmCat]]
       compare <- system2[[gcmCat]]
       merged <- diffACMOByGCM(merged, base, compare)
+      gcmLevels <- c(gcmLevels, levels(as.factor(compare$GCM)))
     }
   }
   
+  merged$GCM <- factor(as.factor(merged$GCM), levels = gcmLevels)
   return (merged)
 }
 
@@ -275,11 +285,15 @@ diffACMOByGCM <- function(merged, base, compare) {
 combineSystem <- function(system1, system2, gcmCats) {
   
   merged <- NULL
+  gcmLevels <- c()
   
   for (i in 1 : length(gcmCats)) {
     merged <- mergedACMOByGCM(merged, system1, gcmCats[i])
+    gcmLevels <- c(gcmLevels, levels(as.factor(system1[[gcmCats[i]]]$GCM)))
     merged <- mergedACMOByGCM(merged, system2, gcmCats[i])
+    gcmLevels <- c(gcmLevels, levels(as.factor(system2[[gcmCats[i]]]$GCM)))
   }
+  merged$GCM <- factor(as.factor(merged$GCM), levels = gcmLevels)
   return (merged)
 }
 
@@ -374,15 +388,15 @@ getSys2Color <- function(color) {
   } else if (color == "green") {
     ret <- "springgreen"
   } else if (color == "blue") {
-    ret <- "mediumblue"
+    ret <- "royalblue2"
   } else if (color == "yellow") {
     ret <- "gold"
   } else if (color == "red") {
-    ret <- "orangered"
+    ret <- "red4"
   } else if (startsWith(color, "#") && nchar(color) == 7) {
-    r <- as.numeric(as.hexmode(substr(color, 2, 3))) / 255 * 0.5
-    g <- as.numeric(as.hexmode(substr(color, 4, 5))) / 255 * 0.5
-    b <- as.numeric(as.hexmode(substr(color, 6, 7))) / 255 * 0.5
+    r <- as.numeric(as.hexmode(substr(color, 2, 3))) / 255 * 0.7 + 0.3
+    g <- as.numeric(as.hexmode(substr(color, 4, 5))) / 255 * 0.7 + 0.3
+    b <- as.numeric(as.hexmode(substr(color, 6, 7))) / 255 * 0.7 + 0.3
     ret <- rgb(r, g, b)
   }
   return (ret)
@@ -665,12 +679,12 @@ faceit_ClimAnomaly <-
       }
       if (ClimVar == "TMAX") {
         ClimCol <- OriData$TMAX
-        unit <- "¡ãC"
+        unit <- "ï¿½ï¿½C"
         ClimName <- "Maximum temperature"
       }
       if (ClimVar == "TMIN") {
         ClimCol <- OriData$TMIN
-        unit <- "¡ãC"
+        unit <- "ï¿½ï¿½C"
         ClimName <- "Minimum temperature"
       }
       if (ClimVar == "RAIN") {
@@ -680,7 +694,7 @@ faceit_ClimAnomaly <-
       }
       if (ClimVar == "TDEW") {
         ClimCol <- OriData$TDEW
-        unit <- "¡ãC"
+        unit <- "ï¿½ï¿½C"
         ClimName <- "Dewpoint temperature"
       }
       if (ClimVar == "VPRSD") {
