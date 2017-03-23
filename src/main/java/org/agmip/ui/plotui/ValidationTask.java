@@ -59,12 +59,15 @@ public class ValidationTask extends Task<LinkedHashMap<File, ArrayList<HashMap<S
     
     public ValidationTask(List<File> inputCsvFiles, String... validateVars) {
         this.inputCsvFiles = inputCsvFiles;
+        for (String var : validateVars) {
+            titlePozMap.put(var.toUpperCase(), -1);
+        }
         titlePozMap.put("EXNAME", 2);
         int i = 52;
         HashSet<String> vars = new HashSet(Arrays.asList(validateVars));
         for (String var : MODEL_OUTPUT_VARS) {
             if (vars.contains(var)) {
-                titlePozMap.put(var, i);
+                titlePozMap.put(var.toUpperCase(), i);
             }
             i++;
         }
@@ -98,12 +101,11 @@ public class ValidationTask extends Task<LinkedHashMap<File, ArrayList<HashMap<S
                     for (String var : titlePozMap.keySet()) {
                         String val = getValue(nextLine, var, "").trim();
                         if (val.equals("")) {
-                            val = "X";
                             isBlank = true;
-                        } else if (!var.equalsIgnoreCase("exname")) {
-                            val = "";
+                            unitReport.put(var.toLowerCase(), "X");
+                        } else if (var.equalsIgnoreCase("exname")) {
+                            unitReport.put("exname", val);
                         }
-                        unitReport.put(var.toLowerCase(), val);
                     }
                     if (isBlank) {
                         LOG.debug("Detect blank records!");
@@ -158,13 +160,6 @@ public class ValidationTask extends Task<LinkedHashMap<File, ArrayList<HashMap<S
                 titlePozMap.put(titles[i], i);
             }
         }
-//        String[] keys = titlePozMap.keySet().toArray(new String[]{});
-//        HashSet<String> titleSet = new HashSet(Arrays.asList(keys));
-//        for (String key : keys) {
-//            if (!titleSet.contains(key)) {
-//                titlePozMap.remove(key);
-//            }
-//        }
     }
 
     private String getValue(String[] line, String var, String defVal) {

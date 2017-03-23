@@ -35,47 +35,21 @@
         <p>The follow tables shows the missing variable used for plot in each ACMO file.</p>
         #foreach ( $csv in $reports.keySet() )
         <p>$!{csv.getPath()}</p>
-        <table style="width: 100%" class="style4">
+        <table class="style4">
             <tr>
-                <td class="style2" style="width: 70px"><strong>EXNAME</strong></td>
-                <td class="style2" style="width: 70px"><strong>HWAH_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>CWAH_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>ADAT_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>MDAT_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>HADAT_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>LAIX_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>PRCP_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>ETCP_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>NUCM_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>NLCM_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>EPCP_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>ESCP_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>SRAA_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>TMAXA_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>TMINA_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>TAVGA_S</strong></td>
-                <td class="style2" style="width: 70px"><strong>CO2D_S</strong></td>
+                #foreach ( $var in $titles.get($csv) )
+                <td class="style2" style="width: 70px"><strong>$var.toUpperCase()</strong></td>
+                #end
             </tr>
             #foreach ( $farm in $reports.get($csv) )
             <tr>
-                <td class="style11">$!farm.exname</td>
-                <td class="style12">$!farm.hwah_s</td>
-                <td class="style12">$!farm.cwah_s</td>
-                <td class="style12">$!farm.adat_s</td>
-                <td class="style12">$!farm.mdat_s</td>
-                <td class="style12">$!farm.hadat_s</td>
-                <td class="style12">$!farm.laix_s</td>
-                <td class="style12">$!farm.prcp_s</td>
-                <td class="style12">$!farm.etcp_s</td>
-                <td class="style12">$!farm.nucm_s</td>
-                <td class="style12">$!farm.nlcm_s</td>
-                <td class="style12">$!farm.epcp_s</td>
-                <td class="style12">$!farm.escp_s</td>
-                <td class="style12">$!farm.sraa_s</td>
-                <td class="style12">$!farm.tmaxa_s</td>
-                <td class="style12">$!farm.tmina_s</td>
-                <td class="style12">$!farm.tavga_s</td>
-                <td class="style12">$!farm.co2d_s</td>
+                #foreach ( $var in $titles.get($csv) )
+                  #if ($var.equals("exname"))
+                  <td class="style11">$!farm.get($var)</td>
+                  #else
+                  <td class="style12">$!farm.get($var)</td>
+                  #end
+                #end
             </tr>
             #end
 

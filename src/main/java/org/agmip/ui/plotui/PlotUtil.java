@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
@@ -392,12 +393,30 @@ public class PlotUtil {
         return f.getName().toLowerCase().endsWith(".csv");
     }
 
-    public static File generateReport(LinkedHashMap<File, ArrayList<HashMap<String, String>>> result, String outputPath) {
+    public static File generateReport(LinkedHashMap<File, ArrayList<HashMap<String, String>>> result, RScps rScpType) {
         LOG.info("Saving validation report ...");
-        File report = Paths.get(outputPath, "report_" + System.currentTimeMillis() + ".htm").toFile();
-        Functions.revisePath(outputPath);
+        File report = getPlotOutputFile(rScpType, System.currentTimeMillis() + ".htm");
+        if (rScpType.equals(RScps.CTWNPlot)) {
+            report = Paths.get(report.getPath(), "report_CTWN_" + System.currentTimeMillis() + ".htm").toFile();
+        }
+        Functions.revisePath(report.getParent());
+        
         try {
-            deployFileByTemplate(report, REPORT_TEMPLATE, result, "reports");
+//            deployFileByTemplate(report, REPORT_TEMPLATE, result, "reports");
+            LinkedHashMap<File, HashSet<String>> titleMap = new LinkedHashMap();
+            for (File f : result.keySet()) {
+                HashSet<String> varSet = new LinkedHashSet();
+                varSet.add("exname");
+                for (HashMap<String, String> reportData : result.get(f)) {
+                    varSet.addAll(reportData.keySet());
+                }
+                titleMap.put(f, varSet);
+            }
+            HashMap<String, Object> data = new HashMap();
+            data.put("titles", titleMap);
+            data.put("reports", result);
+            deployFileByTemplate(report, REPORT_TEMPLATE, data, "reports");
+            
         } catch (IOException ex) {
             LOG.error("An error occured while writing the validation report: {}", ex.getMessage());
             LOG.error(Functions.getStackTrace(ex));
@@ -414,6 +433,21 @@ public class PlotUtil {
             Reader R = new InputStreamReader(PlotUIWindow.class.getClassLoader().getResourceAsStream(templateName));
 
             context.put(dataName, data);
+            Velocity.evaluate(context, writer, "Generate " + dataName, R);
+            writer.close();
+        }
+    }
+
+    public static void deployFileByTemplate(File outputFile, String templateName, HashMap<String, Object> data, String dataName) throws IOException {
+        try (Writer writer = PlotUtil.openUTF8FileForWrite(outputFile)) {
+            Velocity.init();
+            VelocityContext context = new VelocityContext();
+            Reader R = new InputStreamReader(PlotUIWindow.class.getClassLoader().getResourceAsStream(templateName));
+
+            for (String key : data.keySet()) {
+                context.put(key, data.get(key));
+            }
+            
             Velocity.evaluate(context, writer, "Generate " + dataName, R);
             writer.close();
         }
@@ -443,7 +477,7 @@ public class PlotUtil {
     public static ArrayList<String> getValidateVars(PlotUtil.RScps rScpType) {
         HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(rScpType.toString());
         ArrayList<String> plotVars = new ArrayList();
-        if (rScpType.equals(PlotUtil.RScps.StandardPlot) || rScpType.equals(PlotUtil.RScps.HistoricalPlot)) {
+        if (rScpType.equals(PlotUtil.RScps.StandardPlot)) {
             plotVars.add(config.get("plotVar"));
         } else if (rScpType.equals(PlotUtil.RScps.CorrelationPlot)) {
             plotVars.add(config.get("plotVarX"));
@@ -454,11 +488,37 @@ public class PlotUtil {
             plotVars.add(config.get("plotVar"));
         } else if (rScpType.equals(PlotUtil.RScps.ClimAnomaly)) {
             plotVars.add(config.get("plotVar"));
+        } else if (rScpType.equals(PlotUtil.RScps.HistoricalPlot)) {
+            plotVars.add(config.get("plotVar"));
+            String obsVar = getObsVar(config.get("plotVar"));
+            if (obsVar != null) {
+                plotVars.add(obsVar);
+            }
+            
         }
         return plotVars;
     }
-
+    
+    private static String getObsVar(String simVar) {
+        if (null != simVar) switch (simVar) {
+            case "HWAH_S":
+                return "HWAH";
+            case "CWAH_S":
+                return "CWAH";
+            case "HADAT_S":
+                return "HDATE";
+            default:
+                return null;
+        }
+        return null;
+    }
+    
     public static File getPlotOutputFile(RScps rScpType) {
+        HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(rScpType.toString());
+        return getPlotOutputFile(rScpType, config.get("plotFormat"));
+    }
+
+    public static File getPlotOutputFile(RScps rScpType, String format) {
         HashMap<String, String> config = PlotUtil.CONFIG_MAP.get(rScpType.toString());
         StringBuilder plotFileName = new StringBuilder();
         String outputPath = config.get("outputPath");
@@ -467,19 +527,19 @@ public class PlotUtil {
             plotFileName.append("-").append(config.get("plotType"));
             plotFileName.append("-").append(config.get("plotMethod"));
             plotFileName.append("-").append(config.get("plotVar"));
-            plotFileName.append(".").append(config.get("plotFormat"));
+            plotFileName.append(".").append(format);
         } else if (rScpType.equals(PlotUtil.RScps.CorrelationPlot)) {
             plotFileName.append(config.get("outputGraph"));
             plotFileName.append("-").append(config.get("plotVarX"));
             plotFileName.append("-").append(config.get("plotVarY"));
             plotFileName.append("-").append(config.get("group1"));
             plotFileName.append("-").append(config.get("group2"));
-            plotFileName.append(".").append(config.get("plotFormat"));
+            plotFileName.append(".").append(format);
         } else if (rScpType.equals(PlotUtil.RScps.ClimAnomaly)) {
             plotFileName.append(config.get("outputGraph"));
             plotFileName.append("-").append(config.get("plotType"));
             plotFileName.append("-").append(config.get("plotVar"));
-            plotFileName.append(".").append(config.get("plotFormat"));
+            plotFileName.append(".").append(format);
         } else if (rScpType.equals(PlotUtil.RScps.CTWNPlot)) {
         } else {
             return null;

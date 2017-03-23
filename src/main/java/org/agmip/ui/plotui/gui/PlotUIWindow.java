@@ -306,7 +306,7 @@ public class PlotUIWindow extends Window implements Bindable {
         LOG.info("Start validation for {}", curTab.toString());
         ArrayList<String> plotVars = PlotUtil.getValidateVars(curTab);
         String inputDir = PlotUtil.CONFIG_MAP.get(curTab.toString()).get("inputDir");
-        final String outputDir = PlotUtil.CONFIG_MAP.get(curTab.toString()).get("outputPath");
+        String outputDir = PlotUtil.CONFIG_MAP.get(curTab.toString()).get("outputPath");
         if (inputDir == null || inputDir.equals("")) {
             LOG.warn("Invalid input path for validation!");
             Alert.alert(MessageType.ERROR, "Invalid input path!", PlotUIWindow.this);
@@ -330,7 +330,7 @@ public class PlotUIWindow extends Window implements Bindable {
                     if (!result.isEmpty()) {
 
                         // Generate report
-                        final File report = PlotUtil.generateReport(result, outputDir);
+                        final File report = PlotUtil.generateReport(result, curTab);
 
                         // Ask for user confirmation
                         BXMLSerializer serializer = new BXMLSerializer();

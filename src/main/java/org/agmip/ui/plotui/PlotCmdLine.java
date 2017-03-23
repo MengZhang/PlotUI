@@ -75,7 +75,7 @@ public class PlotCmdLine {
             if (!result.isEmpty()) {
 
                 // Generate report
-                File report = PlotUtil.generateReport(result, outputDir);
+                File report = PlotUtil.generateReport(result, rScpType);
 
                 // Ask for user confirmation
                 PlotUtil.waitForUserConfirm(
