@@ -226,6 +226,7 @@ public class PlotUIWindow extends Window implements Bindable {
             }
         });
 
+        workDirInput.setText(MapUtil.getValueOr(globalConfig, "WorkDir", ""));
         workDirInput.getTextInputContentListeners().add(new TextInputContentListener.Adapter() {
 
             @Override
@@ -251,8 +252,6 @@ public class PlotUIWindow extends Window implements Bindable {
         
         // Load configuration from XML into GUI
         loadAllConfig();
-        // Global
-        workDirInput.setText(MapUtil.getValueOr(globalConfig, "WorkDir", ""));
 
     }
     
