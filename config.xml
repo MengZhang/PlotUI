@@ -3,7 +3,7 @@
         <RLibPath>D:\SSD_USER\Documents\R\win-library\3.3</RLibPath>
         <RExePath>C:\Program Files\R\R-3.3.2\bin\Rscript.exe</RExePath>
         <WorkDir>D:\SSD_USER\Documents\NetBeansProjects\Develop\PlotUI\src\test\resources\r_dev\ACMO-p</WorkDir>
-        <GcmMapping>I1XF:Hot-Wet:#FFFF00|GWXF:Hot-Dry:red|GIXF:Hot-Wet:#FFFF00|GEXF:Cool-Dry:blue|0XXX:Base:#D3D3D3|GMXF:Cool-Wet:green|IEXF:Cool-Dry:blue|IWXF:Hot-Dry:red|ILXF:Cool-Wet:green|ICXF:Middle:#333333|GJXF:Middle:#333333|</GcmMapping>
+        <GcmMapping>I1XF:Hot-Wet:yellow|GWXF:Hot-Dry:red|GIXF:Hot-Wet:yellow|GEXF:Cool-Dry:blue|0XXX:Base:#D3D3D3|GMXF:Cool-Wet:green|IEXF:Cool-Dry:blue|IWXF:Hot-Dry:red|ILXF:Cool-Wet:green|ICXF:Middle:#333333|GJXF:Middle:#333333|</GcmMapping>
     </Configuration>
     <Configuration name="StandardPlot">
         <title>CM5CM6</title>
@@ -22,9 +22,9 @@
         <plotFormat>PNG</plotFormat>
         <plotVarX>HWAH_S</plotVarX>
         <plotVarY>CWAH_S</plotVarY>
-        <group1>SOIL_ID</group1>
-        <group2>CLIM_ID</group2>
-        <inputDir>CM2</inputDir>
+        <group1>CMSS</group1>
+        <group2>No</group2>
+        <inputDir>CM2-CC</inputDir>
         <outputPath>plot_output_ui</outputPath>
         <outputACMO>true</outputACMO>
         <outputGraph>Correlation</outputGraph>
@@ -40,7 +40,7 @@
         <title>CM0</title>
         <plotType>ScatterPlot</plotType>
         <plotFormat>PDF</plotFormat>
-        <plotVar>HADAT_S</plotVar>
+        <plotVar>CWAH_S</plotVar>
         <plotMethod>RELATIVE</plotMethod>
         <inputDir>CM0</inputDir>
         <outputPath>plot_output_ui</outputPath>
