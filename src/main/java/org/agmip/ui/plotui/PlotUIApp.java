@@ -39,11 +39,11 @@ public class PlotUIApp extends Application.Adapter {
     public static void main(String[] args) throws TaskExecutionException {
 
         try {
-            boolean cmdFlg = true;
+            boolean cmdFlg = false;
             boolean initFlg = false;
             for (String arg : args) {
-                if (arg.equalsIgnoreCase("-config")) {
-                    cmdFlg = false;
+                if (arg.equalsIgnoreCase("-cli")) {
+                    cmdFlg = true;
                 } else if (arg.equalsIgnoreCase("-init")) {
                     initFlg = true;
                 }
