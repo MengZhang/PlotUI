@@ -414,6 +414,28 @@ getDefColorEnv <- function() {
   return (ret)
 }
 
+getAutoColors <- function(autoNum, usedColors) {
+  if (autoNum < 1) {
+    return (usedColors)
+  }
+  size <- autoNum + length(usedColors)
+  colors <- rainbow(size)
+  if (length(usedColors)  == 0) {
+    return (colors)
+  }
+  ret <- usedColors
+  for (i in 1 : length(usedColors)) {
+    usedColors[i] <- toupper(paste(as.hexmode(as.numeric(as.character(col2rgb(usedColors[i])))), collapse = ""))
+  }
+  usedColors <- paste0("FF", usedColors)
+  for (color in colors) {
+    if (!color %in% usedColors) {
+      ret <- c(ret, color)
+    }
+  }
+  return (ret[1:size])
+}
+
 setLibPath <- function(path) {
   def_lib_path <- "~\\R\\win-library\\3.3"
   .libPaths(def_lib_path)

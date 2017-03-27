@@ -21,9 +21,9 @@ if (length(args) == 0) {
       "ScatterPlot", #3
       "PNG", #4
       # "PDF", #4
-      # "HWAH_S", #5
+      "HWAH_S", #5
       # "CWAH_S", #5
-      "HADAT_S", #5
+      # "HADAT_S", #5
       # "ABSOLUTE", #6
       "RELATIVE", #6
       "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM0", #7
@@ -62,15 +62,18 @@ merged <- readACMOCM0(inputFolder, plotVarID, getHistVarID(plotVarID))
 if (plotMethod == "RELATIVE") {
   merged <- diffSystemCM0(merged)
   plotVarTitle <- paste("Relative Change of", name_unit2(plotVarID, "%"), sep = "\n")
-  colors <- c("red","cyan2")
+  groups <- levels(as.factor(merged$GROUP))
+  colors <- getAutoColors(length(groups) - 2, c("red", "blue"))
   rangeFactors <- c(0.9, 1.1)
 } else {
   plotVarTitle <- name_unit(getHistVarID(plotVarID))
-  colors <- c("red","cyan2", "green")
+  groups <- levels(as.factor(merged$GROUP))
+  colors <- getAutoColors(length(groups) - 2, c("red", "blue", "#333333"))
   rangeFactors <- c(0.9, 1.3)
 }
+
 # merged <- subset(merged, !is.null(VALUE) & VALUE != "" & VALUE != "-99")
-groupNum <- length(levels(as.factor(merged$GROUP)))
+groupNum <- length(groups)
 
 if (plotType == "BoxPlot") {
   
@@ -144,20 +147,16 @@ if (plotType == "BoxPlot") {
   if (plotMethod == "RELATIVE") {
     
     # Currently limited to 2 model comparison.
-    models <- levels(as.factor(merged$GROUP))
-    if (length(models) != 2) {
+    if (groupNum != 2) {
       
       warning("Current Scatter Plot only support for 2 models, please contact IT team to update the script")
       
     } else {
       
-      models <- levels(as.factor(merged$GROUP))
-      mergedScatter <- subset(merged, GROUP == models[1])
-      mergedScatter$VALUE2 <- subset(merged, GROUP == models[2])$VALUE
+      mergedScatter <- subset(merged, GROUP == groups[1])
+      mergedScatter$VALUE2 <- subset(merged, GROUP == groups[2])$VALUE
       mergedScatter <- mergedScatter[,c("EXNAME", "VALUE", "VALUE2")]
       colnames(mergedScatter) <- c("EXNAME", "VALUE_X", "VALUE_Y")
-      range(boxplot(merged$VALUE, plot = FALSE)$stats)[1]
-      range(boxplot(merged$VALUE, plot = FALSE)$stats)[2]
       ggplot(data = mergedScatter, aes(x = VALUE_X, y = VALUE_Y)) +
         geom_point() + 
         geom_smooth(method=lm, se=FALSE, fullrange=TRUE) +
@@ -178,8 +177,8 @@ if (plotType == "BoxPlot") {
     
   } else {
     
-    histData <- subset(merged, GROUP == "Historical")[, c("EXNAME", "VALUE")]
-    modelData <- subset(merged, GROUP != "Historical")
+    histData <- subset(merged, GROUP == "Observed")[, c("EXNAME", "VALUE")]
+    modelData <- subset(merged, GROUP != "Observed")
     models <- levels(as.factor(modelData$GROUP))
     mergedScatter <- NULL
     
