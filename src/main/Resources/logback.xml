@@ -28,5 +28,6 @@
   </logger>
   <root level="INFO">
     <appender-ref ref="CLI" />
+    <appender-ref ref="FILE" />
   </root>
 </configuration>
