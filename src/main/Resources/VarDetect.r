@@ -33,6 +33,7 @@ output <- args[4]
 
 acmoinputs <- list.files(path = inputFolder, pattern = ".*\\.csv", recursive = TRUE)
 acmoinputs <- as.character(acmoinputs)
+ret <- c()
 
 for (i in 1:length(acmoinputs)) {
   print(acmoinputs[i])
@@ -45,13 +46,9 @@ for (i in 1:length(acmoinputs)) {
   }
   OriData <-
     OriData[, c("SUITE_ID",plotVarID)]
-  if (i == 1) {
-    merged <- OriData
-  } else {
-    merged <- rbind(merged, OriData)
-  }
-  
+  colnames(OriData) <- c("SUITE_ID", "VALUE")
+  ret <- c(ret, levels(as.factor(OriData$VALUE)))
 }
-colnames(merged) <- c("SUITE_ID", "VALUE")
+
 # print(levels(merged$VALUE))
-write(levels(merged$VALUE), output)
+write(levels(as.factor(ret)), output)
