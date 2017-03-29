@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.agmip.ui</groupId>
     <artifactId>AgView</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
     <properties>
         <jdk.version>1.7</jdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <product.buildtype>dev</product.buildtype>
-        <product.buildversion>beta10</product.buildversion>
+        <product.buildtype>release</product.buildtype>
+        <product.buildversion>final</product.buildversion>
         <product.buildts>${maven.build.timestamp}</product.buildts>
     </properties>
     <dependencies>
