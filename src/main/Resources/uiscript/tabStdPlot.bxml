@@ -29,7 +29,7 @@
         <BoxPane orientation="vertical">
             <BoxPane orientation="horizontal">
                 <Label text="Plot Title:" styles="{font:{bold:true}}"/>
-                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Give a name for the plot" />
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Give a title for the plot" />
             </BoxPane>
             <BoxPane orientation="horizontal">
                 <TextInput bxml:id="title" preferredWidth="300" editable="true" text="Standard Plot Result" />
@@ -37,31 +37,39 @@
         </BoxPane>
         <!-- Plot Variable -->
         <BoxPane orientation="vertical">
-            <Label text="Plot Variable" styles="{font:{bold:true}}" />
-            <ListButton bxml:id="plotVarLB"
-                        listData="[
-                            'Simulated harvest yield,dry matter (HWAH_S)',
-                            'Simulated above-ground biomass at harvest,dry matter (CWAH_S)',
-                            'Simulated anthesis day (ADAT_S)',
-                            'Simulated maturity day (MDAT_S)',
-                            'Simulated harvest day (HADAT_S)',
-                            'Simulated leaf area index, maximum (LAIX_S)',
-                            'Total precipitation from planting to harvest (PRCP_S)',
-                            'Simulated evapotranspiration, planting to harvest (ETCP_S)',
-                            'Simulated N uptake during season (NUCM_S)',
-                            'Simulated N leached up to harvest maturity (NLCM_S)',
-                            'Transpiration, cumulative from planting to harvest (EPCP_S)',
-                            'Evaporation,soil, cumulative from planting to harvest (ESCP_S)',
-                            'Solar radiation, average, sowing to harvest (SRAA_S)',
-                            'Maximum daily air temperature, average, sowing to harvest (TMAXA_S)',
-                            'Minimum daily air temperature, average, sowing to harvest (TMINA_S)',
-                            'Daily air temperature, average, sowing to harvest (TAVGA_S)',
-                            'CO2 concentration, atmospheric average over day (CO2D_S)'
-                        ]"/>
+            <BoxPane orientation="horizontal">
+                <Label text="Plot Variable" styles="{font:{bold:true}}" />
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Select a variable for plot. A validation for this variable will be excuted on your data." />
+            </BoxPane>
+            <BoxPane orientation="horizontal">
+                <ListButton bxml:id="plotVarLB"
+                            listData="[
+                                'Simulated harvest yield,dry matter (HWAH_S)',
+                                'Simulated above-ground biomass at harvest,dry matter (CWAH_S)',
+                                'Simulated anthesis day (ADAT_S)',
+                                'Simulated maturity day (MDAT_S)',
+                                'Simulated harvest day (HADAT_S)',
+                                'Simulated leaf area index, maximum (LAIX_S)',
+                                'Total precipitation from planting to harvest (PRCP_S)',
+                                'Simulated evapotranspiration, planting to harvest (ETCP_S)',
+                                'Simulated N uptake during season (NUCM_S)',
+                                'Simulated N leached up to harvest maturity (NLCM_S)',
+                                'Transpiration, cumulative from planting to harvest (EPCP_S)',
+                                'Evaporation,soil, cumulative from planting to harvest (ESCP_S)',
+                                'Solar radiation, average, sowing to harvest (SRAA_S)',
+                                'Maximum daily air temperature, average, sowing to harvest (TMAXA_S)',
+                                'Minimum daily air temperature, average, sowing to harvest (TMINA_S)',
+                                'Daily air temperature, average, sowing to harvest (TAVGA_S)',
+                                'CO2 concentration, atmospheric average over day (CO2D_S)'
+                            ]"/>
+            </BoxPane>
         </BoxPane>
-        <!-- Plot Type -->
+        <!-- Plot Method -->
         <BoxPane orientation="vertical">
-            <Label text="Plot Method" styles="{font:{bold:true}}" />
+            <BoxPane orientation="horizontal">
+                <Label text="Plot Method" styles="{font:{bold:true}}" />
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Select a method for plot." />
+            </BoxPane>
             <BoxPane orientation="horizontal">
                 <bxml:define>
                     <ButtonGroup bxml:id="plotMethodButtons"/>
@@ -72,7 +80,10 @@
         </BoxPane>
         <!-- Plot Type -->
         <BoxPane orientation="vertical">
-            <Label text="Plot Type:" styles="{font:{bold:true}}" />
+            <BoxPane orientation="horizontal">
+                <Label text="Plot Type:" styles="{font:{bold:true}}" />
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Select a plot type for your graph." />
+            </BoxPane>
             <BoxPane orientation="horizontal">
                 <bxml:define>
                     <ButtonGroup bxml:id="plotTypeButtons"/>
@@ -83,7 +94,10 @@
         </BoxPane>
         <!-- Plot Format -->
         <BoxPane orientation="vertical">
-            <Label text="Plot Format:" styles="{font:{bold:true}}" />
+            <BoxPane orientation="horizontal">
+                <Label text="Plot Format:" styles="{font:{bold:true}}" />
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Select a output file format for your graph." />
+            </BoxPane>
             <BoxPane orientation="horizontal">
                 <bxml:define>
                     <ButtonGroup bxml:id="plotFormatButtons"/>
@@ -107,13 +121,14 @@
         <BoxPane orientation="vertical">
             <BoxPane orientation="horizontal">
                 <Label text="Output File Name:" styles="{font:{bold:true}}"/>
-                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Give a name for the plot file" />
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Give a name for the plot file. Will use title as default." />
             </BoxPane>
             <BoxPane orientation="horizontal">
                 <TextInput bxml:id="outputGraph" preferredWidth="300" editable="true" />
             </BoxPane>
             <BoxPane orientation="horizontal">
                 <Checkbox bxml:id="outputACMO" buttonData=" Output processed data as CSV file"/>
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Checked for dumping the reorganized data used for plot." />
             </BoxPane>
         </BoxPane>
     </Border>

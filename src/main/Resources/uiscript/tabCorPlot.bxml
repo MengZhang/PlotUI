@@ -18,7 +18,7 @@
         <BoxPane orientation="vertical">
             <BoxPane orientation="horizontal">
                 <Label text="Plot Title:" styles="{font:{bold:true}}"/>
-                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Give a name for the plot" />
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Give a title for the plot" />
             </BoxPane>
             <BoxPane orientation="horizontal">
                 <TextInput bxml:id="title" preferredWidth="300" editable="true" text="Standard Plot Result" />
@@ -26,92 +26,115 @@
         </BoxPane>
         <!-- Plot Variable X -->
         <BoxPane orientation="vertical">
-            <Label text="Select X Output Variable:" styles="{font:{bold:true}}" />
-            <ListButton bxml:id="plotVarXLB"
-                        listData="[
-                            'Simulated harvest yield,dry matter (HWAH_S)',
-                            'Simulated above-ground biomass at harvest,dry matter (CWAH_S)',
-                            'Simulated anthesis day (ADAT_S)',
-                            'Simulated maturity day (MDAT_S)',
-                            'Simulated harvest day (HADAT_S)',
-                            'Simulated leaf area index, maximum (LAIX_S)',
-                            'Total precipitation from planting to harvest (PRCP_S)',
-                            'Simulated evapotranspiration, planting to harvest (ETCP_S)',
-                            'Simulated N uptake during season (NUCM_S)',
-                            'Simulated N leached up to harvest maturity (NLCM_S)',
-                            'Transpiration, cumulative from planting to harvest (EPCP_S)',
-                            'Evaporation,soil, cumulative from planting to harvest (ESCP_S)',
-                            'Solar radiation, average, sowing to harvest (SRAA_S)',
-                            'Maximum daily air temperature, average, sowing to harvest (TMAXA_S)',
-                            'Minimum daily air temperature, average, sowing to harvest (TMINA_S)',
-                            'Daily air temperature, average, sowing to harvest (TAVGA_S)',
-                            'CO2 concentration, atmospheric average over day (CO2D_S)'
-                        ]"/>
+            <BoxPane orientation="horizontal">
+                <Label text="Select X Output Variable:" styles="{font:{bold:true}}" />
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Select a variable for x-axis of plot. A validation for this variable will be excuted on your data." />
+            </BoxPane>
+            <BoxPane orientation="horizontal">
+                <ListButton bxml:id="plotVarXLB"
+                            listData="[
+                                'Simulated harvest yield,dry matter (HWAH_S)',
+                                'Simulated above-ground biomass at harvest,dry matter (CWAH_S)',
+                                'Simulated anthesis day (ADAT_S)',
+                                'Simulated maturity day (MDAT_S)',
+                                'Simulated harvest day (HADAT_S)',
+                                'Simulated leaf area index, maximum (LAIX_S)',
+                                'Total precipitation from planting to harvest (PRCP_S)',
+                                'Simulated evapotranspiration, planting to harvest (ETCP_S)',
+                                'Simulated N uptake during season (NUCM_S)',
+                                'Simulated N leached up to harvest maturity (NLCM_S)',
+                                'Transpiration, cumulative from planting to harvest (EPCP_S)',
+                                'Evaporation,soil, cumulative from planting to harvest (ESCP_S)',
+                                'Solar radiation, average, sowing to harvest (SRAA_S)',
+                                'Maximum daily air temperature, average, sowing to harvest (TMAXA_S)',
+                                'Minimum daily air temperature, average, sowing to harvest (TMINA_S)',
+                                'Daily air temperature, average, sowing to harvest (TAVGA_S)',
+                                'CO2 concentration, atmospheric average over day (CO2D_S)'
+                            ]"/>
+            </BoxPane>
         </BoxPane>
         <!-- Plot Variable Y -->
         <BoxPane orientation="vertical">
-            <Label text="Select Y Output Variable:" styles="{font:{bold:true}}" />
-            <ListButton bxml:id="plotVarYLB"
-                        listData="[
-                            'Simulated harvest yield,dry matter (HWAH_S)',
-                            'Simulated above-ground biomass at harvest,dry matter (CWAH_S)',
-                            'Simulated anthesis day (ADAT_S)',
-                            'Simulated maturity day (MDAT_S)',
-                            'Simulated harvest day (HADAT_S)',
-                            'Simulated leaf area index, maximum (LAIX_S)',
-                            'Total precipitation from planting to harvest (PRCP_S)',
-                            'Simulated evapotranspiration, planting to harvest (ETCP_S)',
-                            'Simulated N uptake during season (NUCM_S)',
-                            'Simulated N leached up to harvest maturity (NLCM_S)',
-                            'Transpiration, cumulative from planting to harvest (EPCP_S)',
-                            'Evaporation,soil, cumulative from planting to harvest (ESCP_S)',
-                            'Solar radiation, average, sowing to harvest (SRAA_S)',
-                            'Maximum daily air temperature, average, sowing to harvest (TMAXA_S)',
-                            'Minimum daily air temperature, average, sowing to harvest (TMINA_S)',
-                            'Daily air temperature, average, sowing to harvest (TAVGA_S)',
-                            'CO2 concentration, atmospheric average over day (CO2D_S)'
-                        ]"/>
+            <BoxPane orientation="horizontal">
+                <Label text="Select Y Output Variable:" styles="{font:{bold:true}}" />
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Select a variable for y-axis of plot. A validation for this variable will be excuted on your data." />
+            </BoxPane>
+            <BoxPane orientation="horizontal">
+                <ListButton bxml:id="plotVarYLB"
+                            listData="[
+                                'Simulated harvest yield,dry matter (HWAH_S)',
+                                'Simulated above-ground biomass at harvest,dry matter (CWAH_S)',
+                                'Simulated anthesis day (ADAT_S)',
+                                'Simulated maturity day (MDAT_S)',
+                                'Simulated harvest day (HADAT_S)',
+                                'Simulated leaf area index, maximum (LAIX_S)',
+                                'Total precipitation from planting to harvest (PRCP_S)',
+                                'Simulated evapotranspiration, planting to harvest (ETCP_S)',
+                                'Simulated N uptake during season (NUCM_S)',
+                                'Simulated N leached up to harvest maturity (NLCM_S)',
+                                'Transpiration, cumulative from planting to harvest (EPCP_S)',
+                                'Evaporation,soil, cumulative from planting to harvest (ESCP_S)',
+                                'Solar radiation, average, sowing to harvest (SRAA_S)',
+                                'Maximum daily air temperature, average, sowing to harvest (TMAXA_S)',
+                                'Minimum daily air temperature, average, sowing to harvest (TMINA_S)',
+                                'Daily air temperature, average, sowing to harvest (TAVGA_S)',
+                                'CO2 concentration, atmospheric average over day (CO2D_S)'
+                            ]"/>
+            </BoxPane>
         </BoxPane>
         <!-- Plot Group 1 -->
         <BoxPane orientation="vertical">
-            <Label text="Select Group Method 1:" styles="{font:{bold:true}}" />
-            <ListButton bxml:id="plotGroup1LB"
-                        listData="[
-                            'Crop (CRID_text)' ,
-                            'Field overlay ID (FIELD_OVERLAY)' ,
-                            'Seasonal strategy (SEASONAL_STRATEGY)' ,
-                            'Crop model simulation set (CMSS)',
-                            'Climate ID (CLIM_ID)' ,
-                            'Region ID (REG_ID)' ,
-                            'Weather station ID (WST_ID)' ,
-                            'Soil ID (SOIL_ID)' ,
-                            'Cultivar ID (CUL_ID)' ,
-                            'Cultivar name (CUL_NAME)' ,
-                            'Crop model (CROP_MODEL)'
-                        ]"/>
+            <BoxPane orientation="horizontal">
+                <Label text="Select Group Method 1:" styles="{font:{bold:true}}" />
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Select the first factor of grouping for plot. A validation for this variable will be excuted on your data." />
+            </BoxPane>
+            <BoxPane orientation="horizontal">
+                <ListButton bxml:id="plotGroup1LB"
+                            listData="[
+                                'Crop (CRID_text)' ,
+                                'Field overlay ID (FIELD_OVERLAY)' ,
+                                'Seasonal strategy (SEASONAL_STRATEGY)' ,
+                                'Crop model simulation set (CMSS)',
+                                'Climate ID (CLIM_ID)' ,
+                                'Region ID (REG_ID)' ,
+                                'Weather station ID (WST_ID)' ,
+                                'Soil ID (SOIL_ID)' ,
+                                'Cultivar ID (CUL_ID)' ,
+                                'Cultivar name (CUL_NAME)' ,
+                                'Crop model (CROP_MODEL)'
+                            ]"/>
+            </BoxPane>
         </BoxPane>
         <!-- Plot Group 2 -->
         <BoxPane orientation="vertical">
-            <Label text="Select Group Method 2:" styles="{font:{bold:true}}" />
-            <ListButton bxml:id="plotGroup2LB"
-                        listData="[
-                            'No Grouping' ,
-                            'Crop (CRID_text)' ,
-                            'Field overlay ID (FIELD_OVERLAY)' ,
-                            'Seasonal strategy (SEASONAL_STRATEGY)' ,
-                            'Crop model simulation set (CMSS)',
-                            'Climate ID (CLIM_ID)' ,
-                            'Region ID (REG_ID)' ,
-                            'Weather station ID (WST_ID)' ,
-                            'Soil ID (SOIL_ID)' ,
-                            'Cultivar ID (CUL_ID)' ,
-                            'Cultivar name (CUL_NAME)' ,
-                            'Crop model (CROP_MODEL)'
-                        ]"/>
+            <BoxPane orientation="horizontal">
+                <Label text="Select Group Method 2:" styles="{font:{bold:true}}" />
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Select the second factor of grouping for plot. A validation for this variable will be excuted on your data." />
+            </BoxPane>
+            <BoxPane orientation="horizontal">
+                <ListButton bxml:id="plotGroup2LB"
+                            listData="[
+                                'No Grouping' ,
+                                'Crop (CRID_text)' ,
+                                'Field overlay ID (FIELD_OVERLAY)' ,
+                                'Seasonal strategy (SEASONAL_STRATEGY)' ,
+                                'Crop model simulation set (CMSS)',
+                                'Climate ID (CLIM_ID)' ,
+                                'Region ID (REG_ID)' ,
+                                'Weather station ID (WST_ID)' ,
+                                'Soil ID (SOIL_ID)' ,
+                                'Cultivar ID (CUL_ID)' ,
+                                'Cultivar name (CUL_NAME)' ,
+                                'Crop model (CROP_MODEL)'
+                            ]"/>
+            </BoxPane>
         </BoxPane>
         <!-- Plot Format -->
         <BoxPane orientation="vertical">
-            <Label text="Plot Format:" styles="{font:{bold:true}}" />
+            <BoxPane orientation="horizontal">
+                <Label text="Plot Format:" styles="{font:{bold:true}}" />
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Select a output file format for your graph." />
+            </BoxPane>
             <BoxPane orientation="horizontal">
                 <bxml:define>
                     <ButtonGroup bxml:id="plotFormatButtons"/>
@@ -135,13 +158,14 @@
         <BoxPane orientation="vertical">
             <BoxPane orientation="horizontal">
                 <Label text="Output File Name:" styles="{font:{bold:true}}"/>
-                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Give a name for the plot file" />
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Give a name for the plot file. Will use title as default." />
             </BoxPane>
             <BoxPane orientation="horizontal">
                 <TextInput bxml:id="outputGraph" preferredWidth="300" editable="true" />
             </BoxPane>
             <BoxPane orientation="horizontal">
                 <Checkbox bxml:id="outputACMO" buttonData=" Output processed data as CSV file"/>
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Checked for dumping the reorganized data used for plot." />
             </BoxPane>
         </BoxPane>
     </Border>
