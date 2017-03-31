@@ -58,6 +58,7 @@ public class PlotUtil {
     public final static String CONFIG_FILE_PROJECT_TEMPLATE = "config_project.template";
     public final static String REPORT_TEMPLATE = "report.template";
     public final static String GLOBAL_CONFIG = "GlobalConfig";
+    public final static String RENV_DIALOG_PATH = "/uiscript/dialogREnvConfig.bxml";
     public static HashMap<String, HashMap<String, String>> CONFIG_MAP;
 
     public enum RScps {

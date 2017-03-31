@@ -88,18 +88,10 @@ public class PlotUIWindow extends Window implements Bindable {
                 DesktopApplicationContext.exit();
             }
         });
-        final Window curWindow = this.getWindow();
         Action.getNamedActions().put("REnvConfig", new Action() {
             @Override
             public void perform(Component src) {
-                BXMLSerializer bxml = new BXMLSerializer();
-                Dialog dialog;
-                try {
-                    dialog = (Dialog) bxml.readObject(getClass().getResource("/uiscript/dialogREnvConfig.bxml"));
-                    dialog.open(curWindow.getWindow());
-                } catch (IOException | SerializationException ex) {
-                    LOG.error(Functions.getStackTrace(ex));
-                }
+                openDialog(RENV_DIALOG_PATH);
             }
         });
     }
@@ -159,16 +151,24 @@ public class PlotUIWindow extends Window implements Bindable {
             @Override
             public void buttonPressed(Button button) {
 
-                runIndicator.setActive(true);
-                try {
-                    saveAllConfig();
-                    LOG.info("Done!");
-                } catch (IOException ex) {
-                    LOG.error("An error occured while writing the {} file: {}", CONFIG_FILE, ex.getMessage());
-                    LOG.error(Functions.getStackTrace(ex));
-                    Alert.alert(MessageType.ERROR, ex.getMessage(), PlotUIWindow.this);
+                if (isEnvConfigMissing("RExePath", true) || isEnvConfigMissing("RLibPath", true)) {
+                    
+                    openDialog(RENV_DIALOG_PATH);
+                    Alert.alert(MessageType.WARNING, "Please config the path for R environment before running the script", PlotUIWindow.this);
+                    
+                } else {
+                    
+                    runIndicator.setActive(true);
+                    try {
+                        saveAllConfig();
+                        LOG.info("Done!");
+                    } catch (IOException ex) {
+                        LOG.error("An error occured while writing the {} file: {}", CONFIG_FILE, ex.getMessage());
+                        LOG.error(Functions.getStackTrace(ex));
+                        Alert.alert(MessageType.ERROR, ex.getMessage(), PlotUIWindow.this);
+                    }
+                    validateInput();
                 }
-                validateInput();
             }
         });
 
@@ -573,5 +573,26 @@ public class PlotUIWindow extends Window implements Bindable {
         title = bp.get(0);
         bp.removeAll();
         bp.add(title);
+    }
+    
+    private boolean isEnvConfigMissing(String var, boolean isPath) {
+        String val = MapUtil.getValueOr(getConfig(PlotUtil.GLOBAL_CONFIG), var, "");
+        if (isPath) {
+            File path = new File(val);
+            return !path.exists();
+        } else {
+            return !"".equals(val.trim());
+        }
+    }
+    
+    private void openDialog(String bxmlPath) {
+        BXMLSerializer bxml = new BXMLSerializer();
+        Dialog dialog;
+        try {
+            dialog = (Dialog) bxml.readObject(getClass().getResource(bxmlPath));
+            dialog.open(PlotUIWindow.this);
+        } catch (IOException | SerializationException ex) {
+            LOG.error(Functions.getStackTrace(ex));
+        }
     }
 }
