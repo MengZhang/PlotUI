@@ -11,6 +11,7 @@
         <plotFormat>$!{config.StandardPlot.plotFormat}</plotFormat>
         <plotVar>$!{config.StandardPlot.plotVar}</plotVar>
         <plotMethod>$!{config.StandardPlot.plotMethod}</plotMethod>
+        <plotGrouping>$!{config.StandardPlot.plotGrouping}</plotGrouping>
         <inputDir>$!{config.StandardPlot.inputDir}</inputDir>
         <inputDir2>$!{config.StandardPlot.inputDir2}</inputDir2>
         <outputPath>$!{config.StandardPlot.outputPath}</outputPath>

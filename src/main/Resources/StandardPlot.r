@@ -20,19 +20,23 @@ if (length(args) == 0) {
       # "CDF",
       "PNG",
       "HWAH_S",
-      "ABSOLUTE",
-      # "RELATIVE",
+      # "ABSOLUTE",
+      "RELATIVE",
+      "Model+GCM",
+      # "RCP",
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM3",
-      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM1",
+      "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM1",
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM3",
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM4",
-      "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM2\\RCP4.5",
-      "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM5\\RCP4.5",
+      "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM2",
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM2\\RCP4.5",
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM5\\RCP4.5",
       "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output",
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output_ui",
       "true",
       "CM1CM2RCP4",
-      "GWXF:Middle_GIXF:Cool-Wet_GEXF:Cool-Dry_0XXX:Base_GMXF:Hot-Wet_GJXF:Hot-Dry_"
+      # "GWXF:Middle_GIXF:Cool-Wet_GEXF:Cool-Dry_0XXX:Base_GMXF:Hot-Wet_GJXF:Hot-Dry_"
+      "I1XF:Hot-Wet:yellow_GWXF:Hot-Dry:red_GIXF:Hot-Wet:yellow_GEXF:Cool-Dry:blue_0XXX:Base:#D3D3D3_GMXF:Cool-Wet:green_IEXF:Cool-Dry:blue_IWXF:Hot-Dry:red_ILXF:Cool-Wet:green_ICXF:Middle:#333333_GJXF:Middle:#333333_"
       # "GWXF:Middle:#333333_GIXF:Cool-Wet:green_GEXF:Cool-Dry:blue_0XXX:Base:#D3D3D3_GMXF:Hot-Wet:yellow_GJXF:Hot-Dry:red_"
     )
   utilScpPath <- "PlotUtil.r"
@@ -47,20 +51,21 @@ plotType <- args[3]
 plotFormat <- tolower(args[4])
 plotVarID <- args[5]
 plotMethod <- args[6]
-inputFolder <- args[7]
-inputFolder2 <- args[8]
-outputPath <- args[9]
-outputCsvFlag <- args[10]
+plotGrouping <- args[7]
+inputFolder <- args[8]
+inputFolder2 <- args[9]
+outputPath <- args[10]
+outputCsvFlag <- args[11]
 outputAcmo <-
-  paste(paste(args[11], plotType, plotMethod, plotVarID, sep = "-"),
+  paste(paste(args[12], plotType, plotMethod, plotVarID, sep = "-"),
         "csv",
         sep = ".")
 outputAcmo <- paste(outputPath, outputAcmo, sep = "/")
 outputPlot <-
-  paste(paste(args[11], plotType, plotMethod, plotVarID, sep = "-"),
+  paste(paste(args[12], plotType, plotMethod, plotVarID, sep = "-"),
         plotFormat,
         sep = ".")
-gcmCatPairs <- strsplit(args[12], split = "_")[[1]]
+gcmCatPairs <- strsplit(args[13], split = "_")[[1]]
 duration <- 30
 
 # Initialize GCM category setting
@@ -101,25 +106,56 @@ print(paste("Detect", gcmNum, "combination of GCM+RAP+MAN", sep = " "))
 
 if (plotType == "BoxPlot") {
   
-  ggplot(data = merged, aes(x = MODEL, y = VALUE)) +
-    geom_boxplot(
-      aes(fill = GCM),
-      outlier.colour = NA,
-      width = gcmNum / 12,
-      color = "darkgrey"
-    )  +
-    coord_cartesian(ylim = adjustRange(range(boxplot(merged$VALUE, plot = FALSE)$stats), rangeFactors)) +
-    theme_bw() +
-    theme(legend.text = element_text(size = 13),
-          legend.title = element_text(size = 13)) +
-    theme(axis.text = element_text(size = 13)) +
-    theme(axis.title = element_text(size = 13, face = "bold")) +
-    labs(x = "Models", y = plotVarTitle, colour = "Legend", title = title) +
-    theme(panel.grid.minor = element_blank()) +
-    theme(plot.margin = unit(c(1, 1, 1, 1), "mm")) +
-    theme(axis.text.x = element_text(hjust = 0.5)) +
-    theme(plot.title = element_text(size=20, face="bold", hjust = 0.5)) +
-    scale_fill_manual(values=colors)
+  if (plotGrouping == "RCP") {
+    
+    merged$Scenario <- substr(getScenarioNames(merged$CLIM_ID), 1, 6)
+    rcpNum <- length(levels(as.factor(merged$Scenario)))
+    colors <- getAutoColors(rcpNum)
+    
+    ggplot(data = merged, aes(x = substr(Scenario, 1, 6), y = VALUE)) +
+      geom_boxplot(
+        aes(fill = Scenario),
+        outlier.colour = NA,
+        width = rcpNum / 12,
+        color = "darkgrey"
+      )  + 
+      coord_flip(ylim = adjustRange(range(boxplot(merged$VALUE, plot = FALSE)$stats), rangeFactors)) +
+      theme_bw() +
+      theme(legend.text = element_text(size = 13),
+            legend.title = element_text(size = 13)) +
+      theme(axis.text = element_text(size = 13)) +
+      theme(axis.title = element_text(size = 13, face = "bold")) +
+      labs(x = "Scenarios", y = plotVarTitle, colour = "Legend", title = title) +
+      theme(panel.grid.minor = element_blank()) +
+      theme(plot.margin = unit(c(1, 1, 1, 1), "mm")) +
+      theme(axis.text.x = element_text(hjust = 0.5)) +
+      theme(plot.title = element_text(size=20, face="bold", hjust = 0.5)) +
+      scale_fill_manual(values=colors)
+      
+    
+  } else {
+    
+    ggplot(data = merged, aes(x = MODEL, y = VALUE)) +
+      geom_boxplot(
+        aes(fill = GCM),
+        outlier.colour = NA,
+        width = gcmNum / 12,
+        color = "darkgrey"
+      )  +
+      coord_cartesian(ylim = adjustRange(range(boxplot(merged$VALUE, plot = FALSE)$stats), rangeFactors)) +
+      theme_bw() +
+      theme(legend.text = element_text(size = 13),
+            legend.title = element_text(size = 13)) +
+      theme(axis.text = element_text(size = 13)) +
+      theme(axis.title = element_text(size = 13, face = "bold")) +
+      labs(x = "Models", y = plotVarTitle, colour = "Legend", title = title) +
+      theme(panel.grid.minor = element_blank()) +
+      theme(plot.margin = unit(c(1, 1, 1, 1), "mm")) +
+      theme(axis.text.x = element_text(hjust = 0.5)) +
+      theme(plot.title = element_text(size=20, face="bold", hjust = 0.5)) +
+      scale_fill_manual(values=colors)
+    
+  }
   
   ggsave(
     filename = outputPlot,
@@ -134,12 +170,15 @@ if (plotType == "BoxPlot") {
   
 } else if (plotType == "CDF") {
   
-  models <- levels(as.factor(merged$MODEL))
-  gcms <- levels(as.factor(merged$GCM))
-  mergedCDF <- NULL
-  for (i in 1 : length(models)) {
-    for (j in 1 : length(gcms)) {
-      subData <- subset(merged, MODEL == models[i] & GCM == gcms[j])
+  if (plotGrouping == "RCP") {
+    
+    merged$Scenario <- substr(getScenarioNames(merged$CLIM_ID), 1, 6)
+    colors <- getAutoColors(length(levels(as.factor(merged$Scenario))))
+    
+    Scenarios <- levels(as.factor(merged$Scenario))
+    mergedCDF <- NULL
+    for (i in 1 : length(Scenarios)) {
+      subData <- subset(merged, Scenarios == Scenarios[i])
       subData$ECDF <- ecdf(subData$VALUE)(subData$VALUE)
       if (is.null(mergedCDF)) {
         mergedCDF <- subData
@@ -147,14 +186,10 @@ if (plotType == "BoxPlot") {
         mergedCDF <- rbind(mergedCDF, subData)
       }
     }
-  }
-  
-  if (qt != "Cur") {
     
-    # Multi GCM
-    ggplot(mergedCDF, aes(VALUE, 1 - ECDF, color = GCM)) +
+    ggplot(mergedCDF, aes(VALUE, 1 - ECDF, color = Scenario)) +
       geom_step() +
-      facet_wrap(~MODEL, ncol = 1) +
+      # facet_wrap(~MODEL, ncol = 1) +
       xlab(plotVarTitle) +
       ylab("Cumulative Frequency") +
       scale_color_manual(values=colors) +
@@ -164,16 +199,48 @@ if (plotType == "BoxPlot") {
     
   } else {
     
-    # Single GCM
-    colors <- c("red", "green")
-    ggplot(mergedCDF, aes(VALUE, 1 - ECDF, color = MODEL)) +
-      geom_step() +
-      xlab(plotVarTitle) +
-      ylab("Cumulative Frequency") +
-      scale_color_manual(values=colors) +
-      labs(title=title) +
-      theme(axis.title = element_text(size = 13, face = "bold")) +
-      theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5))
+    models <- levels(as.factor(merged$MODEL))
+    gcms <- levels(as.factor(merged$GCM))
+    mergedCDF <- NULL
+    for (i in 1 : length(models)) {
+      for (j in 1 : length(gcms)) {
+        subData <- subset(merged, MODEL == models[i] & GCM == gcms[j])
+        subData$ECDF <- ecdf(subData$VALUE)(subData$VALUE)
+        if (is.null(mergedCDF)) {
+          mergedCDF <- subData
+        } else {
+          mergedCDF <- rbind(mergedCDF, subData)
+        }
+      }
+    }
+    
+    if (qt != "Cur") {
+      
+      # Multi GCM
+      ggplot(mergedCDF, aes(VALUE, 1 - ECDF, color = GCM)) +
+        geom_step() +
+        facet_wrap(~MODEL, ncol = 1) +
+        xlab(plotVarTitle) +
+        ylab("Cumulative Frequency") +
+        scale_color_manual(values=colors) +
+        labs(title=title) +
+        theme(axis.title = element_text(size = 13, face = "bold")) +
+        theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5))
+      
+    } else {
+      
+      # Single GCM
+      colors <- c("red", "green")
+      ggplot(mergedCDF, aes(VALUE, 1 - ECDF, color = MODEL)) +
+        geom_step() +
+        xlab(plotVarTitle) +
+        ylab("Cumulative Frequency") +
+        scale_color_manual(values=colors) +
+        labs(title=title) +
+        theme(axis.title = element_text(size = 13, face = "bold")) +
+        theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5))
+      
+    }
     
   }
   

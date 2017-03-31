@@ -414,7 +414,7 @@ getDefColorEnv <- function() {
   return (ret)
 }
 
-getAutoColors <- function(autoNum, usedColors) {
+getAutoColors <- function(autoNum, usedColors = c()) {
   if (autoNum < 1) {
     return (usedColors)
   }
@@ -434,6 +434,50 @@ getAutoColors <- function(autoNum, usedColors) {
     }
   }
   return (ret[1:size])
+}
+
+getScenarioName <- function(climId) {
+  ret <- switch(
+    substr(climId, 1, 1),
+    "0" = "1980-2009 baseline",
+    "1" = "A2-2005-2035 (Near-term)",
+    "2" = "B1-2005-2035 (Near-term)",
+    "3" = "A2-2040-2069 (Mid-Century)",
+    "4" = "B1-2040-2069 (Mid-Century)",
+    "5" = "A2-2070-2099 (End-of-Century)",
+    "6" = "B1-2070-2099 (End-of-Century)",
+    "S" = "sensitivity scenario",
+    "A" = "observational time period (determined in file)",
+    "B" = "RCP3PD 2010-2039 (Near-term)",
+    "C" = "RCP45 2010-2039 (Near-term)",
+    "D" = "RCP60 2010-2039 (Near-term)",
+    "E" = "RCP85 2010-2039 (Near-term)",
+    "F" = "RCP3PD 2040-2069 (Mid-Century)",
+    "G" = "RCP45 2040-2069 (Mid-Century)",
+    "H" = "RCP60 2040-2069 (Mid-Century)",
+    "I" = "RCP85 2040-2069 (Mid-Century)",
+    "J" = "RCP3PD 2070-2099 (End-of-Century)",
+    "K" = "RCP45 2070-2099 (End-of-Century)",
+    "L" = "RCP60 2070-2099 (End-of-Century)",
+    "M" = "RCP85 2070-2099 (End-of-Century)",
+    "Undefined"
+  )
+  # ret <- substr(ret, 1, 6)
+  return (ret)
+}
+
+getScenarioNames <- function(climIds) {
+  ret <- c()
+  ids <- levels(as.factor(climIds))
+  if (length(ids) == 1) {
+    return ("Undefined")
+  } else if (length(ids) == 1) {
+    return (getScenarioName(climIds[1]))
+  }
+  for (climId in climIds) {
+    ret <- c(ret, getScenarioName(climId))
+  }
+  return (ret)
 }
 
 setLibPath <- function(path) {

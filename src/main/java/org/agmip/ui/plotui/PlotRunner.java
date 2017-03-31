@@ -31,6 +31,7 @@ public class PlotRunner {
         String plotFormat = config.get("plotFormat");
         String plotVar = config.get("plotVar");
         String plotMethod = config.get("plotMethod");
+        String plotGrouping = config.get("plotGrouping");
         String inputDir = resolveAbsPath(base, config.get("inputDir"));
         String inputDir2 = resolveAbsPath(base, config.get("inputDir2"));
         String outputPath = resolveAbsPath(base, config.get("outputPath"));
@@ -43,7 +44,7 @@ public class PlotRunner {
                 PlotUtil.getRExePath(),
                 PlotUtil.getRScpPath(RScps.StandardPlot),
                 PlotUtil.getRLibPath(),
-                title, plotType, plotFormat, plotVar, plotMethod, inputDir, inputDir2, outputPath, outputACMO, outputGraph, gcmMapping);
+                title, plotType, plotFormat, plotVar, plotMethod, plotGrouping, inputDir, inputDir2, outputPath, outputACMO, outputGraph, gcmMapping);
         LOG.debug(pb.command().toString());
         return printRProc(pb.start(), RScps.StandardPlot);
     }

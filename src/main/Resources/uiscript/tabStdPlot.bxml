@@ -78,6 +78,20 @@
                 <RadioButton bxml:id="plotMethod_rel" buttonData="RELATIVE" buttonGroup="$plotMethodButtons"/>
             </BoxPane>
         </BoxPane>
+        <!-- Plot Grouping -->
+        <BoxPane orientation="vertical">
+            <BoxPane orientation="horizontal">
+                <Label text="Plot Grouping" styles="{font:{bold:true}}" />
+                <ImageView image="/info_s.jpg" tooltipDelay="200" tooltipText="Select a way of grouping for plot." />
+            </BoxPane>
+            <BoxPane orientation="horizontal">
+                <bxml:define>
+                    <ButtonGroup bxml:id="plotGroupingButtons"/>
+                </bxml:define>
+                <RadioButton bxml:id="plotGrouping_m+g" buttonData="Model+GCM" buttonGroup="$plotGroupingButtons" selected="true"/>
+                <RadioButton bxml:id="plotGrouping_rcp" buttonData="RCP" buttonGroup="$plotGroupingButtons"/>
+            </BoxPane>
+        </BoxPane>
         <!-- Plot Type -->
         <BoxPane orientation="vertical">
             <BoxPane orientation="horizontal">

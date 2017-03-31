@@ -11,6 +11,7 @@
         <plotFormat>PNG</plotFormat>
         <plotVar>HWAH_S</plotVar>
         <plotMethod>ABSOLUTE</plotMethod>
+        <plotGrouping>Model+GCM</plotGrouping>
         <inputDir>CM1</inputDir>
         <inputDir2>CM2</inputDir2>
         <outputPath>plot_output</outputPath>

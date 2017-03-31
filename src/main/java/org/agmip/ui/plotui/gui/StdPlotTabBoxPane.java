@@ -37,6 +37,8 @@ public class StdPlotTabBoxPane extends PlotTabBoxPane implements Bindable {
     private ListButton plotVarLB = null;
     private ButtonGroup plotMethod = null;
     private HashMap<String, RadioButton> plotMethodRBMap = null;
+    private ButtonGroup plotGrouping = null;
+    private HashMap<String, RadioButton> plotGroupingRBMap = null;
     private ButtonGroup plotType = null;
     private HashMap<String, RadioButton> plotTypeRBMap = null;
     private ButtonGroup plotFormat = null;
@@ -62,6 +64,8 @@ public class StdPlotTabBoxPane extends PlotTabBoxPane implements Bindable {
         plotVarLB = (ListButton) ns.get("plotVarLB");
         plotMethod = (ButtonGroup) ns.get("plotMethodButtons");
         plotMethodRBMap = initRadioButtonGroup(ns, "plotMethod_abs", "plotMethod_rel");
+        plotGrouping = (ButtonGroup) ns.get("plotGroupingButtons");
+        plotGroupingRBMap = initRadioButtonGroup(ns, "plotGrouping_m+g", "plotGrouping_rcp");
         plotType = (ButtonGroup) ns.get("plotTypeButtons");
         plotTypeRBMap = initRadioButtonGroup(ns, "plotType_box", "plotType_cdf");
         plotFormat = (ButtonGroup) ns.get("plotFormatButtons");
@@ -87,6 +91,7 @@ public class StdPlotTabBoxPane extends PlotTabBoxPane implements Bindable {
         outputGraph.setText(MapUtil.getValueOr(config, "outputGraph", ""));
         setSelectionList(plotVarLB, config, "plotVar");
         setRadioButtonGroup(plotMethod, plotMethodRBMap, config, "plotMethod");
+        setRadioButtonGroup(plotGrouping, plotGroupingRBMap, config, "plotGrouping");
         setRadioButtonGroup(plotType, plotTypeRBMap, config, "plotType");
         setRadioButtonGroup(plotFormat, plotFormatRBMap, config, "plotFormat");
         outputACMO.setSelected(!MapUtil.getValueOr(config, "outputACMO", "").equalsIgnoreCase("false"));
@@ -105,6 +110,7 @@ public class StdPlotTabBoxPane extends PlotTabBoxPane implements Bindable {
         config.put("outputGraph", outputGraph.getText());
         config.put("plotFormat", plotFormat.getSelection().getButtonData().toString());
         config.put("plotMethod", plotMethod.getSelection().getButtonData().toString());
+        config.put("plotGrouping", plotGrouping.getSelection().getButtonData().toString());
         config.put("plotType", plotType.getSelection().getButtonData().toString());
         config.put("plotVar", getSelectedVar(plotVarLB));
         config.put("outputACMO", outputACMO.isSelected() + "");
