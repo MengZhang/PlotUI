@@ -94,6 +94,14 @@
                         <bxml:include bxml:id="hisPlotTab" src="tabHisPlot.bxml"/>
                     </BoxPane>
                     
+                    <!-- Standard Plot Config -->
+                    <BoxPane orientation="vertical" name="StandardPlot">
+                        <TabPane.tabData>
+                            <content:ButtonData text=" Standard Plot "/>
+                        </TabPane.tabData>
+                        <bxml:include bxml:id="stdPlotTab" src="tabStdPlot.bxml"/>
+                    </BoxPane>
+                    
                     <!-- Correlation Plot Config -->
                     <BoxPane orientation="vertical" name="CorrelationPlot">
                         <TabPane.tabData>
@@ -108,14 +116,6 @@
                             <content:ButtonData text="   CTWN Plot   " />
                         </TabPane.tabData>
                         <bxml:include bxml:id="ctwnPlotTab" src="tabCtwnPlot.bxml"/>
-                    </BoxPane>
-                    
-                    <!-- Standard Plot Config -->
-                    <BoxPane orientation="vertical" name="StandardPlot">
-                        <TabPane.tabData>
-                            <content:ButtonData text=" Standard Plot "/>
-                        </TabPane.tabData>
-                        <bxml:include bxml:id="stdPlotTab" src="tabStdPlot.bxml"/>
                     </BoxPane>
                     
                     <BoxPane orientation="vertical" name="help">
