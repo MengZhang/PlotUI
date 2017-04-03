@@ -150,7 +150,7 @@ if (plotType == "BoxPlot") {
         width = gcmNum / 12,
         color = "darkgrey"
       )  +
-      facet_wrap(~Scenario, ncol = rcpNum) +
+      facet_wrap(~SCENARIO, ncol = rcpNum) +
       coord_cartesian(ylim = adjustRange(range(boxplot(merged$VALUE, plot = FALSE)$stats), rangeFactors)) +
       # coord_cartesian(ylim = adjustRange(range(merged$VALUE), rangeFactors)) +
       theme_light() +
@@ -182,13 +182,13 @@ if (plotType == "BoxPlot") {
   
   if (plotGrouping == "RCP") {
     
-    merged$Scenario <- substr(getScenarioNames(merged$CLIM_ID), 1, 6)
-    colors <- getAutoColors(length(levels(as.factor(merged$Scenario))))
+    merged$SCENARIO <- substr(getScenarioNames(merged$CLIM_ID), 1, 6)
+    colors <- getAutoColors(length(levels(as.factor(merged$SCENARIO))))
     
-    Scenarios <- levels(as.factor(merged$Scenario))
+    Scenarios <- levels(as.factor(merged$SCENARIO))
     mergedCDF <- NULL
     for (i in 1 : length(Scenarios)) {
-      subData <- subset(merged, Scenarios == Scenarios[i])
+      subData <- subset(merged, SCENARIO == Scenarios[i])
       subData$ECDF <- ecdf(subData$VALUE)(subData$VALUE)
       if (is.null(mergedCDF)) {
         mergedCDF <- subData
@@ -197,7 +197,7 @@ if (plotType == "BoxPlot") {
       }
     }
     
-    ggplot(mergedCDF, aes(VALUE, 1 - ECDF, color = Scenario)) +
+    ggplot(mergedCDF, aes(VALUE, 1 - ECDF, color = SCENARIO)) +
       geom_step() +
       facet_wrap(~MODEL, nrow = modelNum) +
       xlab(plotVarTitle) +
