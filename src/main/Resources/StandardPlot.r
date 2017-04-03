@@ -20,8 +20,8 @@ if (length(args) == 0) {
       # "CDF",
       "PNG",
       "HWAH_S",
-      # "ABSOLUTE",
-      "RELATIVE",
+      "ABSOLUTE",
+      # "RELATIVE",
       "Model+GCM+RCP",
       # "RCP",
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM3",
@@ -93,7 +93,7 @@ if (plotMethod == "RELATIVE") {
 } else {
   merged <- combineSystem(system1, system2, gcmCats)
   plotVarTitle <- name_unit(plotVarID)
-  rangeFactors <- c(0.9, 1.3)
+  rangeFactors <- c(0.9, 1.1)
 }
 gcmCats <- detectGCM(system1, system2, gcmCats)
 qt <- getQuestionType(length(system1), length(system2), merged)
@@ -102,6 +102,23 @@ colors <- getStdPlotColors(qt, gcmCats, gcmColorEnv)
 
 # Calculate RCP name
 merged$SCENARIO <- getScenarioNames(merged$CLIM_ID)
+gcmCol <- as.character(merged$GCM)
+baseData <- subset(merged, startsWith(gcmCol, "Base"))
+if (nrow(baseData) != 0) {
+  RCPData <- subset(merged, !startsWith(gcmCol, "Base"))
+  scenarios <- levels(as.factor(RCPData$SCENARIO))
+  for (scenario in scenarios) {
+    tmp <- baseData
+    tmp$SCENARIO <- scenario
+    RCPData <- rbind(RCPData, tmp)
+  }
+  merged <- RCPData
+  # merged$SCENARIO <- as.factor(as.character(merged$SCENARIO))
+  # levels(merged$SCENARIO)
+}
+baseData <- NULL
+# merged$GCM <- as.factor(merged$GCM)
+levels(merged$GCM)
 # detect number of RCP
 rcpNum <- length(levels(as.factor(merged$SCENARIO)))
 print(paste("Detect", rcpNum, "RCP Scenarios", sep = " "))
@@ -150,7 +167,7 @@ if (plotType == "BoxPlot") {
         width = gcmNum / 12,
         color = "darkgrey"
       )  +
-      facet_wrap(~SCENARIO, ncol = rcpNum) +
+      facet_wrap(~SCENARIO, ncol = 1,  nrow = (rcpNum + 1 ) %/% 2) +
       coord_cartesian(ylim = adjustRange(range(boxplot(merged$VALUE, plot = FALSE)$stats), rangeFactors)) +
       # coord_cartesian(ylim = adjustRange(range(merged$VALUE), rangeFactors)) +
       theme_light() +
@@ -209,7 +226,6 @@ if (plotType == "BoxPlot") {
     
   } else {
     
-    
     models <- levels(as.factor(merged$MODEL))
     gcms <- levels(as.factor(merged$GCM))
     mergedCDF <- NULL
@@ -228,7 +244,6 @@ if (plotType == "BoxPlot") {
     if (qt != "Cur") {
       
       # Multi GCM
-      
       ggplot(mergedCDF, aes(VALUE, 1 - ECDF, color = GCM)) +
         geom_step() +
         facet_wrap(~paste(MODEL, SCENARIO), ncol = rcpNum, nrow = modelNum) +
