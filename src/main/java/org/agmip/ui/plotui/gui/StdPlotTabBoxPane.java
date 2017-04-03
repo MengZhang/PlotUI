@@ -65,7 +65,7 @@ public class StdPlotTabBoxPane extends PlotTabBoxPane implements Bindable {
         plotMethod = (ButtonGroup) ns.get("plotMethodButtons");
         plotMethodRBMap = initRadioButtonGroup(ns, "plotMethod_abs", "plotMethod_rel");
         plotGrouping = (ButtonGroup) ns.get("plotGroupingButtons");
-        plotGroupingRBMap = initRadioButtonGroup(ns, "plotGrouping_m+g", "plotGrouping_rcp");
+        plotGroupingRBMap = initRadioButtonGroup(ns, "plotGrouping_mgr", "plotGrouping_rcp");
         plotType = (ButtonGroup) ns.get("plotTypeButtons");
         plotTypeRBMap = initRadioButtonGroup(ns, "plotType_box", "plotType_cdf");
         plotFormat = (ButtonGroup) ns.get("plotFormatButtons");

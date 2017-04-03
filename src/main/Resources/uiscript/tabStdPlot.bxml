@@ -88,7 +88,7 @@
                 <bxml:define>
                     <ButtonGroup bxml:id="plotGroupingButtons"/>
                 </bxml:define>
-                <RadioButton bxml:id="plotGrouping_m+g" buttonData="Model+GCM" buttonGroup="$plotGroupingButtons" selected="true"/>
+                <RadioButton bxml:id="plotGrouping_mgr" buttonData="Model+GCM+RCP" buttonGroup="$plotGroupingButtons" selected="true"/>
                 <RadioButton bxml:id="plotGrouping_rcp" buttonData="RCP" buttonGroup="$plotGroupingButtons"/>
             </BoxPane>
         </BoxPane>

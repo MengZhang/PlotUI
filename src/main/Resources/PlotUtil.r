@@ -437,8 +437,9 @@ getAutoColors <- function(autoNum, usedColors = c()) {
 }
 
 getScenarioName <- function(climId) {
+  code <- substr(climId, 1, 1)
   ret <- switch(
-    substr(climId, 1, 1),
+    code,
     "0" = "1980-2009 baseline",
     "1" = "A2-2005-2035 (Near-term)",
     "2" = "B1-2005-2035 (Near-term)",
@@ -460,7 +461,7 @@ getScenarioName <- function(climId) {
     "K" = "RCP45 2070-2099 (End-of-Century)",
     "L" = "RCP60 2070-2099 (End-of-Century)",
     "M" = "RCP85 2070-2099 (End-of-Century)",
-    "Undefined"
+    paste0("Undefined Scenario [", code, "]")
   )
   # ret <- substr(ret, 1, 6)
   return (ret)

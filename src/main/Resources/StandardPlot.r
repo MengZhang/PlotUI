@@ -22,7 +22,7 @@ if (length(args) == 0) {
       "HWAH_S",
       # "ABSOLUTE",
       "RELATIVE",
-      "Model+GCM",
+      "Model+GCM+RCP",
       # "RCP",
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM3",
       "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM1",
@@ -30,8 +30,9 @@ if (length(args) == 0) {
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM4",
       "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM2",
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM2\\RCP4.5",
-      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM5\\RCP4.5",
-      "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output",
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\CM5\\RCP4.5
+      "..\\..\\..\\plot_output\\Pakistan\\plot_output",
+      # "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output",
       # "..\\..\\test\\resources\\r_dev\\ACMO-p\\plot_output_ui",
       "true",
       "CM1CM2RCP4",
@@ -99,31 +100,38 @@ qt <- getQuestionType(length(system1), length(system2), merged)
 print(paste("Detect comparison mode as [", qt, "]", sep = ""))
 colors <- getStdPlotColors(qt, gcmCats, gcmColorEnv)
 
+# Calculate RCP name
+merged$SCENARIO <- getScenarioNames(merged$CLIM_ID)
+# detect number of RCP
+rcpNum <- length(levels(as.factor(merged$SCENARIO)))
+print(paste("Detect", rcpNum, "RCP Scenarios", sep = " "))
 # detect number of GCMs
-# gcmNum <- length(gcmCatPairs)
 gcmNum <- length(levels(as.factor(merged$GCM)))
 print(paste("Detect", gcmNum, "combination of GCM+RAP+MAN", sep = " "))
+# detect number of model
+modelNum <- length(levels(as.factor(merged$MODEL)))
+print(paste("Detect", modelNum, "models", sep = " "))
 
 if (plotType == "BoxPlot") {
   
   if (plotGrouping == "RCP") {
     
-    merged$Scenario <- substr(getScenarioNames(merged$CLIM_ID), 1, 6)
-    rcpNum <- length(levels(as.factor(merged$Scenario)))
+    merged$SCENARIO_S <- substr(merged$SCENARIO, 1, 6)
     colors <- getAutoColors(rcpNum)
     
-    ggplot(data = merged, aes(x = substr(Scenario, 1, 6), y = VALUE)) +
+    ggplot(data = merged, aes(x = SCENARIO_S, y = VALUE)) +
       geom_boxplot(
-        aes(fill = Scenario),
+        aes(fill = SCENARIO_S),
         outlier.colour = NA,
-        width = rcpNum / 12,
+        width = rcpNum / 16,
         color = "darkgrey"
       )  + 
-      coord_flip(ylim = adjustRange(range(boxplot(merged$VALUE, plot = FALSE)$stats), rangeFactors)) +
-      theme_bw() +
+      coord_flip(ylim = range(boxplot(merged$VALUE, plot = FALSE)$stats)) +
+      theme_light() +
+      # theme(axis.ticks.x = element_line(size = rel(10))) +
       theme(legend.text = element_text(size = 13),
             legend.title = element_text(size = 13)) +
-      theme(axis.text = element_text(size = 13)) +
+      theme(axis.text = element_text(size = 11)) +
       theme(axis.title = element_text(size = 13, face = "bold")) +
       labs(x = "Scenarios", y = plotVarTitle, colour = "Legend", title = title) +
       theme(panel.grid.minor = element_blank()) +
@@ -142,8 +150,10 @@ if (plotType == "BoxPlot") {
         width = gcmNum / 12,
         color = "darkgrey"
       )  +
+      facet_wrap(~Scenario, ncol = rcpNum) +
       coord_cartesian(ylim = adjustRange(range(boxplot(merged$VALUE, plot = FALSE)$stats), rangeFactors)) +
-      theme_bw() +
+      # coord_cartesian(ylim = adjustRange(range(merged$VALUE), rangeFactors)) +
+      theme_light() +
       theme(legend.text = element_text(size = 13),
             legend.title = element_text(size = 13)) +
       theme(axis.text = element_text(size = 13)) +
@@ -189,7 +199,7 @@ if (plotType == "BoxPlot") {
     
     ggplot(mergedCDF, aes(VALUE, 1 - ECDF, color = Scenario)) +
       geom_step() +
-      # facet_wrap(~MODEL, ncol = 1) +
+      facet_wrap(~MODEL, nrow = modelNum) +
       xlab(plotVarTitle) +
       ylab("Cumulative Frequency") +
       scale_color_manual(values=colors) +
@@ -198,6 +208,7 @@ if (plotType == "BoxPlot") {
       theme(plot.title = element_text(size = 20, face = "bold", hjust = 0.5))
     
   } else {
+    
     
     models <- levels(as.factor(merged$MODEL))
     gcms <- levels(as.factor(merged$GCM))
@@ -217,9 +228,10 @@ if (plotType == "BoxPlot") {
     if (qt != "Cur") {
       
       # Multi GCM
+      
       ggplot(mergedCDF, aes(VALUE, 1 - ECDF, color = GCM)) +
         geom_step() +
-        facet_wrap(~MODEL, ncol = 1) +
+        facet_wrap(~paste(MODEL, SCENARIO), ncol = rcpNum, nrow = modelNum) +
         xlab(plotVarTitle) +
         ylab("Cumulative Frequency") +
         scale_color_manual(values=colors) +
@@ -233,6 +245,7 @@ if (plotType == "BoxPlot") {
       colors <- c("red", "green")
       ggplot(mergedCDF, aes(VALUE, 1 - ECDF, color = MODEL)) +
         geom_step() +
+        facet_wrap(~SCENARIO, ncol = rcpNum) +
         xlab(plotVarTitle) +
         ylab("Cumulative Frequency") +
         scale_color_manual(values=colors) +
